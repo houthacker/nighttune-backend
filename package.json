@@ -7,11 +7,21 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "bin": {
+    "nighttune": "main.js"
+  },
+  "keywords": [
+    "nighttune",
+    "autotune",
+    "oref0"
+  ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
-    "esm": "^3.2.25"
+    "esm": "^3.2.25",
+    "express": "^5.1.0",
+    "otplib": "^12.0.1",
+    "sqlite": "^5.1.1"
   }
 }
