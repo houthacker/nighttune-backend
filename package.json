@@ -20,8 +20,8 @@
   "type": "module",
   "dependencies": {
     "esm": "^3.2.25",
-    "express": "^5.1.0",
     "otplib": "^12.0.1",
+    "restify": "^11.1.0",
     "sqlite": "^5.1.1"
   }
 }
