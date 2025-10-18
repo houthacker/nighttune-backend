@@ -1,17 +1,37 @@
 {
   "name": "nighttune-backend",
-  "version": "1.0.0",
-  "description": "",
+  "author": "houthacker",
+  "bin": {
+    "nighttune": "main.js"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.0",
+    "cors": "^2.8.5",
+    "esm": "^3.2.25",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
+    "otplib": "^12.0.1",
+    "sqlite": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3"
+  },
+  "description": "Nighttune API backend",
+  "engines": {
+    "node": ">=24.8.0"
+  },
   "main": "index.js",
-  "module": "main.js",
+  "module": "main.js", 
+  "keywords": [
+    "nighttune",
+    "autotune",
+    "oref0"
+  ],
+  "license": "MIT",
   "scripts": {
+    "start": "dotenvx run --convention=nextjs -- node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "esm": "^3.2.25"
-  }
+  "type": "module",
+  "version": "0.0.1"
 }
