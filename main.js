@@ -1,8 +1,10 @@
 import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
-
+import compression from 'compression';
 import dotenv from 'dotenv';
+
+import RateLimit from 'express-rate-limit';
 
 // Read .env file
 dotenv.config();
@@ -13,9 +15,19 @@ const port = process.env.NT_PORT || 3333;
 if (!process.env.NT_TURNSTILE_SECRET) {
     throw new Error('Missing required env variable NT_TURNSTILE_SECRET');
 }
+
+// CORS configuration
 const corsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || []
 };
+
+const limiter = RateLimit({
+    windowMs: parseInt(process.env.NT_RATELIMIT_WINDOW_MS) || 60_000,
+    max: process.env.NT_RATELIMIT_MAX || 30
+});
+
+app.use(limiter);
+app.use(compression());
 app.use(express.json({ type: ['*/json', 'text/plain']}));
 
 const validateTurnstile = async (token, remote_ip) => {
