@@ -3,5 +3,5 @@ LABEL org.opencontainers.image.authors="github.com/houthacker"
 
 WORKDIR /nighttune
 COPY . .
-RUN npm install
-CMD ["/bin/sh", "-c", "npm run nighttune"]
+RUN npm install -g
+CMD ["/bin/sh", "-c", "nighttune"]

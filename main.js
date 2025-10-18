@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
