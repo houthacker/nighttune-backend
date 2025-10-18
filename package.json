@@ -1,10 +1,11 @@
 {
   "name": "nighttune-backend",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "module": "main.js",
   "scripts": {
+    "start": "dotenvx run --convention=nextjs -- node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
@@ -16,12 +17,18 @@
     "oref0"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.0",
+    "cors": "^2.8.5",
     "esm": "^3.2.25",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
     "otplib": "^12.0.1",
-    "restify": "^11.1.0",
     "sqlite": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3"
   }
 }
