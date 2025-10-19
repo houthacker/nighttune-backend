@@ -16,7 +16,13 @@
     "sqlite": "^5.1.1"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3"
+    "@tsconfig/node-ts": "^23.6.1",
+    "@tsconfig/recommended": "^1.0.10",
+    "@types/compression": "^1.8.1",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node-fetch": "^2.6.13",
+    "ts-node": "^10.9.2"
   },
   "description": "Nighttune API backend",
   "engines": {
@@ -31,9 +37,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "dotenvx run --convention=nextjs -- node main.js",
+    "start": "dotenvx run --convention=nextjs -- npx ts-node main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "type": "module",
   "version": "0.0.1"
 }
