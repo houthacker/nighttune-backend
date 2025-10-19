@@ -27,6 +27,10 @@ const limiter = RateLimit({
     max: process.env.NT_RATELIMIT_MAX || 30
 });
 
+// Configure express
+if (process.env.NT_RATELIMIT_TRUST_PROXY) {
+    app.set('trust proxy', process.env.NT_RATELIMIT_TRUST_PROXY.split(',').map(e => e.trim()));
+}
 app.use(limiter);
 app.use(compression());
 app.use(express.json({ type: ['*/json', 'text/plain']}));
