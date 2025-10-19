@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 import RateLimit from 'express-rate-limit';
 
-import turnstileRouter from './src/routes/turnstile.ts';
+import turnstileRouter from './src/routes/turnstile.js';
 
 // Read .env file
 dotenv.config();

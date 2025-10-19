@@ -94,10 +94,7 @@ web_modules/
 
 # dotenv environment variable files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -180,3 +177,8 @@ dist
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# dotenvx secrets
+.env.keys
+
+# Typescript build output
+build/

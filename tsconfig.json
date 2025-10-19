@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "module": "commonjs"
+        "baseUrl": "./",
+        "outDir": "build",
+        "sourceMap": true,
     },
-    "extends": "@tsconfig/recommended/tsconfig.json",
-    "include": ["./src/**/*"],
-    "ts-node": {
-        "transpileOnly": true,
-    }
+    "extends": "@tsconfig/node24",
+    "include": ["./src/**/*", "./main.ts"],
 }

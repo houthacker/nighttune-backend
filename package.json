@@ -1,35 +1,31 @@
 {
   "name": "nighttune-backend",
   "author": "houthacker",
-  "bin": {
-    "nighttune": "main.js"
-  },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.51.0",
+    "@tsconfig/node24": "^24.0.1",
+    "better-sqlite3": "^12.4.1",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "esm": "^3.2.25",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "node-fetch": "^3.3.2",
-    "otplib": "^12.0.1",
-    "sqlite": "^5.1.1"
+    "otplib": "^12.0.1"
   },
   "devDependencies": {
-    "@tsconfig/node-ts": "^23.6.1",
-    "@tsconfig/recommended": "^1.0.10",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node-fetch": "^2.6.13",
-    "ts-node": "^10.9.2"
+    "@types/node-fetch": "^2.6.13"
   },
   "description": "Nighttune API backend",
   "engines": {
     "node": ">=24.8.0"
   },
   "main": "index.js",
-  "module": "main.js",
+  "module": "main.ts",
   "keywords": [
     "nighttune",
     "autotune",
@@ -37,8 +33,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "dotenvx run --convention=nextjs -- npx ts-node main.ts",
+    "build": "tsc",
+    "start": "dotenvx run --convention=nextjs -- node build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "type": "module",
   "version": "0.0.1"
 }

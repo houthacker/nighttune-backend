@@ -4,7 +4,7 @@ import type { CorsOptions } from 'cors';
 import cors from 'cors';
 import { Router } from 'express';
 
-import { validateTurnstile } from '../controllers/turnstileController';
+import { validateTurnstile } from '../controllers/turnstileController.js';
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || []

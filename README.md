@@ -15,6 +15,7 @@ Please ensure the following prerequisites have been installed:
 | :--- | :--- |
 | [Docker Engine](https://docs.docker.com/engine/install/) | |
 | [nvm](https://github.com/nvm-sh/nvm) | Node Version Manager |
+| [dotenvx](https://dotenvx.com/docs/install) | secure dotenv files |
 | [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
 
 ### Configure ufw
@@ -37,6 +38,23 @@ $ sudo ufw allow https
 $ sudo ufw default deny incoming
 ```
 
+### Configure Cloudflare Turnstile
+The frontend uses Cloudflare Turnstile for bot protection and the backend handles the verification.
+How to configure Turnstile is described at [Cloudflare](https://developers.cloudflare.com/turnstile/).
+
+### Copy .env file
+Copy your secured (production) .env file to the vm. See [.env.example](./examples/.env.example) for its format.
+```bash
+$ scp .env.keys nightscout.app:~
+$ scp .env.production nightscout.app:~
+```
+
+### Run the backend Docker container 
+Ensure the container does not expose its ports to the internet.
+```bash
+$ backend_port=3333
+$ source ./.env.keys && docker run --name nighttune-backend -v ./.env.production:/app/.env -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:latest
+```
 
 ### Install nginx
 nighttune-backend uses `nginx` as a reverse proxy that also provides the ssl certificates using certbot.
@@ -73,7 +91,7 @@ $ sudo certbot --nginx
 ```
 
 ### Add reverse proxy config
-Edit the site config to allow reverse proxying to the backend docker container. An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
+Edit the site config to allow reverse proxying to the backend docker container. An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly. See [api.nighttune.app.example](./examples/api.nighttune.app.example) for a full example nginx site config.
 ```bash
     location / {
 		proxy_pass http://$backend_ip:$backend_port;
@@ -103,3 +121,5 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 # Then reload nginx
 $ sudo systemctl reload nginx
 ```
+
+Afther this, the backend should be reachable at the location you configured; congrats!
