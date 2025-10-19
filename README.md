@@ -53,7 +53,7 @@ $ scp .env.production nightscout.app:~
 Ensure the container does not expose its ports to the internet.
 ```bash
 $ backend_port=3333
-$ source ./.env.keys && docker run --name nighttune-backend -v ./.env.production:/app/.env -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:latest
+$ docker run --name nighttune-backend -v ./.env.production:/app/.env -v ./.env.keys:/app/.env.keys -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:latest
 ```
 
 ### Install nginx
