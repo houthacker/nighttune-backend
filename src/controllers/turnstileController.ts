@@ -27,8 +27,7 @@ export async function validateTurnstile(token: string, remote_ip: string): Promi
             body: formData
         });
 
-        const result = await response.json() as TurnstileValidation;
-        return result;
+        return await response.json() as TurnstileValidation;
     } catch (error) {
         console.error('Turnstile validation error:', error);
         return { success: false, 'error-codes': ['internal-error']} as TurnstileValidation;

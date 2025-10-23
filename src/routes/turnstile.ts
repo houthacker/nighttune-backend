@@ -5,9 +5,10 @@ import cors from 'cors';
 import { Router } from 'express';
 
 import { validateTurnstile } from '../controllers/turnstileController.js';
+import { getSession } from '../controllers/sessionController.js';
 
 const corsOptions: CorsOptions = {
-    origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || []
+    origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
 };
 const router = Router();
 
@@ -18,12 +19,19 @@ router.options('/', cors(corsOptions));
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const ip = request.get('CF-Connecting-IP') || request.ip!;
     const validation = await validateTurnstile(request.body.token, ip);
+
+    const session = await getSession(request, response);
+    session.turnstileTestPassed = validation.success;
+    await session.save();
+
     if (validation.success) {
-        response.sendStatus(200);
+        response.status(200);
     } else {
-        console.error('Invalid verification: ', validation['error-codes']);
-        response.send(400).json({ message: 'Turnstile verification invalid.'});
+        console.error('Invalid turnstile verification: ', validation['error-codes']);
+        response.status(400).json({ message: 'Turnstile verification failed.'});
     }
+
+    response.end();
 });
 
 export default router;

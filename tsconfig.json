@@ -3,6 +3,7 @@
         "baseUrl": "./",
         "outDir": "build",
         "sourceMap": true,
+        "exactOptionalPropertyTypes": true,
     },
     "extends": "@tsconfig/node24",
     "include": ["./src/**/*", "./main.ts"],

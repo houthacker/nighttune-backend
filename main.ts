@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import RateLimit from 'express-rate-limit';
 
 import turnstileRouter from './src/routes/turnstile.js';
+import jobRouter from './src/routes/job.js';
 
 // Read .env file
 dotenv.config();
@@ -28,10 +29,13 @@ if (process.env.NT_RATELIMIT_TRUST_PROXY) {
 }
 app.use(limiter);
 app.use(compression());
+
+// Accept 'text/plain' and '*/json' as json content types.
 app.use(express.json({ type: ['*/json', 'text/plain']}));
 
 // Routers
 app.use('/turnstile', turnstileRouter);
+app.use('/job', jobRouter);
 
 app.listen(port, () => {
     console.log(`listening at port ${port}`)
