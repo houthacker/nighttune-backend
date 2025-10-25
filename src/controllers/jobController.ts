@@ -1,15 +1,15 @@
-import { JobMqttDAO } from '../dao/job.js'
+import { MqttDAO } from '../dao/mqtt.js'
 import { AutotuneJob as AutotuneJobT } from '../models/job.js'
 
-import type { JobId } from '../dao/job.js'
+import type { JobId } from '../dao/mqtt.js'
 
 type AutotuneJob = typeof AutotuneJobT.infer
 
 export class JobController {
 
-    private readonly mqtt: JobMqttDAO
+    private readonly mqtt: MqttDAO
 
-    constructor(mqttDao: JobMqttDAO) {
+    constructor(mqttDao: MqttDAO) {
         this.mqtt = mqttDao
     }
 

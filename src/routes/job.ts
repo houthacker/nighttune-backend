@@ -7,7 +7,7 @@ import { type } from 'arktype'
 
 import { AutotuneJob } from '../models/job.js'
 import { getSession } from '../controllers/sessionController.js'
-import { JobMqttDAO } from '../dao/job.js'
+import { MqttDAO } from '../dao/mqtt.js'
 import { JobController } from '../controllers/jobController.js'
 
 const corsOptions: CorsOptions = {
@@ -15,7 +15,7 @@ const corsOptions: CorsOptions = {
     credentials: true,
 }
 const router = Router()
-const mqttDao = new JobMqttDAO(process.env.NT_MQTT_URL!, process.env.NT_MQTT_USER!, process.env.NT_MQTT_PASSWORD!, process.env.NT_MQTT_SUBMIT_TOPIC!)
+const mqttDao = new MqttDAO(process.env.NT_MQTT_URL!, process.env.NT_MQTT_USER!, process.env.NT_MQTT_PASSWORD!, process.env.NT_MQTT_SUBMIT_TOPIC!)
 const controller = new JobController(mqttDao)
 
 // Handle CORS preflight
