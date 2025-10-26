@@ -40,6 +40,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "initdb": "./scripts/initdb.sh",
     "start": "dotenvx run --convention=nextjs -- node build/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
