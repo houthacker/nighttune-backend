@@ -6,6 +6,7 @@ The API server of nighttune.
     1. [Configure ufw](#configure-ufw)
     2. [Install nginx](#install-nginx)
     3. [Install certbot](#install-certbot-and-configure-certifciate)
+    4. [Install sqlite3](#install-sqlite3)
 
 ### Installing
 
@@ -17,6 +18,7 @@ Please ensure the following prerequisites have been installed:
 | [nvm](https://github.com/nvm-sh/nvm) | Node Version Manager |
 | [dotenvx](https://dotenvx.com/docs/install) | secure dotenv files |
 | [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
+| [sqlite3](https://sqlite.org/) | An SQL database engine |
 
 ### Configure ufw
 Deny all incoming traffic by default, but leave ssh, http and https open.
@@ -382,4 +384,18 @@ $ sudo ln -s /etc/nginx/sites-available/mqtt.yourdomain.com /etc/nginx/sites-ena
 $ sudo systemctl reload nginx
 
 # Now use the management console at https://mqtt.yourdomain.com with the credentials from `env.sh`.
+```
+
+### Install sqlite3
+```bash
+$ sudo apt install sqlite3
+```
+
+### Initialize the database
+```bash
+# Using default values
+$ npm run initdb
+
+# Or using custom values
+$ npm run initdb -- /tmp/db.sql /tmp/nightscout-backend.db
 ```
