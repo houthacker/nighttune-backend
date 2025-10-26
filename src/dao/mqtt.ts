@@ -1,5 +1,4 @@
 import mqtt, { MqttClient } from 'mqtt';
-import { v4 as uuidv4 } from 'uuid';
 import { AutotuneJob as AutotuneJobModel } from '../models/job.js'
 
 type AutotuneJob = typeof AutotuneJobModel.infer
@@ -35,21 +34,20 @@ export class MqttDAO {
     /**
      * Submit an autotune job to MQTT.
      * 
+     * @param id The job identifier. Must be unique for all jobs.
      * @param job The autotune job to submit.
      * @returns A promise of `JobId` on success, otherwise `undefined`.
      */
-    async submit(job: AutotuneJob): Promise<JobId | undefined> {
-        const jobId: JobId = uuidv4()
-
+    async submit(id: JobId, job: AutotuneJob): Promise<boolean> {
         const response = await this.client.publishAsync(this.topic, JSON.stringify(job), {
             qos: MqttDAO.MQTT_QOS,
             properties: {
                 userProperties: {
-                    'X-Job-Id': jobId
+                    'X-Job-Id': id
                 }
             }
         })
 
-        return response ? jobId : undefined
+        return response ? true : false
     }
 }

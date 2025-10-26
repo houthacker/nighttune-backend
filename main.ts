@@ -7,6 +7,7 @@ import RateLimit from 'express-rate-limit';
 
 import turnstileRouter from './src/routes/turnstile.js';
 import jobRouter from './src/routes/job.js';
+import nightscoutRouter from './src/routes/nightscout.js';
 
 // Read .env file
 dotenv.config();
@@ -36,6 +37,7 @@ app.use(express.json({ type: ['*/json', 'text/plain']}));
 // Routers
 app.use('/turnstile', turnstileRouter);
 app.use('/job', jobRouter);
+app.use('/nightscout', nightscoutRouter);
 
 app.listen(port, () => {
     console.log(`listening at port ${port}`)
