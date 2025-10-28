@@ -5,7 +5,6 @@ import cors from 'cors'
 import { Router } from 'express'
 import { type } from 'arktype'
 
-import { MqttDAO } from '../dao/mqtt.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import { AutotuneJob } from '../models/job.js'
 import { getSession } from '../controllers/sessionController.js'
@@ -17,12 +16,6 @@ const corsOptions: CorsOptions = {
 }
 const router = Router()
 const controller = new JobController(
-    new MqttDAO(
-        process.env.NT_MQTT_URL!, 
-        process.env.NT_MQTT_USER!, 
-        process.env.NT_MQTT_PASSWORD!, 
-        process.env.NT_MQTT_SUBMIT_TOPIC!
-    ), 
     new SqliteDao(process.env.NT_DB_PATH!) 
 )
 

@@ -1,20 +1,14 @@
 import { v4 as uuidv4 } from 'uuid'
-import { MqttDAO } from '../dao/mqtt.js'
 import { SqliteDao } from '../dao/sqlite.js'
-import { AutotuneJob as AutotuneJobT } from '../models/job.js'
-
-import type { JobId } from '../dao/mqtt.js'
+import { AutotuneJob as AutotuneJobT, JobId } from '../models/job.js'
 
 type AutotuneJob = typeof AutotuneJobT.infer
 
 export class JobController {
 
-    private readonly mqtt: MqttDAO
-
     private readonly sqlite: SqliteDao
 
-    constructor(mqtt: MqttDAO, sqlite: SqliteDao) {
-        this.mqtt = mqtt
+    constructor(sqlite: SqliteDao) {
         this.sqlite = sqlite
     }
 
@@ -23,10 +17,10 @@ export class JobController {
 
         try {
             this.sqlite.enqueueJob(id, job.nightscout_url, job)
-            return await this.mqtt.submit(id, job);
+            return true
         } catch (err) {
             console.error(`Error while submitting job: ${err}`)
-            return false;
+            return false
         }
     }
 }

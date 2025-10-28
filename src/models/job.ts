@@ -1,8 +1,8 @@
 import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
-
 export const InsulineUnit = "'mmol' | 'mg/dL'"
+export type JobId = string
 
 export const NormalizedTimedValue = type({
     /**

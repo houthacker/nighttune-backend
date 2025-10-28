@@ -87,9 +87,7 @@ export class SqliteDao {
     }
 
     /**
-     * Notifies the database a new job is going to be enqueued. This must be called before
-     * submitting the message to MQTT, otherwise the job processor might get a job from MQTT
-     * without a matching database record.
+     * Notifies the database a new job is going to be enqueued. 
      * 
      * Also, this enables showing the amount of queued jobs to users.
      * @param id The unique identifier of the job.
