@@ -1,5 +1,7 @@
 import { subtle } from 'node:crypto'
+import { isMainThread } from 'node:worker_threads'
 
+import type { JobWorkerConfig as AutotuneConfig } from '../models/job.js'
 
 const hash_access_token = async (token: string): Promise<string> => {
     const encoder = new TextEncoder()
@@ -39,5 +41,16 @@ export class NightscoutDao {
         }
         
         return false;
+    }
+
+    /**
+     * Runs autotune using the given configuration. This method must be run from a worker thread.
+     */
+    async autotune(config: AutotuneConfig) {
+        if (isMainThread) {
+            throw new Error('NightscoutDao.autotune is a long-running task and must be run in a worker thread.')
+        }
+
+        console.log('Running autotune...')
     }
 }
