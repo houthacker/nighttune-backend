@@ -2,7 +2,66 @@ import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
 export const InsulineUnit = "'mmol' | 'mg/dL'"
+
+export enum WorkerMessageReasonCode {
+    NightscoutVerificationFailed = 'NS_SITE_VERIFICATION_FAILURE',
+}
+
 export type JobId = string
+
+export class JobError extends Error {
+    public readonly jobId: JobId
+
+    constructor(jobId: JobId, message: string, cause?: any) {
+        super(message, { cause })
+        Error.captureStackTrace(this, this.constructor)
+
+        this.jobId = jobId
+    }
+}
+
+export class JobAlreadyEnqueuedError extends JobError {
+    public readonly tag = 'JobAlreadyEnqueuedError'
+
+    constructor(jobId: JobId, message: string, cause?: any) {
+        super(jobId, message, cause)
+    }
+}
+
+export class GenericDatabaseError extends JobError {
+    public readonly tag = 'GenericDatabaseError'
+
+    constructor(jobId: JobId, message: string, cause?: any) {
+        super(jobId, message, cause)
+    }
+}
+
+export class JobExecutionError extends JobError {
+    public readonly tag = 'JobExecutionError'
+
+    constructor(jobId: JobId, message: string, cause?: any) {
+        super(jobId, message, cause)
+    }
+}
+
+export interface WorkerMessage {
+    jobId: JobId,
+    reasonCode: WorkerMessageReasonCode,
+    message?: string
+}
+
+export interface JobWorkerConfig {
+
+    /**
+     * The job identifier
+     */
+    id: JobId
+
+    /**
+     * The autotune job configuration.
+     */
+    job: typeof AutotuneJob.infer
+}
 
 export const NormalizedTimedValue = type({
     /**

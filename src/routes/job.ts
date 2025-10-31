@@ -4,20 +4,19 @@ import type { CorsOptions } from 'cors'
 import cors from 'cors'
 import { Router } from 'express'
 import { type } from 'arktype'
+import { inspect } from 'node:util'
 
-import { SqliteDao } from '../dao/sqlite.js'
-import { AutotuneJob } from '../models/job.js'
+import { AutotuneJob, JobAlreadyEnqueuedError, GenericDatabaseError, JobExecutionError } from '../models/job.js'
 import { getSession } from '../controllers/sessionController.js'
 import { JobController } from '../controllers/jobController.js'
+import { SqliteDao } from '../dao/sqlite.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
     credentials: true,
 }
 const router = Router()
-const controller = new JobController(
-    new SqliteDao(process.env.NT_DB_PATH!) 
-)
+const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!))
 
 // Handle CORS preflight
 router.options('/', cors(corsOptions))
@@ -38,21 +37,19 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
     } else {
 
         try {
-            // Check if Nightscout URL from autotune job is the same as the verified URL from the session cookie.
-            const verifiedUrl = new URL(session.verifiedNightscoutUrl!).toString()
-            const jobUrl = new URL(jobRequest.nightscout_url).toString()
-
-            if (verifiedUrl !== jobUrl) {
-                response.status(400).json({message: `The Nightscout URL '${jobUrl}' in the autotune job configuration is unverified.`})
+            await controller.submit(jobRequest)
+            response.status(200)
+        } catch (error: any) {
+            if (error instanceof JobAlreadyEnqueuedError) {
+                console.error(`[job ${error.jobId}]: ${inspect(error)}`)
+                response.status(400).json({message: 'Job already enqueued.'})
+            } else if (error instanceof GenericDatabaseError || error instanceof JobExecutionError) {
+                console.error(`[job ${error.jobId}]: ${inspect(error)}`)
+                response.status(500).json({message: `Error while running job with id '${error.jobId}'`})
             } else {
-
-                // If all is OK, submit the job request.
-                await controller.submit(jobRequest)
-                response.status(200)
+                console.error(`[job <unknown>]: ${inspect(error)}`)
+                response.status(500).json({message: 'Generic error running job with unknown id.'})
             }
-        } catch (error) {
-            console.error('Error while verifying Nightscout URL from autotune job: ', error)
-            response.status(400).json({message: 'Error while verifying Nightscout URL from autotune job.'})
         }
     }
 
