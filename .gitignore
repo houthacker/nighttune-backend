@@ -182,3 +182,6 @@ dist
 
 # Typescript build output
 build/
+
+# (testing) databases
+nighttune*.db

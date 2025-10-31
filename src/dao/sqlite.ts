@@ -1,4 +1,8 @@
 import sqlite from 'better-sqlite3'
+import { JobId, WorkerMessage } from '../models/job.js'
+
+export { SqliteError } from 'better-sqlite3'
+export type JobStatus = 'submitted' | 'processing' | 'error'
 
 export class SqliteDao {
 
@@ -31,8 +35,9 @@ export class SqliteDao {
      * 
      * @throws `Error` if execution of the BEGIN statement fails.
      */
-    private begin() {
+    private begin(): SqliteDao {
         this.db.prepare('BEGIN DEFERRED').run()
+        return this
     }
 
     /**
@@ -43,8 +48,9 @@ export class SqliteDao {
      * 
      * @throws `Error` If executing the COMMIT statement fails.
      */
-    private commit() {
+    private commit(): SqliteDao {
         this.db.prepare('COMMIT').run()
+        return this
     }
 
     /**
@@ -52,8 +58,9 @@ export class SqliteDao {
      * 
      * @throws `Error` if executing the ROLLBACK statement fails.
      */
-    private rollback() {
+    private rollback(): SqliteDao {
         this.db.prepare('ROLLBACK').run()
+        return this
     }
 
     /**
@@ -66,7 +73,7 @@ export class SqliteDao {
      * @throws `Error` if query execution fails.
      */
     private execute(sql: string, ...parameters: unknown[]): sqlite.RunResult {
-        return this.db.prepare(sql).run(parameters)
+        return this.db.prepare(sql).run(...parameters)
     }
 
     /**
@@ -75,26 +82,55 @@ export class SqliteDao {
      * 
      * @param sql The sql statement to execute.
      * @param parameters The parameters of the statement.
-     * 
-     * @throws `Error` if executing the statement fails.
+     * @returns The amount of rows changed and the last inserted rowid, if any. 
+     * @throws If executing the statement fails.
      */
     private executeInTransaction(sql: string, ...parameters: unknown[]): sqlite.RunResult {
         const fn = this.db.transaction((): sqlite.RunResult => {
-            return this.db.prepare(sql).run(parameters)
+            return this.db.prepare(sql).run(...parameters)
         })
 
         return fn()
     }
 
     /**
-     * Notifies the database a new job is going to be enqueued. 
+     * Submit a new job to the queue. 
      * 
-     * Also, this enables showing the amount of queued jobs to users.
+     * Inserting a job can lead to a job conflict, which causes this method to fail. Enqueueing a job 
+     * conflicts when a previous job with the same status exists. Jobs with status `error` do not
+     * cause conflicts.
+     * 
      * @param id The unique identifier of the job.
-     * @param url The Nightscout URL
+     * @param url The normalized Nightscout URL
      * @param settings The settings object.
+     * @returns The amount of rows changed and the last inserted rowid, if any.
+     * @throws `Error` if a job exists for the given `ns_url` that has a `JobStatus` of `submitted` or `processing`.
      */
-    enqueueJob(id: string, url: string, settings: object) {
-        this.executeInTransaction('INSERT INTO `job_queue` (`job_uuid`, `ns_url`, `parameters`) VALUES (@id, @url, @settings)', {id, url, settings})
+    enqueueJob(id: string, url: string, settings: object): sqlite.RunResult {
+        const json_settings = JSON.stringify(settings)
+        return this.executeInTransaction(
+            'INSERT INTO `job_queue` (`job_uuid`, `ns_url`, `parameters`) VALUES (@id, @url, @json_settings)', 
+            {id, url, json_settings})
+    }
+
+    /**
+     * Record job failure and store the reason for later retrieval.
+     * 
+     * @param jobId The unique job identifier.
+     * @param reasonCode The coded failure reason.
+     * @returns `true` if the job failure was recorded in the database, `false` otherwise.
+     */
+    jobFailed(jobId: JobId, reasonCode: WorkerMessage['reasonCode']): boolean {
+        try {
+            this.begin()
+            this.execute('UPDATE `job_queue` SET `state` = \'error\' WHERE `job_uuid` = @jobId', { jobId })
+            this.execute('INSERT INTO `job_errors` (`job_id`, `reason_code`) VALUES (@jobId, @errorCode)', { jobId, errorCode: reasonCode })
+            this.commit()
+            return true
+        } catch (error) {
+            this.rollback()
+        }
+
+        return false
     }
 }
