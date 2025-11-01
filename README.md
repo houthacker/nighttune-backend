@@ -93,7 +93,8 @@ $ sudo certbot --nginx
 ```
 
 ### Add reverse proxy config
-Edit the site config to allow reverse proxying to the backend docker container. An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly. See [api.nighttune.app.example](./examples/api.nighttune.app.example) for a full example nginx site config.
+Edit the site config to allow reverse proxying to the backend (or docker container). An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
+Usually, `backend_ip` will be `127.0.0.1` and `backend_port` will be `3333`.
 ```bash
   location / {
     proxy_pass http://$backend_ip:$backend_port;
@@ -133,9 +134,24 @@ $ sudo apt install sqlite3
 
 ### Initialize the database
 ```bash
-# Using default values
+# Using default values (src/config/db.sql and nighttune-backend-test.db)
 $ npm run initdb
 
 # Or using custom values
 $ npm run initdb -- /tmp/db.sql /tmp/nightscout-backend.db
+```
+
+### Clone and install oref0
+Installing oref0 globally is required to successfully spawn a child process that runs autotune.
+```bash
+$ git clone --branch v0.7.1 https://github.com/openaps/oref0.git
+$ cd oref0
+$ npm run global-install
+```
+
+### Install and run nighttune-backend
+```bash
+$ npm install
+$ npm run build
+$ npm start
 ```

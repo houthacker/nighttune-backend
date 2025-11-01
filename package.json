@@ -2,12 +2,14 @@
   "name": "nighttune-backend",
   "author": "houthacker",
   "dependencies": {
+    "@date-fns/tz": "^1.4.1",
     "@dotenvx/dotenvx": "^1.51.0",
     "@tsconfig/node24": "^24.0.1",
     "arktype": "^2.1.23",
     "better-sqlite3": "^12.4.1",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dockerode": "^4.0.9",
     "esm": "^3.2.25",
     "express": "^5.1.0",
@@ -25,11 +27,12 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.9.1",
     "@types/node-fetch": "^2.6.13",
-    "@types/uuid": "^10.0.0"
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.9.3"
   },
   "description": "Nighttune API backend",
   "engines": {
-    "node": ">=24.8.0"
+    "node": ">=24.11.0"
   },
   "main": "index.js",
   "module": "main.ts",
