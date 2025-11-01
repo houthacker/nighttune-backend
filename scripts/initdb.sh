@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Exit immediately on error
+set -e
+
 ME="${0}"
 
 show_usage() {
@@ -34,6 +37,8 @@ if [ ! -f "${schema_file}" ]; then
     echo "Database schema ${schema_file} does not exist." >&2
     show_usage
     exit 1
+else
+    echo "Using database schema from ${schema_file}"
 fi
 
 if [ ! -f $(which sqlite3) ]; then
@@ -42,3 +47,4 @@ fi
 
 echo "Creating nighttune database at ${db_file}"
 sqlite3 ${db_file} < ${schema_file}
+echo "Database initialization successful"
