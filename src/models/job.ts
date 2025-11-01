@@ -3,10 +3,6 @@ import { type } from 'arktype';
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
 export const InsulineUnit = "'mmol' | 'mg/dL'"
 
-export enum WorkerMessageReasonCode {
-    NightscoutVerificationFailed = 'NS_SITE_VERIFICATION_FAILURE',
-}
-
 export type JobId = string
 
 export class JobError extends Error {
@@ -44,13 +40,12 @@ export class JobExecutionError extends JobError {
     }
 }
 
-export interface WorkerMessage {
-    jobId: JobId,
-    reasonCode: WorkerMessageReasonCode,
-    message?: string
+export enum AutotuneErrorType {
+    NightscoutVerificationFailed = 'NS_SITE_VERIFICATION_FAILED',
+    AutotuneFailed = 'AUTOTUNE_FAILED'
 }
 
-export interface JobWorkerConfig {
+export interface AutotuneConfig {
 
     /**
      * The job identifier

@@ -1,5 +1,6 @@
 import sqlite from 'better-sqlite3'
-import { JobId, WorkerMessage } from '../models/job.js'
+import { JobId } from '../models/job.js'
+import { AutotuneResult } from '../services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -72,8 +73,12 @@ export class SqliteDao {
      * 
      * @throws `Error` if query execution fails.
      */
-    private execute(sql: string, ...parameters: unknown[]): sqlite.RunResult {
+    private run(sql: string, ...parameters: unknown[]): sqlite.RunResult {
         return this.db.prepare(sql).run(...parameters)
+    }
+
+    private get<T>(sql: string, ...parameters: unknown[]): T {
+        return this.db.prepare(sql).get(...parameters) as T
     }
 
     /**
@@ -120,11 +125,35 @@ export class SqliteDao {
      * @param reasonCode The coded failure reason.
      * @returns `true` if the job failure was recorded in the database, `false` otherwise.
      */
-    jobFailed(jobId: JobId, reasonCode: WorkerMessage['reasonCode']): boolean {
+    jobFailed(jobId: JobId, reasonCode: string): boolean {
         try {
             this.begin()
-            this.execute('UPDATE `job_queue` SET `state` = \'error\' WHERE `job_uuid` = @jobId', { jobId })
-            this.execute('INSERT INTO `job_errors` (`job_id`, `reason_code`) VALUES (@jobId, @errorCode)', { jobId, errorCode: reasonCode })
+            this.run('UPDATE `job_queue` SET `state` = \'error\' WHERE `job_uuid` = @jobId', { jobId })
+            this.run('INSERT INTO `job_errors` (`job_uuid`, `reason_code`) VALUES (@jobId, @errorCode)', { jobId, errorCode: reasonCode })
+            this.commit()
+            return true
+        } catch (error) {
+            this.rollback()
+        }
+
+        return false
+    }
+
+    jobSuccessful(jobId: JobId, recommendations: AutotuneResult): boolean {
+        try {
+            const { options, ...resultWithoutOptions } = recommendations
+            const queued_job = this.get<{ create_ts: number }>('SELECT `create_ts` FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
+
+            this.begin()
+            this.run('INSERT INTO `recommendations` (`job_uuid`, `ns_url`, `create_ts`, `parameters`, `recommendation`) \
+                VALUES (@jobId, @nsUrl, @createTs, @parameters, @recommendations)', {
+                    jobId, 
+                    nsUrl: recommendations.options.nsHost, 
+                    createTs: queued_job.create_ts, 
+                    parameters: JSON.stringify(recommendations.options),
+                    recommendations: JSON.stringify(resultWithoutOptions)
+                })
+            this.run('DELETE FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
             this.commit()
             return true
         } catch (error) {

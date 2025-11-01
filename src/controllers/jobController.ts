@@ -1,49 +1,47 @@
 import { v4 as uuidv4 } from 'uuid'
-import { 
-    AutotuneJob as AutotuneJobT, 
-    JobWorkerConfig,  
-    JobId, 
-    JobAlreadyEnqueuedError, 
-    GenericDatabaseError, 
-    JobExecutionError, 
-    WorkerMessage,
-    WorkerMessageReasonCode,
- } from '../models/job.js'
+import { NightscoutDao } from '../dao/nightscout.js'
 import { SqliteDao, SqliteError } from '../dao/sqlite.js'
+import {
+    AutotuneConfig,
+    AutotuneErrorType,
+    AutotuneJob as AutotuneJobT,
+    GenericDatabaseError,
+    JobAlreadyEnqueuedError,
+    JobExecutionError,
+    JobId,
+} from '../models/job.js'
+import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
-import { Piscina } from 'piscina'
-import { inspect } from 'node:util'
+import type { AutotuneError } from '../dao/nightscout.js'
+
 
 type AutotuneJob = typeof AutotuneJobT.infer
 
 const SQLITE_CONSTRAINT: string = 'SQLITE_CONSTRAINT'
 const SQLITE_CONSTRAINT_UNIQUE: string = 'SQLITE_CONSTRAINT_UNIQUE'
 
-const pool = new Piscina({
-    filename: new URL('../workers/jobWorker.js', import.meta.url).href,
-    maxQueue: 'auto'
-})
+const createAutotuneCallback = (sqlite: SqliteDao) => {
+    return (error: AutotuneError | null, recommendations?: AutotuneResult): void => {
+        if (error) {
+            sqlite.jobFailed(error.jobId, error.type)
+            console.error(`[job ${error.jobId}] error: ${error.log}`)
+        } else {
+            const opts = recommendations!.options as AutotuneOptions
+            sqlite.jobSuccessful(opts.jobId, recommendations!)
+            console.log(`[job ${opts.jobId}] success.`)
+        }
+    }
+}
 
 export class JobController {
 
     private readonly sqlite: SqliteDao
 
-    constructor(sqlite: SqliteDao) {
+    private readonly nightscout: NightscoutDao
+
+    constructor(sqlite: SqliteDao, nightscout: NightscoutDao) {
         this.sqlite = sqlite
-
-        pool.on('message', this.dispatch)
-    }
-
-    /**
-     * Dispatch messages from worker threads.
-     */
-    private dispatch(message: WorkerMessage) {
-        switch (message.reasonCode) {
-            case WorkerMessageReasonCode.NightscoutVerificationFailed:
-                this.sqlite.jobFailed(message.jobId, message.reasonCode)
-            default:
-                console.error(`Unsupported worker message: ${inspect(message)}`)
-        }
+        this.nightscout = nightscout
     }
 
     /**
@@ -51,7 +49,7 @@ export class JobController {
      * 
      * @throws `JobError` if running the job fails.
      */
-    async submit(job: AutotuneJob): Promise<void> {
+    async submit(job: AutotuneJob): Promise<JobId> {
         const id: JobId = uuidv4()
 
         // Enqueue the job here and not in the worker, because this allows
@@ -59,14 +57,18 @@ export class JobController {
         // Otherwise we'd have to poll the database for that.
         try {
             this.sqlite.enqueueJob(id, job.nightscout_url, job)
-            await pool.run({ id, job } as JobWorkerConfig)
+            if (await this.nightscout.verify(job.nightscout_url, job.nightscout_access_token) !== true) {
+                this.sqlite.jobFailed(id, AutotuneErrorType.NightscoutVerificationFailed)
+            } else {
+                await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite))
+            }
         } catch (error) {
             if (error instanceof SqliteError) {
                 switch (error.code) {
                     // Returned on trigger failure.
                     case SQLITE_CONSTRAINT:
 
-                    // Returned on regar unique constraint violation
+                    // Returned on regular unique constraint violation
                     case SQLITE_CONSTRAINT_UNIQUE:
                         throw new JobAlreadyEnqueuedError(id, 'Job already queued', error)
                     default:
@@ -75,6 +77,8 @@ export class JobController {
             } else {
                 throw new JobExecutionError(id, 'Error while executing job', error)
             }
+        } finally {
+            return id
         }
     }
 }
