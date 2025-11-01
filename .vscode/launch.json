@@ -8,6 +8,7 @@
         {
             "type": "node",
             "envFile": "${workspaceFolder}/.env.development.local",
+            "runtimeVersion": "25",
             "request": "launch",
             "name": "Debug nighttune-backend",
             "skipFiles": [
