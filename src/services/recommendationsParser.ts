@@ -40,13 +40,18 @@ export class AutotuneOptions {
 
     public readonly autotuneVersion: string
 
-    constructor(jobId: JobId, nsHost: string, dateFrom: string, dateTo: string, uam: boolean, autotuneVersion: string) {
+    public readonly timeZone: string
+
+    constructor(jobId: JobId, nsHost: string, dateFrom: string, dateTo: string, uam: boolean, autotuneVersion: string,
+        timeZone: string
+    ) {
         this.jobId = jobId
         this.nsHost = nsHost
         this.dateFrom = dateFrom
         this.dateTo = dateTo
         this.uam = uam
         this.autotuneVersion = autotuneVersion
+        this.timeZone = timeZone
     }
 
 }

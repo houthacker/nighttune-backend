@@ -1,6 +1,8 @@
 import sqlite from 'better-sqlite3'
-import { JobId } from '../models/job.js'
-import { AutotuneResult } from '../services/recommendationsParser.js'
+import { JobId, JobMeta } from '../models/job.js'
+import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
+import { fromUnixTime } from 'date-fns'
+import { tz } from '@date-fns/tz'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -77,8 +79,12 @@ export class SqliteDao {
         return this.db.prepare(sql).run(...parameters)
     }
 
-    private get<T>(sql: string, ...parameters: unknown[]): T {
-        return this.db.prepare(sql).get(...parameters) as T
+    private get<T>(sql: string, ...parameters: unknown[]): T | undefined {
+        return this.db.prepare(sql).get(...parameters) as T | undefined
+    }
+
+    private all<T>(sql: string, ...parameters: unknown[]): Array<T> {
+        return this.db.prepare(sql).all(...parameters) as Array<T>
     }
 
     /**
@@ -144,22 +150,73 @@ export class SqliteDao {
             const { options, ...resultWithoutOptions } = recommendations
             const queued_job = this.get<{ create_ts: number }>('SELECT `create_ts` FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
 
-            this.begin()
-            this.run('INSERT INTO `recommendations` (`job_uuid`, `ns_url`, `create_ts`, `parameters`, `recommendation`) \
-                VALUES (@jobId, @nsUrl, @createTs, @parameters, @recommendations)', {
-                    jobId, 
-                    nsUrl: recommendations.options.nsHost, 
-                    createTs: queued_job.create_ts, 
-                    parameters: JSON.stringify(recommendations.options),
-                    recommendations: JSON.stringify(resultWithoutOptions)
-                })
-            this.run('DELETE FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
-            this.commit()
-            return true
+            if (queued_job !== undefined) {
+                this.begin()
+                this.run('INSERT INTO `recommendations` (`job_uuid`, `ns_url`, `create_ts`, `parameters`, `recommendation`) \
+                    VALUES (@jobId, @nsUrl, @createTs, @parameters, @recommendations)', {
+                        jobId, 
+                        nsUrl: recommendations.options.nsHost, 
+                        createTs: queued_job.create_ts, 
+                        parameters: JSON.stringify(recommendations.options),
+                        recommendations: JSON.stringify(resultWithoutOptions)
+                    })
+                this.run('DELETE FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
+                this.commit()
+                return true
+            }
         } catch (error) {
             this.rollback()
         }
 
         return false
+    }
+
+    jobs(url: URL, limit: number): Array<JobMeta> {
+        const all = this.all<{job_uuid: string, create_ts: number, state: string, parameters: string}>(
+            'SELECT * FROM ( \
+                SELECT `job_uuid`, `create_ts`, `state`, `parameters` \
+                FROM `job_queue` \
+                WHERE `ns_url` = @url \
+                UNION \
+                SELECT `job_uuid`, `create_ts`, \'finished\' as `state`, `parameters` \
+                FROM `recommendations` \
+                WHERE `ns_url` = @url \
+                ORDER BY `create_ts` DESC \
+            ) LIMIT @limit;', 
+            { url: url.toString(), limit }
+        )
+
+        return all.map((row) => {
+            const parameters = JSON.parse(row.parameters) as AutotuneOptions
+
+            return new JobMeta(
+                row.job_uuid, 
+                row.state as JobMeta['status'], 
+                fromUnixTime(row.create_ts, {
+                    in: tz(parameters.timeZone)
+                }))
+        })
+    }
+
+    poll(url: URL): JobMeta | undefined {
+        const row = this.get<{ job_uuid: string, state: string, create_ts: number, parameters: string}>(
+            'SELECT `job_uuid`, `state`, `create_ts`, `parameters` \
+            FROM `job_queue` \
+            WHERE `ns_url` = @url \
+            ORDER BY `create_ts` DESC \
+            LIMIT 1', { url: url.href })
+
+        if (row !== undefined) {
+            const parameters = JSON.parse(row.parameters) as AutotuneOptions
+            return new JobMeta(
+                row.job_uuid, 
+                row.state as JobMeta['status'],
+                fromUnixTime(row.create_ts, {
+                    in: tz(parameters.timeZone)
+                })
+            )
+        }
+
+        return undefined
     }
 }

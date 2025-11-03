@@ -3,12 +3,12 @@ import { NightscoutDao } from '../dao/nightscout.js'
 import { SqliteDao, SqliteError } from '../dao/sqlite.js'
 import {
     AutotuneConfig,
-    AutotuneErrorType,
     AutotuneJob as AutotuneJobT,
     GenericDatabaseError,
     JobAlreadyEnqueuedError,
     JobExecutionError,
     JobId,
+    JobMeta,
 } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
@@ -57,11 +57,7 @@ export class JobController {
         // Otherwise we'd have to poll the database for that.
         try {
             this.sqlite.enqueueJob(id, job.nightscout_url, job)
-            if (await this.nightscout.verify(job.nightscout_url, job.nightscout_access_token) !== true) {
-                this.sqlite.jobFailed(id, AutotuneErrorType.NightscoutVerificationFailed)
-            } else {
-                await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite))
-            }
+            await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite))
         } catch (error) {
             if (error instanceof SqliteError) {
                 switch (error.code) {
@@ -80,5 +76,23 @@ export class JobController {
         } finally {
             return id
         }
+    }
+
+    /**
+     * Return the last `limit` jobs.
+     * 
+     * @param url The nightscout url to retrieve the statuses of.
+     * @param limit The maximum amount of statuses to retrieve. Defaults to `30`.
+     * @returns An array of `JobMeta` instances for the given URL.
+     */
+    async all(url: URL, limit: number = 30): Promise<Array<JobMeta>> {
+        return this.sqlite.jobs(url, limit)
+    }
+
+    /**
+     * Poll the state of the last queued job.
+     */
+    async poll(url: URL): Promise<JobMeta | undefined> {
+        return this.sqlite.poll(url)
     }
 }

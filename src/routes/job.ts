@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import type { CorsOptions } from 'cors'
 
 import cors from 'cors'
@@ -19,19 +19,29 @@ const corsOptions: CorsOptions = {
 const router = Router()
 const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao())
 
-// Handle CORS preflight
-router.options('/', cors(corsOptions))
-
-//
-router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
+// All requests must have the session cookie, have passed the turnstile- and Nightscout access test.
+router.use(async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
     if (session.turnstileTestPassed !== true) {
         console.error('Client has not (yet) passed turnstile test.')
-        response.sendStatus(400).json({ message: 'Please verify turnstile test first.'})
-        return
+        response.sendStatus(403).json({ message: 'Please verify turnstile test first.'})
+        return next('route')
+    } else {
+        try {
+            new URL(session.verifiedNightscoutUrl || '')
+        } catch (error) {
+            console.error('`Nightscout URL not verified.')
+            response.sendStatus(403).json({ message: 'Please verify the Nightscout URL and token first.'})
+        }
     }
+})
 
+// Handle CORS preflight
+router.options('/', cors(corsOptions))
+
+// POST a new job request
+router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const jobRequest = AutotuneJob(request.body)
     if (jobRequest instanceof type.errors) {
         response.status(400).json({ message: jobRequest.summary })
@@ -52,6 +62,36 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
                 response.status(500).json({message: 'Generic error running job with unknown id.'})
             }
         }
+    }
+
+    response.end()
+})
+
+// GET the status of all current and previous jobs.
+router.get('/all', cors(corsOptions), async (request: Request, response: Response) => {
+    const session = await getSession(request, response)
+
+    try {
+        const jobs = await controller.all(new URL(session.verifiedNightscoutUrl!))
+        response.status(200).json({ jobs })
+    } catch (error: any) {
+        console.error(`Error retrieving jobs: ${inspect(error)}`)
+        response.status(500).json({ message: 'Error retrieving jobs' })
+    }
+
+    response.end()
+})
+
+// GET the status of any queued job for the given Nightscout URL
+router.get('/poll', cors(corsOptions), async(request: Request, response: Response) => {
+    const session = await getSession(request, response)
+
+    try {
+        const job = await controller.poll(new URL(session.verifiedNightscoutUrl!))
+        response.status(200).json({ job })
+    } catch (error: any) {
+        console.error(`[job ${request.body.id}] Error while polling: ${inspect(error)}`)
+        response.status(500).json({ message: 'Error polling job'})
     }
 
     response.end()

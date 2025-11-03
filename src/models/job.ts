@@ -1,3 +1,4 @@
+import { TZDate } from '@date-fns/tz';
 import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
@@ -306,3 +307,30 @@ export const AutotuneJob = type({
      */
     settings: JobSettings,
 })
+
+/**
+ * Metadata of a single job.
+ */
+export class JobMeta {
+
+    /**
+     * The unique job identifier.
+     */
+    public readonly id: JobId
+
+    /**
+     * The current job status.
+     */
+    public readonly status: 'submitted' | 'processing' | 'error' | 'finished'
+
+    /**
+     * The time at which the job was submitted, in the profile time zone.
+     */
+    public readonly submittedAt: TZDate
+
+    constructor(id: JobId, status: typeof this.status, submittedAt: TZDate) {
+        this.id = id
+        this.status = status
+        this.submittedAt = submittedAt
+    }
+}

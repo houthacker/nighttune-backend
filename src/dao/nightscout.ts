@@ -43,7 +43,7 @@ export class NightscoutDao {
      * @param token The access token, required if the Nightscout instance is locked down.
      * @returns Whether the Nightscout API could be accessed.
      */
-    async verify(url: string, token?: string): Promise<boolean> {
+    async verify(url: URL, token?: string): Promise<boolean> {
         const statusUrl = new URL('/api/v1/status.json', url)
 
         if (token) {
@@ -124,7 +124,8 @@ export class NightscoutDao {
                     dateFrom: startDate.toDateString(),
                     dateTo: endDate.toDateString(),
                     uam: config.job.settings.uam_as_basal,
-                    autotuneVersion: '0.7.1' // TODO read from manifest
+                    autotuneVersion: '0.7.1', // TODO read from manifest
+                    timeZone: config.job.settings.oaps_profile_data.timezone
                 })
                 callback(null, recommendations)                
             } else {

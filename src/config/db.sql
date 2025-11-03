@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `job_queue` (
     `ns_url` TEXT NOT NULL,
     `create_ts` INTEGER NOT NULL DEFAULT (strftime('%s', 'now', 'utc')),
     `state` TEXT CHECK(`state` IN ('submitted', 'processing', 'error')) NOT NULL DEFAULT 'submitted',
-    `parameters` JSONB NULL,
+    `parameters` TEXT NULL,
     CONSTRAINT `unique_job_uuid_state` UNIQUE (`job_uuid`, `state`) ON CONFLICT ABORT
 );
 
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `recommendations` (
     `ns_url` TEXT NOT NULL,
     `create_ts` INTEGER NOT NULL,
     `finish_ts` INTEGER NOT NULL DEFAULT (strftime('%s', 'now', 'utc')),
-    `parameters` JSONB NOT NULL,
-    `recommendation` JSONB NOT NULL,
+    `parameters` TEXT NOT NULL,
+    `recommendation` TEXT NOT NULL,
     CONSTRAINT `unique_job_uuid_ns_url` UNIQUE (`job_uuid`, `ns_url`) ON CONFLICT ABORT
 );
