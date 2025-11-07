@@ -100,7 +100,7 @@ export class NightscoutDao {
             `--categorize-uam-as-basal=${config.job.settings.uam_as_basal}`
         ],
         {
-            detached: false,
+            detached: true,
             env: {...process.env, 'API_SECRET': token},
             shell: '/usr/bin/bash',
             stdio: ['pipe', 'ignore', 'pipe'],

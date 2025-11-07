@@ -184,4 +184,6 @@ dist
 build/
 
 # (testing) databases
-nighttune*.db*
+nighttune*.db
+nighttune*.db-shm
+nighttune*db-wal

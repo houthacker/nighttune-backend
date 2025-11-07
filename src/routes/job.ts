@@ -33,8 +33,11 @@ router.use(async (request: Request, response: Response, next: NextFunction) => {
         } catch (error) {
             console.error('`Nightscout URL not verified.')
             response.sendStatus(403).json({ message: 'Please verify the Nightscout URL and token first.'})
+            return next('route')
         }
     }
+
+    return next()
 })
 
 // Handle CORS preflight
@@ -67,6 +70,24 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
     response.end()
 })
 
+router.get('/id/:id', cors(corsOptions), async (request: Request, response: Response) => {
+    const session = await getSession(request, response)
+
+    try {
+        const result = await controller.result(new URL(session.verifiedNightscoutUrl!), request.params.id)
+        if (result === undefined) {
+            response.status(404).json({ message: `No such job '${request.params.id}'`})
+        } else {
+            response.status(200).json({ result })
+        }
+    } catch (error) {
+        console.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}: ${inspect(error)}`)
+        response.status(500).json({message: 'Error while retrieving job results.'})
+    }
+
+    response.end()
+})
+
 // GET the status of all current and previous jobs.
 router.get('/all', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
@@ -83,15 +104,15 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
 })
 
 // GET the status of any queued job for the given Nightscout URL
-router.get('/poll', cors(corsOptions), async(request: Request, response: Response) => {
+router.get('/latest', cors(corsOptions), async(request: Request, response: Response) => {
     const session = await getSession(request, response)
 
     try {
-        const job = await controller.poll(new URL(session.verifiedNightscoutUrl!))
+        const job = await controller.latest(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ job })
     } catch (error: any) {
-        console.error(`[job ${request.body.id}] Error while polling: ${inspect(error)}`)
-        response.status(500).json({ message: 'Error polling job'})
+        console.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}': ${inspect(error)}`)
+        response.status(500).json({ message: 'Error retrieving latest job'})
     }
 
     response.end()

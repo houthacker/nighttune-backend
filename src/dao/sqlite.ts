@@ -1,11 +1,13 @@
 import sqlite from 'better-sqlite3'
-import { JobId, JobMeta } from '../models/job.js'
+import { JobId, JobMeta, AutotuneJob as AutotuneJobT } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
-import { fromUnixTime } from 'date-fns'
+import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
 import { tz } from '@date-fns/tz'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
+
+type AutotuneJob = typeof AutotuneJobT.infer
 
 export class SqliteDao {
 
@@ -31,6 +33,7 @@ export class SqliteDao {
             fileMustExist: true
         })
         this.db.pragma('journal_mode = WAL')
+        this.db.pragma('foreign_keys = ON')
     }
 
     /**
@@ -79,8 +82,8 @@ export class SqliteDao {
         return this.db.prepare(sql).run(...parameters)
     }
 
-    private get<T>(sql: string, ...parameters: unknown[]): T | undefined {
-        return this.db.prepare(sql).get(...parameters) as T | undefined
+    private get<T>(sql: string, ...parameters: unknown[]): T  {
+        return this.db.prepare(sql).get(...parameters) as T
     }
 
     private all<T>(sql: string, ...parameters: unknown[]): Array<T> {
@@ -105,62 +108,39 @@ export class SqliteDao {
     }
 
     /**
-     * Submit a new job to the queue. 
+     * Submit a new job. 
      * 
-     * Inserting a job can lead to a job conflict, which causes this method to fail. Enqueueing a job 
-     * conflicts when a previous job with the same status exists. Jobs with status `error` do not
-     * cause conflicts.
+     * Only a single job per `ns_url` can be processing at any time. This method fails
+     * if multiple jobs for the same `ns_url` are submitted.
      * 
-     * @param id The unique identifier of the job.
-     * @param url The normalized Nightscout URL
+     * @param uuid The unique identifier of the job.
+     * @param url The Nightscout site URL
      * @param settings The settings object.
      * @returns The amount of rows changed and the last inserted rowid, if any.
-     * @throws `Error` if a job exists for the given `ns_url` that has a `JobStatus` of `submitted` or `processing`.
+     * @throws If a job exists for the given `ns_url` that has a `JobStatus` of `submitted` or `processing`.
      */
-    enqueueJob(id: string, url: string, settings: object): sqlite.RunResult {
-        const json_settings = JSON.stringify(settings)
+    submit(uuid: JobId, url: URL, settings: AutotuneJob): sqlite.RunResult {
+        const parameters = JSON.stringify(settings)
         return this.executeInTransaction(
-            'INSERT INTO `job_queue` (`job_uuid`, `ns_url`, `parameters`) VALUES (@id, @url, @json_settings)', 
-            {id, url, json_settings})
+            'INSERT INTO `jobs` (`uuid`, `ns_url`, `parameters`) VALUES (@id, @url, @parameters)', 
+            {id: uuid, url: url.href, parameters})
     }
 
     /**
      * Record job failure and store the reason for later retrieval.
      * 
-     * @param jobId The unique job identifier.
+     * @param uuid The unique job identifier.
      * @param reasonCode The coded failure reason.
      * @returns `true` if the job failure was recorded in the database, `false` otherwise.
      */
-    jobFailed(jobId: JobId, reasonCode: string): boolean {
+    onJobFailed(uuid: JobId, reasonCode: string): boolean {
         try {
-            this.begin()
-            this.run('UPDATE `job_queue` SET `state` = \'error\' WHERE `job_uuid` = @jobId', { jobId })
-            this.run('INSERT INTO `job_errors` (`job_uuid`, `reason_code`) VALUES (@jobId, @errorCode)', { jobId, errorCode: reasonCode })
-            this.commit()
-            return true
-        } catch (error) {
-            this.rollback()
-        }
+            const row = this.get<{ id: number }>('SELECT `id` FROM `jobs` WHERE `uuid` = @uuid', { uuid })
 
-        return false
-    }
-
-    jobSuccessful(jobId: JobId, recommendations: AutotuneResult): boolean {
-        try {
-            const { options, ...resultWithoutOptions } = recommendations
-            const queued_job = this.get<{ create_ts: number }>('SELECT `create_ts` FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
-
-            if (queued_job !== undefined) {
+            if (row !== undefined) {
                 this.begin()
-                this.run('INSERT INTO `recommendations` (`job_uuid`, `ns_url`, `create_ts`, `parameters`, `recommendation`) \
-                    VALUES (@jobId, @nsUrl, @createTs, @parameters, @recommendations)', {
-                        jobId, 
-                        nsUrl: recommendations.options.nsHost, 
-                        createTs: queued_job.create_ts, 
-                        parameters: JSON.stringify(recommendations.options),
-                        recommendations: JSON.stringify(resultWithoutOptions)
-                    })
-                this.run('DELETE FROM `job_queue` WHERE `job_uuid` = @jobId', { jobId })
+                this.run('UPDATE `jobs` SET `state` = \'error\' WHERE `uuid` = @uuid', { uuid })
+                this.run('INSERT INTO `job_errors` (`job_id`, `reason_code`) VALUES (@id, @errorCode)', { id: row.id, errorCode: reasonCode })
                 this.commit()
                 return true
             }
@@ -171,18 +151,59 @@ export class SqliteDao {
         return false
     }
 
+    /**
+     * Store the autotune recommendations and set job state on successful job completion.
+     * 
+     * @param uuid The jobs' unique identifier.
+     * @param recommendations The autotune recommendations.
+     * @returns `true` if storing the results was successful, `false` otherwise.
+     */
+    onJobSuccessful(uuid: JobId, recommendations: AutotuneResult): boolean {
+        try {
+            const { options, ...resultWithoutOptions } = recommendations
+            const row = this.get<{ id: number }>('SELECT `id` FROM `jobs` WHERE `uuid` = @uuid', { uuid })
+
+            if (row !== undefined) {
+                this.begin()
+                this.run('UPDATE `jobs` SET `state` = \'success\', `done_ts` = @doneTs WHERE `uuid` = @uuid', 
+                    { doneTs: getUnixTime(constructNow(tz('UTC'))), uuid })
+                this.run('INSERT INTO `job_results` (`job_id`, `recommendations`) VALUES(@id, @recommendations)', 
+                    { id: row.id, recommendations: JSON.stringify(resultWithoutOptions) })
+                this.commit()
+                return true
+            }
+        } catch (error) {
+            this.rollback()
+        }
+
+        return false
+    }
+
+    result(url: URL, uuid: JobId): AutotuneResult | undefined {
+        const row = this.get<{ recommendations: string | undefined}>(
+            'SELECT `recommendations` \
+             FROM `job_results` \
+             JOIN `jobs` ON `jobs`.`id` = `job_results`.`job_id`\
+             WHERE `jobs`.`uuid` = @uuid\
+             AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
+
+        return row.recommendations === undefined ? undefined : JSON.parse(row.recommendations)
+    }
+
+    /**
+     * Retrieves the latest `limit` jobs that have been submitted for `url`.
+     * 
+     * @param url The Nightscout site URL.
+     * @param limit The maximum amount of jobs to retrieve.
+     * @returns The requested jobs, or an empty array if no jobs exist for `url`.
+     */
     jobs(url: URL, limit: number): Array<JobMeta> {
-        const all = this.all<{job_uuid: string, create_ts: number, state: string, parameters: string}>(
-            'SELECT * FROM ( \
-                SELECT `job_uuid`, `create_ts`, `state`, `parameters` \
-                FROM `job_queue` \
-                WHERE `ns_url` = @url \
-                UNION \
-                SELECT `job_uuid`, `create_ts`, \'finished\' as `state`, `parameters` \
-                FROM `recommendations` \
-                WHERE `ns_url` = @url \
-                ORDER BY `create_ts` DESC \
-            ) LIMIT @limit;', 
+        const all = this.all<{uuid: string, submit_ts: number, state: string, parameters: string}>(
+            'SELECT `uuid`, `submit_ts`, `state`, `parameters` \
+             FROM `jobs` \
+             WHERE `ns_url` = @url \
+             ORDER BY `submit_ts` DESC \
+             LIMIT @limit;',
             { url: url.toString(), limit }
         )
 
@@ -190,28 +211,35 @@ export class SqliteDao {
             const parameters = JSON.parse(row.parameters) as AutotuneOptions
 
             return new JobMeta(
-                row.job_uuid, 
+                row.uuid, 
                 row.state as JobMeta['status'], 
-                fromUnixTime(row.create_ts, {
+                fromUnixTime(row.submit_ts, {
                     in: tz(parameters.timeZone)
                 }))
         })
     }
 
-    poll(url: URL): JobMeta | undefined {
-        const row = this.get<{ job_uuid: string, state: string, create_ts: number, parameters: string}>(
-            'SELECT `job_uuid`, `state`, `create_ts`, `parameters` \
-            FROM `job_queue` \
-            WHERE `ns_url` = @url \
-            ORDER BY `create_ts` DESC \
-            LIMIT 1', { url: url.href })
+    /**
+     * Retrieves the job that was last submitted for `url`. 
+     * 
+     * @param url The Nightscout site URL.
+     * @returns The job, or `undefined` if there is no such job.
+     */
+    latest(url: URL): JobMeta | undefined {
+        const row = this.get<{ uuid: string, state: string, submit_ts: number, parameters: string}>(
+            'SELECT `uuid`, `state`, `submit_ts`, `parameters` \
+             FROM `jobs` \
+             WHERE `ns_url` = @url \
+             ORDER BY `submit_ts` DESC \
+             LIMIT 1;', 
+            { url: url.href })
 
         if (row !== undefined) {
             const parameters = JSON.parse(row.parameters) as AutotuneOptions
             return new JobMeta(
-                row.job_uuid, 
+                row.uuid, 
                 row.state as JobMeta['status'],
-                fromUnixTime(row.create_ts, {
+                fromUnixTime(row.submit_ts, {
                     in: tz(parameters.timeZone)
                 })
             )

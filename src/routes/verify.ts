@@ -33,7 +33,8 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
             ? url.href
             : undefined
 
-        session.save()
+        await session.save()
+        response.status(200)
     }
 
     response.end()
