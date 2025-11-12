@@ -25,14 +25,14 @@ router.use(async (request: Request, response: Response, next: NextFunction) => {
 
     if (session.turnstileTestPassed !== true) {
         console.error('Client has not (yet) passed turnstile test.')
-        response.sendStatus(403).json({ message: 'Please verify turnstile test first.'})
+        response.status(403).json({ message: 'Please verify turnstile test first.'})
         return next('route')
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
         } catch (error) {
             console.error('`Nightscout URL not verified.')
-            response.sendStatus(403).json({ message: 'Please verify the Nightscout URL and token first.'})
+            response.status(403).json({ message: 'Please verify the Nightscout URL and token first.'})
             return next('route')
         }
     }
@@ -89,6 +89,7 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
 })
 
 // GET the status of all current and previous jobs.
+router.options('/all', cors(corsOptions))
 router.get('/all', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
 
