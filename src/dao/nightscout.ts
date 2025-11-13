@@ -121,8 +121,8 @@ export class NightscoutDao {
                 const recommendations = await AutotuneResult.parseLog(autotune_log, {
                     jobId: config.id,
                     nsHost: config.job.nightscout_url,
-                    dateFrom: startDate.toDateString(),
-                    dateTo: endDate.toDateString(),
+                    dateFrom: startDate.toISOString(),
+                    dateTo: endDate.toISOString(),
                     uam: config.job.settings.uam_as_basal,
                     autotuneVersion: '0.7.1', // TODO read from manifest
                     timeZone: config.job.settings.oaps_profile_data.timezone

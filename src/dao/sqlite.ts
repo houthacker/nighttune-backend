@@ -3,6 +3,7 @@ import { JobId, JobMeta, AutotuneJob as AutotuneJobT } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
 import { tz } from '@date-fns/tz'
+import { inspect } from 'node:util'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -160,7 +161,6 @@ export class SqliteDao {
      */
     onJobSuccessful(uuid: JobId, recommendations: AutotuneResult): boolean {
         try {
-            const { options, ...resultWithoutOptions } = recommendations
             const row = this.get<{ id: number }>('SELECT `id` FROM `jobs` WHERE `uuid` = @uuid', { uuid })
 
             if (row !== undefined) {
@@ -168,11 +168,12 @@ export class SqliteDao {
                 this.run('UPDATE `jobs` SET `state` = \'success\', `done_ts` = @doneTs WHERE `uuid` = @uuid', 
                     { doneTs: getUnixTime(constructNow(tz('UTC'))), uuid })
                 this.run('INSERT INTO `job_results` (`job_id`, `recommendations`) VALUES(@id, @recommendations)', 
-                    { id: row.id, recommendations: JSON.stringify(resultWithoutOptions) })
+                    { id: row.id, recommendations: JSON.stringify(recommendations) })
                 this.commit()
                 return true
             }
         } catch (error) {
+            console.error(inspect(error))
             this.rollback()
         }
 
@@ -181,9 +182,9 @@ export class SqliteDao {
 
     result(url: URL, uuid: JobId): AutotuneResult | undefined {
         const row = this.get<{ recommendations: string | undefined}>(
-            'SELECT `recommendations` \
-             FROM `job_results` \
-             JOIN `jobs` ON `jobs`.`id` = `job_results`.`job_id`\
+            'SELECT `r`.`recommendations` \
+             FROM `job_results` as `r` \
+             JOIN `jobs` ON `jobs`.`id` = `r`.`job_id`\
              WHERE `jobs`.`uuid` = @uuid\
              AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
