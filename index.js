@@ -1,4 +1,4 @@
 // Set options as a parameter, environment variable, or rc file.
 // eslint-disable-next-line no-global-assign
 
-import './main.js'
+import './src/main.ts'

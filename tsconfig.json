@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "exactOptionalPropertyTypes": true,
+        "outDir": "build",
+        "sourceMap": true,
+        "strict": true,
+    },
+    "extends": "@tsconfig/node24",
+    "include": ["./src/**/*", "./main.ts"],
+}

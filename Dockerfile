@@ -1,7 +1,18 @@
-FROM node:24-alpine
+FROM node:25-trixie-slim
 LABEL org.opencontainers.image.authors="github.com/houthacker"
 
-WORKDIR /nighttune
+RUN apt-get update && apt-get install -y curl git sudo bash sqlite3 python3 build-essential jq bc && apt-get clean
+RUN git clone --branch v0.7.1 https://github.com/openaps/oref0.git /autotune/oref0
+RUN curl -fsS https://dotenvx.sh | sh
+
+WORKDIR /autotune/oref0
+RUN npm run global-install
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
 COPY . .
-RUN npm install -g
-CMD ["/bin/sh", "-c", "nighttune"]
+
+RUN npm run build
+CMD ["dotenvx", "run", "--convention=nextjs", "--", "node", "build/main.js"]

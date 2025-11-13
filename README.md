@@ -6,6 +6,7 @@ The API server of nighttune.
     1. [Configure ufw](#configure-ufw)
     2. [Install nginx](#install-nginx)
     3. [Install certbot](#install-certbot-and-configure-certifciate)
+    4. [Install sqlite3](#install-sqlite3)
 
 ### Installing
 
@@ -15,7 +16,9 @@ Please ensure the following prerequisites have been installed:
 | :--- | :--- |
 | [Docker Engine](https://docs.docker.com/engine/install/) | |
 | [nvm](https://github.com/nvm-sh/nvm) | Node Version Manager |
+| [dotenvx](https://dotenvx.com/docs/install) | secure dotenv files |
 | [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
+| [sqlite3](https://sqlite.org/) | An SQL database engine |
 
 ### Configure ufw
 Deny all incoming traffic by default, but leave ssh, http and https open.
@@ -37,6 +40,23 @@ $ sudo ufw allow https
 $ sudo ufw default deny incoming
 ```
 
+### Configure Cloudflare Turnstile
+The frontend uses Cloudflare Turnstile for bot protection and the backend handles the verification.
+How to configure Turnstile is described at [Cloudflare](https://developers.cloudflare.com/turnstile/).
+
+### Copy .env file
+Copy your secured (production) .env file to the vm. See [.env.example](./examples/.env.example) for its format.
+```bash
+$ scp .env.keys nightscout.app:~
+$ scp .env.production nightscout.app:~
+```
+
+### Run the backend Docker container 
+Ensure the container does not expose its ports to the internet.
+```bash
+$ backend_port=3333
+$ docker run --name nighttune-backend -v ./.env.production:/app/.env -v ./.env.keys:/app/.env.keys -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:latest
+```
 
 ### Install nginx
 nighttune-backend uses `nginx` as a reverse proxy that also provides the ssl certificates using certbot.
@@ -73,14 +93,15 @@ $ sudo certbot --nginx
 ```
 
 ### Add reverse proxy config
-Edit the site config to allow reverse proxying to the backend docker container. An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
+Edit the site config to allow reverse proxying to the backend (or docker container). An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
+Usually, `backend_ip` will be `127.0.0.1` and `backend_port` will be `3333`.
 ```bash
-    location / {
-		proxy_pass http://$backend_ip:$backend_port;
-		proxy_buffering off;
+  location / {
+    proxy_pass http://$backend_ip:$backend_port;
+    proxy_buffering off;
 
-		include proxy_params;
-	}
+    include proxy_params;
+  }
 
 	location /ws/ {
 		proxy_pass http://$backend_ip:$backend_port;
@@ -102,4 +123,35 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 # Then reload nginx
 $ sudo systemctl reload nginx
+```
+
+Afther this, the backend should be reachable at the location you configured; congrats!
+
+### Install sqlite3
+```bash
+$ sudo apt install sqlite3
+```
+
+### Initialize the database
+```bash
+# Using default values (src/config/db.sql and nighttune-backend-test.db)
+$ npm run initdb
+
+# Or using custom values
+$ npm run initdb -- /tmp/db.sql /tmp/nightscout-backend.db
+```
+
+### Clone and install oref0
+Installing oref0 globally is required to successfully spawn a child process that runs autotune.
+```bash
+$ git clone --branch v0.7.1 https://github.com/openaps/oref0.git
+$ cd oref0
+$ npm run global-install
+```
+
+### Install and run nighttune-backend
+```bash
+$ npm install
+$ npm run build
+$ npm start
 ```
