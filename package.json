@@ -42,6 +42,9 @@
     "oref0"
   ],
   "license": "MIT",
+  "bin": {
+    "initdb": "scripts/initdb.sh"
+  },
   "scripts": {
     "build": "tsc",
     "initdb": "./scripts/initdb.sh",

@@ -4,6 +4,7 @@
 set -e
 
 ME="${0}"
+MY_DIR=$(dirname $(readlink -f ${ME}))
 
 show_usage() {
     cat <<EOF
@@ -30,8 +31,9 @@ any data.
 EOF
 }
 
-schema_file=${1:-$(realpath $(cd -- $(dirname -- "${0}") &> /dev/null && pwd)"/../src/config/db.sql")}
-db_file=${2:-$(realpath $(cd -- $(dirname -- "${0}") &> /dev/null && pwd)"/../nighttune-backend-test.db")}
+
+schema_file=${1:-$(realpath ${MY_DIR}"/../src/config/db.sql")}
+db_file=${2:-$(realpath ${MY_DIR}"/../nighttune-backend-test.db")}
 
 if [ ! -f "${schema_file}" ]; then
     echo "Database schema ${schema_file} does not exist." >&2
