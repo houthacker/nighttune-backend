@@ -47,6 +47,7 @@ router.options('/', cors(corsOptions))
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const jobRequest = AutotuneJob(request.body)
     if (jobRequest instanceof type.errors) {
+        console.error(`Request body not accepted [${JSON.stringify(request.body)}]`)
         response.status(400).json({ message: jobRequest.summary })
     } else {
 
