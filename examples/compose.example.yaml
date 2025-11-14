@@ -7,8 +7,7 @@ services:
     ports:
       - "127.0.0.1:3333:3333"
     volumes:
-      - /home/user/nighttune-backend/.env.production:/app/.env.production
-      - /home/user/nighttune-backend/.env.keys:/app/.env.keys
+      - /home/user/nighttune-backend/.env.production:/app/.env
       - type: bind
         source: /home/user/nighttune-backend/data
         target: /data
