@@ -15,4 +15,4 @@ RUN npm install
 COPY . .
 
 RUN npm run build
-CMD ["dotenvx", "run", "--convention=nextjs", "--", "node", "build/main.js"]
+CMD ["npm", "start"]
