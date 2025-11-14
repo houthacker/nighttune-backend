@@ -51,11 +51,20 @@ $ scp .env.keys nightscout.app:~
 $ scp .env.production nightscout.app:~
 ```
 
+### Ensure an initialized database exists
+```bash
+# Create a directory to hold the database
+$ mkdir -p ~/nighttune-backend/data
+
+# Create or migrate the database
+$ docker run --rm --mount type=bind,src=/home/user/nighttune-backend/data,dst=/data ghcr.io/houthacker/nighttune-backend:main bash -c 'npx initdb /data/nighttune-backend-prod.db'
+```
+
 ### Run the backend Docker container 
 Ensure the container does not expose its ports to the internet.
 ```bash
 $ backend_port=3333
-$ docker run --name nighttune-backend -v ./.env.production:/app/.env -v ./.env.keys:/app/.env.keys -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:latest
+$ docker run --name nighttune-backend -v /home/user/nighttune-backend/.env.production:/app/.env.production -v /home/user/nighttune-backend/.env.keys:/app/.env.keys -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:main
 ```
 
 ### Install nginx
