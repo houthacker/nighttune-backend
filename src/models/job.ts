@@ -2,7 +2,7 @@ import { TZDate } from '@date-fns/tz';
 import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
-export const InsulineUnit = "'mmol' | 'mg/dL'"
+export const InsulineUnit = "'mmol' | 'mg/dl'"
 
 export type JobId = string
 
