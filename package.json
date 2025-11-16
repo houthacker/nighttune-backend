@@ -28,6 +28,7 @@
     "@types/node": "^24.9.1",
     "@types/node-fetch": "^2.6.13",
     "@types/uuid": "^10.0.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
   "description": "Nighttune API backend",
@@ -49,7 +50,7 @@
     "build": "tsc",
     "initdb": "./scripts/initdb.sh",
     "start": "dotenvx run --convention=nextjs -- node build/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --import tsx --test tests/**/*test.ts"
   },
   "type": "module",
   "version": "0.1.0"
