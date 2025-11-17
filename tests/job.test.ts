@@ -15,3 +15,8 @@ test('validate a job request', (t) => {
     const request = AutotuneJob(jsonFixture('job_request.json'))
     assert(!(request instanceof type.errors), 'Job request must be an instance of typeof AutotuneJob.infer')
 })
+
+test('validate', (t) => {
+    const request = AutotuneJob(jsonFixture('job_request_mg_dl_case.json'))
+    assert(!(request instanceof type.errors), 'Job request must be an instance of typeof AutotuneJob.infer')
+})

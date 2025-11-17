@@ -2,7 +2,7 @@ import { TZDate } from '@date-fns/tz';
 import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
-export const InsulineUnit = "'mmol' | 'mg/dl'"
+export const Unit = "'mg/dl' | 'mg/dL' | 'mmol' | 'mmol/l' | 'mmol/L'"
 
 export type JobId = string
 
@@ -196,7 +196,7 @@ export const OAPSProfile = type({
     /**
      * The output units.
      */
-    out_units: InsulineUnit,
+    out_units: Unit,
 
     /**
      * The native time zone name, e.g. `Europe/Amsterdam`.
@@ -207,8 +207,8 @@ export const OAPSProfile = type({
      * The blood glucose target time slots.
      */
     bg_targets: {
-        units: InsulineUnit,
-        user_preferred_units: InsulineUnit,
+        units: Unit,
+        user_preferred_units: Unit,
         targets: BgTimeslot.array(),
     },
 
