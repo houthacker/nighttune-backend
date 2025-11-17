@@ -58,7 +58,11 @@ export class JobController {
         // us to let the client know fast if the job was enqueued successfully.
         // Otherwise we'd have to poll the database for that.
         try {
-            this.sqlite.submit(id, new URL(job.nightscout_url), job)
+
+            // Remove the access token from the job information.
+            // We only need it at runtime so it must not be stored.
+            const { nightscout_access_token, ...jobWithoutToken } = job
+            this.sqlite.submit(id, new URL(job.nightscout_url), jobWithoutToken)
             await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite))
             return id
         } catch (error) {
