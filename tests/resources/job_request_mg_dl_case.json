@@ -1,0 +1,439 @@
+{
+  "nightscout_url": "https://nightscout.url",
+  "nightscout_access_token": "nightscout-abcdef",
+  "settings": {
+    "min_5m_carbimpact": 8,
+    "pump_basal_increment": 0.05,
+    "autotune_days": 7,
+    "uam_as_basal": false,
+    "insulin_type": "ultra-rapid",
+    "autosens_min": 0.7,
+    "autosens_max": 1.2,
+    "profile_name": "Default",
+    "profile_data": {
+      "dia": 7,
+      "carbratio": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 11.3
+        },
+        {
+          "time": "01:00",
+          "timeAsSeconds": 3600,
+          "value": 10
+        },
+        {
+          "time": "04:00",
+          "timeAsSeconds": 14400,
+          "value": 9.4
+        },
+        {
+          "time": "09:00",
+          "timeAsSeconds": 32400,
+          "value": 10
+        },
+        {
+          "time": "10:00",
+          "timeAsSeconds": 36000,
+          "value": 10.6
+        },
+        {
+          "time": "11:00",
+          "timeAsSeconds": 39600,
+          "value": 11.3
+        },
+        {
+          "time": "12:00",
+          "timeAsSeconds": 43200,
+          "value": 10.6
+        },
+        {
+          "time": "13:00",
+          "timeAsSeconds": 46800,
+          "value": 9.4
+        },
+        {
+          "time": "14:00",
+          "timeAsSeconds": 50400,
+          "value": 8.1
+        },
+        {
+          "time": "17:00",
+          "timeAsSeconds": 61200,
+          "value": 9.4
+        },
+        {
+          "time": "19:00",
+          "timeAsSeconds": 68400,
+          "value": 11.3
+        },
+        {
+          "time": "21:00",
+          "timeAsSeconds": 75600,
+          "value": 13.1
+        },
+        {
+          "time": "23:00",
+          "timeAsSeconds": 82800,
+          "value": 11.3
+        }
+      ],
+      "sens": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 45
+        },
+        {
+          "time": "01:00",
+          "timeAsSeconds": 3600,
+          "value": 40
+        },
+        {
+          "time": "04:00",
+          "timeAsSeconds": 14400,
+          "value": 38
+        },
+        {
+          "time": "09:00",
+          "timeAsSeconds": 32400,
+          "value": 40
+        },
+        {
+          "time": "10:00",
+          "timeAsSeconds": 36000,
+          "value": 43
+        },
+        {
+          "time": "11:00",
+          "timeAsSeconds": 39600,
+          "value": 45
+        },
+        {
+          "time": "12:00",
+          "timeAsSeconds": 43200,
+          "value": 43
+        },
+        {
+          "time": "13:00",
+          "timeAsSeconds": 46800,
+          "value": 38
+        },
+        {
+          "time": "14:00",
+          "timeAsSeconds": 50400,
+          "value": 32
+        },
+        {
+          "time": "17:00",
+          "timeAsSeconds": 61200,
+          "value": 38
+        },
+        {
+          "time": "19:00",
+          "timeAsSeconds": 68400,
+          "value": 45
+        },
+        {
+          "time": "21:00",
+          "timeAsSeconds": 75600,
+          "value": 52
+        },
+        {
+          "time": "23:00",
+          "timeAsSeconds": 82800,
+          "value": 45
+        }
+      ],
+      "basal": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 0.9
+        },
+        {
+          "time": "04:00",
+          "timeAsSeconds": 14400,
+          "value": 0.85
+        },
+        {
+          "time": "05:00",
+          "timeAsSeconds": 18000,
+          "value": 0.8
+        },
+        {
+          "time": "06:00",
+          "timeAsSeconds": 21600,
+          "value": 0.75
+        },
+        {
+          "time": "07:00",
+          "timeAsSeconds": 25200,
+          "value": 0.8
+        },
+        {
+          "time": "08:00",
+          "timeAsSeconds": 28800,
+          "value": 0.9
+        },
+        {
+          "time": "09:00",
+          "timeAsSeconds": 32400,
+          "value": 1.05
+        },
+        {
+          "time": "12:00",
+          "timeAsSeconds": 43200,
+          "value": 0.9
+        },
+        {
+          "time": "14:00",
+          "timeAsSeconds": 50400,
+          "value": 0.75
+        },
+        {
+          "time": "16:00",
+          "timeAsSeconds": 57600,
+          "value": 0.65
+        },
+        {
+          "time": "18:00",
+          "timeAsSeconds": 64800,
+          "value": 0.75
+        },
+        {
+          "time": "20:00",
+          "timeAsSeconds": 72000,
+          "value": 0.85
+        },
+        {
+          "time": "23:00",
+          "timeAsSeconds": 82800,
+          "value": 0.9
+        }
+      ],
+      "target_low": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 130
+        },
+        {
+          "time": "08:00",
+          "timeAsSeconds": 28800,
+          "value": 115
+        },
+        {
+          "time": "22:00",
+          "timeAsSeconds": 79200,
+          "value": 130
+        }
+      ],
+      "target_high": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 130
+        },
+        {
+          "time": "08:00",
+          "timeAsSeconds": 28800,
+          "value": 115
+        },
+        {
+          "time": "22:00",
+          "timeAsSeconds": 79200,
+          "value": 130
+        }
+      ],
+      "units": "mg/dL",
+      "timezone": "-07:00"
+    },
+    "oaps_profile_data": {
+      "autosens_max": 1.2,
+      "autosens_min": 0.7,
+      "basalprofile": [
+        {
+          "i": 0,
+          "timeAsSeconds": 0,
+          "minutes": 0,
+          "time": "00:00",
+          "start": "00:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        },
+        {
+          "i": 1,
+          "timeAsSeconds": 14400,
+          "minutes": 240,
+          "time": "04:00",
+          "start": "04:00:00",
+          "value": 0.85,
+          "rate": 0.85
+        },
+        {
+          "i": 2,
+          "timeAsSeconds": 18000,
+          "minutes": 300,
+          "time": "05:00",
+          "start": "05:00:00",
+          "value": 0.8,
+          "rate": 0.8
+        },
+        {
+          "i": 3,
+          "timeAsSeconds": 21600,
+          "minutes": 360,
+          "time": "06:00",
+          "start": "06:00:00",
+          "value": 0.75,
+          "rate": 0.75
+        },
+        {
+          "i": 4,
+          "timeAsSeconds": 25200,
+          "minutes": 420,
+          "time": "07:00",
+          "start": "07:00:00",
+          "value": 0.8,
+          "rate": 0.8
+        },
+        {
+          "i": 5,
+          "timeAsSeconds": 28800,
+          "minutes": 480,
+          "time": "08:00",
+          "start": "08:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        },
+        {
+          "i": 6,
+          "timeAsSeconds": 32400,
+          "minutes": 540,
+          "time": "09:00",
+          "start": "09:00:00",
+          "value": 1.05,
+          "rate": 1.05
+        },
+        {
+          "i": 7,
+          "timeAsSeconds": 43200,
+          "minutes": 720,
+          "time": "12:00",
+          "start": "12:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        },
+        {
+          "i": 8,
+          "timeAsSeconds": 50400,
+          "minutes": 840,
+          "time": "14:00",
+          "start": "14:00:00",
+          "value": 0.75,
+          "rate": 0.75
+        },
+        {
+          "i": 9,
+          "timeAsSeconds": 57600,
+          "minutes": 960,
+          "time": "16:00",
+          "start": "16:00:00",
+          "value": 0.65,
+          "rate": 0.65
+        },
+        {
+          "i": 10,
+          "timeAsSeconds": 64800,
+          "minutes": 1080,
+          "time": "18:00",
+          "start": "18:00:00",
+          "value": 0.75,
+          "rate": 0.75
+        },
+        {
+          "i": 11,
+          "timeAsSeconds": 72000,
+          "minutes": 1200,
+          "time": "20:00",
+          "start": "20:00:00",
+          "value": 0.85,
+          "rate": 0.85
+        },
+        {
+          "i": 12,
+          "timeAsSeconds": 82800,
+          "minutes": 1380,
+          "time": "23:00",
+          "start": "23:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        }
+      ],
+      "bg_targets": {
+        "units": "mg/dL",
+        "user_preferred_units": "mg/dL",
+        "targets": [
+          {
+            "i": 0,
+            "start": "00:00:00",
+            "offset": 0,
+            "low": 130,
+            "min_bg": 130,
+            "high": 130,
+            "max_bg": 130
+          },
+          {
+            "i": 1,
+            "start": "08:00:00",
+            "offset": 28800,
+            "low": 115,
+            "min_bg": 115,
+            "high": 115,
+            "max_bg": 115
+          },
+          {
+            "i": 2,
+            "start": "22:00:00",
+            "offset": 79200,
+            "low": 130,
+            "min_bg": 130,
+            "high": 130,
+            "max_bg": 130
+          }
+        ]
+      },
+      "carb_ratio": 10.1,
+      "carb_ratios": {
+        "first": 1,
+        "units": "grams",
+        "schedule": [
+          {
+            "i": 0,
+            "offset": 0,
+            "ratio": 10.1,
+            "start": "00:00:00"
+          }
+        ]
+      },
+      "curve": "ultra-rapid",
+      "dia": 7,
+      "isfProfile": {
+        "first": 1,
+        "sensitivities": [
+          {
+            "i": 0,
+            "start": "00:00:00",
+            "offset": 0,
+            "sensitivity": 40.6
+          }
+        ]
+      },
+      "min_5m_carbimpact": 8,
+      "out_units": "mg/dL",
+      "timezone": "-07:00"
+    }
+  }
+}
