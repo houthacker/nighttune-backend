@@ -181,7 +181,7 @@ export const OAPSProfile = type({
     /**
      * The Duration of Insulin Activity.
      */
-    dia: "number.integer > 0",
+    dia: "number > 0",
 
     /**
      * The minimum carb absorption in grams, per 5 minutes.

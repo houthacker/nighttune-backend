@@ -1,0 +1,456 @@
+{
+  "nightscout_url": "https://nightscout.url",
+  "nightscout_access_token": "nightscout-abcdef",
+  "settings": {
+    "min_5m_carbimpact": 8,
+    "pump_basal_increment": 0.01,
+    "autotune_days": 7,
+    "uam_as_basal": false,
+    "insulin_type": "ultra-rapid",
+    "email_address": "mail@example.com",
+    "autosens_min": 0.7,
+    "autosens_max": 1.2,
+    "profile_name": "Profile name",
+    "profile_data": {
+      "dia": 8.75,
+      "carbratio": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 9
+        },
+        {
+          "time": "06:00",
+          "timeAsSeconds": 21600,
+          "value": 6.2
+        },
+        {
+          "time": "10:00",
+          "timeAsSeconds": 36000,
+          "value": 9
+        },
+        {
+          "time": "15:00",
+          "timeAsSeconds": 54000,
+          "value": 9
+        },
+        {
+          "time": "17:00",
+          "timeAsSeconds": 61200,
+          "value": 9
+        }
+      ],
+      "sens": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 65
+        }
+      ],
+      "basal": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 1.05
+        },
+        {
+          "time": "01:00",
+          "timeAsSeconds": 3600,
+          "value": 1.05
+        },
+        {
+          "time": "02:00",
+          "timeAsSeconds": 7200,
+          "value": 1.05
+        },
+        {
+          "time": "03:00",
+          "timeAsSeconds": 10800,
+          "value": 1
+        },
+        {
+          "time": "04:00",
+          "timeAsSeconds": 14400,
+          "value": 0.95
+        },
+        {
+          "time": "05:00",
+          "timeAsSeconds": 18000,
+          "value": 0.95
+        },
+        {
+          "time": "06:00",
+          "timeAsSeconds": 21600,
+          "value": 0.95
+        },
+        {
+          "time": "07:00",
+          "timeAsSeconds": 25200,
+          "value": 0.95
+        },
+        {
+          "time": "08:00",
+          "timeAsSeconds": 28800,
+          "value": 0.95
+        },
+        {
+          "time": "09:00",
+          "timeAsSeconds": 32400,
+          "value": 0.95
+        },
+        {
+          "time": "10:00",
+          "timeAsSeconds": 36000,
+          "value": 0.95
+        },
+        {
+          "time": "11:00",
+          "timeAsSeconds": 39600,
+          "value": 0.9
+        },
+        {
+          "time": "12:00",
+          "timeAsSeconds": 43200,
+          "value": 0.9
+        },
+        {
+          "time": "13:00",
+          "timeAsSeconds": 46800,
+          "value": 0.95
+        },
+        {
+          "time": "14:00",
+          "timeAsSeconds": 50400,
+          "value": 1
+        },
+        {
+          "time": "15:00",
+          "timeAsSeconds": 54000,
+          "value": 1
+        },
+        {
+          "time": "16:00",
+          "timeAsSeconds": 57600,
+          "value": 1
+        },
+        {
+          "time": "17:00",
+          "timeAsSeconds": 61200,
+          "value": 1
+        },
+        {
+          "time": "18:00",
+          "timeAsSeconds": 64800,
+          "value": 1
+        },
+        {
+          "time": "19:00",
+          "timeAsSeconds": 68400,
+          "value": 1
+        },
+        {
+          "time": "20:00",
+          "timeAsSeconds": 72000,
+          "value": 1
+        },
+        {
+          "time": "21:00",
+          "timeAsSeconds": 75600,
+          "value": 1
+        },
+        {
+          "time": "22:00",
+          "timeAsSeconds": 79200,
+          "value": 1
+        },
+        {
+          "time": "23:00",
+          "timeAsSeconds": 82800,
+          "value": 1.05
+        }
+      ],
+      "target_low": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 100
+        }
+      ],
+      "target_high": [
+        {
+          "time": "00:00",
+          "timeAsSeconds": 0,
+          "value": 105
+        }
+      ],
+      "units": "mg/dl",
+      "timezone": "+01:00"
+    },
+    "oaps_profile_data": {
+      "autosens_max": 1.2,
+      "autosens_min": 0.7,
+      "basalprofile": [
+        {
+          "i": 0,
+          "timeAsSeconds": 0,
+          "minutes": 0,
+          "time": "00:00",
+          "start": "00:00:00",
+          "value": 1.05,
+          "rate": 1.05
+        },
+        {
+          "i": 1,
+          "timeAsSeconds": 3600,
+          "minutes": 60,
+          "time": "01:00",
+          "start": "01:00:00",
+          "value": 1.05,
+          "rate": 1.05
+        },
+        {
+          "i": 2,
+          "timeAsSeconds": 7200,
+          "minutes": 120,
+          "time": "02:00",
+          "start": "02:00:00",
+          "value": 1.05,
+          "rate": 1.05
+        },
+        {
+          "i": 3,
+          "timeAsSeconds": 10800,
+          "minutes": 180,
+          "time": "03:00",
+          "start": "03:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 4,
+          "timeAsSeconds": 14400,
+          "minutes": 240,
+          "time": "04:00",
+          "start": "04:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 5,
+          "timeAsSeconds": 18000,
+          "minutes": 300,
+          "time": "05:00",
+          "start": "05:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 6,
+          "timeAsSeconds": 21600,
+          "minutes": 360,
+          "time": "06:00",
+          "start": "06:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 7,
+          "timeAsSeconds": 25200,
+          "minutes": 420,
+          "time": "07:00",
+          "start": "07:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 8,
+          "timeAsSeconds": 28800,
+          "minutes": 480,
+          "time": "08:00",
+          "start": "08:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 9,
+          "timeAsSeconds": 32400,
+          "minutes": 540,
+          "time": "09:00",
+          "start": "09:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 10,
+          "timeAsSeconds": 36000,
+          "minutes": 600,
+          "time": "10:00",
+          "start": "10:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 11,
+          "timeAsSeconds": 39600,
+          "minutes": 660,
+          "time": "11:00",
+          "start": "11:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        },
+        {
+          "i": 12,
+          "timeAsSeconds": 43200,
+          "minutes": 720,
+          "time": "12:00",
+          "start": "12:00:00",
+          "value": 0.9,
+          "rate": 0.9
+        },
+        {
+          "i": 13,
+          "timeAsSeconds": 46800,
+          "minutes": 780,
+          "time": "13:00",
+          "start": "13:00:00",
+          "value": 0.95,
+          "rate": 0.95
+        },
+        {
+          "i": 14,
+          "timeAsSeconds": 50400,
+          "minutes": 840,
+          "time": "14:00",
+          "start": "14:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 15,
+          "timeAsSeconds": 54000,
+          "minutes": 900,
+          "time": "15:00",
+          "start": "15:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 16,
+          "timeAsSeconds": 57600,
+          "minutes": 960,
+          "time": "16:00",
+          "start": "16:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 17,
+          "timeAsSeconds": 61200,
+          "minutes": 1020,
+          "time": "17:00",
+          "start": "17:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 18,
+          "timeAsSeconds": 64800,
+          "minutes": 1080,
+          "time": "18:00",
+          "start": "18:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 19,
+          "timeAsSeconds": 68400,
+          "minutes": 1140,
+          "time": "19:00",
+          "start": "19:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 20,
+          "timeAsSeconds": 72000,
+          "minutes": 1200,
+          "time": "20:00",
+          "start": "20:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 21,
+          "timeAsSeconds": 75600,
+          "minutes": 1260,
+          "time": "21:00",
+          "start": "21:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 22,
+          "timeAsSeconds": 79200,
+          "minutes": 1320,
+          "time": "22:00",
+          "start": "22:00:00",
+          "value": 1,
+          "rate": 1
+        },
+        {
+          "i": 23,
+          "timeAsSeconds": 82800,
+          "minutes": 1380,
+          "time": "23:00",
+          "start": "23:00:00",
+          "value": 1.05,
+          "rate": 1.05
+        }
+      ],
+      "bg_targets": {
+        "units": "mg/dl",
+        "user_preferred_units": "mg/dl",
+        "targets": [
+          {
+            "i": 0,
+            "start": "00:00:00",
+            "offset": 0,
+            "low": 100,
+            "min_bg": 100,
+            "high": 105,
+            "max_bg": 105
+          }
+        ]
+      },
+      "carb_ratio": 8.5,
+      "carb_ratios": {
+        "first": 1,
+        "units": "grams",
+        "schedule": [
+          {
+            "i": 0,
+            "offset": 0,
+            "ratio": 8.5,
+            "start": "00:00:00"
+          }
+        ]
+      },
+      "curve": "ultra-rapid",
+      "dia": 9,
+      "isfProfile": {
+        "first": 1,
+        "sensitivities": [
+          {
+            "i": 0,
+            "start": "00:00:00",
+            "offset": 0,
+            "sensitivity": 65
+          }
+        ]
+      },
+      "min_5m_carbimpact": 8,
+      "out_units": "mg/dl",
+      "timezone": "+01:00"
+    }
+  }
+}
