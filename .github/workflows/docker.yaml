@@ -61,6 +61,10 @@ jobs:
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
 
+  deploy-to-production:
+    environment: 'production'
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to production env
         uses: appleboy/ssh-action@v1
         with:
