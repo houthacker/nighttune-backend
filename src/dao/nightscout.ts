@@ -32,7 +32,7 @@ function chunks_to_string(chunks: any[]): string {
 }
 
 export type AutotuneError = { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }
-export type AutotuneCallback = (error: AutotuneError | null, recommendations?: AutotuneResult) => void
+export type AutotuneCallback = (error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
 
 export class NightscoutDao {
 
@@ -125,9 +125,10 @@ export class NightscoutDao {
                     dateTo: endDate.toISOString(),
                     uam: config.job.settings.uam_as_basal,
                     autotuneVersion: '0.7.1', // TODO read from manifest
-                    timeZone: config.job.settings.oaps_profile_data.timezone
+                    timeZone: config.job.settings.oaps_profile_data.timezone,
+                    emailAddress: config.job.settings.email_address
                 })
-                callback(null, recommendations)                
+                await callback(null, recommendations)                
             } else {
                 const error = {
                     jobId: config.id,
@@ -135,7 +136,7 @@ export class NightscoutDao {
                     type: AutotuneErrorType.AutotuneFailed,
                     log: chunks_to_string(autotune_err)
                 }
-                callback(error)
+                await callback(error)
             }
         })
 

@@ -11,13 +11,14 @@ import { getSession } from '../controllers/sessionController.js'
 import { JobController } from '../controllers/jobController.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import { NightscoutDao } from '../dao/nightscout.js'
+import { MailjetDao } from '../dao/mail.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
     credentials: true,
 }
 const router = Router()
-const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao())
+const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao())
 
 // All requests must have the session cookie, have passed the turnstile- and Nightscout access test.
 router.use(async (request: Request, response: Response, next: NextFunction) => {

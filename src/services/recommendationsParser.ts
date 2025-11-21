@@ -42,8 +42,10 @@ export class AutotuneOptions {
 
     public readonly timeZone: string
 
+    public readonly emailAddress: string | undefined
+
     constructor(jobId: JobId, nsHost: string, dateFrom: string, dateTo: string, uam: boolean, autotuneVersion: string,
-        timeZone: string
+        timeZone: string, emailAddress: string | undefined = undefined
     ) {
         this.jobId = jobId
         this.nsHost = nsHost
@@ -52,6 +54,7 @@ export class AutotuneOptions {
         this.uam = uam
         this.autotuneVersion = autotuneVersion
         this.timeZone = timeZone
+        this.emailAddress = emailAddress
     }
 
 }
