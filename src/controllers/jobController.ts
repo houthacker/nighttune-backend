@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import { NightscoutDao } from '../dao/nightscout.js'
 import { SqliteDao, SqliteError } from '../dao/sqlite.js'
+import { MailDao } from '../dao/mail.js'
+
 import {
     AutotuneConfig,
     AutotuneJob as AutotuneJobT,
@@ -22,14 +24,20 @@ const SQLITE_CONSTRAINT: string = 'SQLITE_CONSTRAINT'
 const SQLITE_CONSTRAINT_TRIGGER: string = 'SQLITE_CONSTRAINT_TRIGGER'
 const SQLITE_CONSTRAINT_UNIQUE: string = 'SQLITE_CONSTRAINT_UNIQUE'
 
-const createAutotuneCallback = (sqlite: SqliteDao) => {
-    return (error: AutotuneError | null, recommendations?: AutotuneResult): void => {
+const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
+    return async (error: AutotuneError | null, recommendations?: AutotuneResult): Promise<void> => {
         if (error) {
             sqlite.onJobFailed(error.jobId, error.type)
             console.error(`[job ${error.jobId}] error: ${error.log}`)
         } else {
-            const opts = recommendations!.options as AutotuneOptions
-            sqlite.onJobSuccessful(opts.jobId, recommendations!)
+            const report = recommendations!
+            const opts = report.options as AutotuneOptions
+            sqlite.onJobSuccessful(opts.jobId, report)
+            
+            if (report.options.emailAddress) {
+                await mail.sendReport(report.options.emailAddress!, report)
+            }
+
             console.log(`[job ${opts.jobId}] success.`)
         }
     }
@@ -41,9 +49,12 @@ export class JobController {
 
     private readonly nightscout: NightscoutDao
 
-    constructor(sqlite: SqliteDao, nightscout: NightscoutDao) {
+    private readonly mail: MailDao
+
+    constructor(sqlite: SqliteDao, nightscout: NightscoutDao, mail: MailDao) {
         this.sqlite = sqlite
         this.nightscout = nightscout
+        this.mail = mail
     }
 
     /**
@@ -63,7 +74,7 @@ export class JobController {
             // We only need it at runtime so it must not be stored.
             const { nightscout_access_token, ...jobWithoutToken } = job
             this.sqlite.submit(id, new URL(job.nightscout_url), jobWithoutToken)
-            await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite))
+            await this.nightscout.autotune({ id, job } as AutotuneConfig, createAutotuneCallback(this.sqlite, this.mail))
             return id
         } catch (error) {
             if (error instanceof SqliteError) {
