@@ -44,8 +44,10 @@ export class AutotuneOptions {
 
     public readonly emailAddress: string | undefined
 
+    public readonly basalIncrement: number
+
     constructor(jobId: JobId, nsHost: string, dateFrom: string, dateTo: string, uam: boolean, autotuneVersion: string,
-        timeZone: string, emailAddress: string | undefined = undefined
+        timeZone: string, emailAddress: string | undefined = undefined, basalIncrement: number
     ) {
         this.jobId = jobId
         this.nsHost = nsHost
@@ -55,6 +57,7 @@ export class AutotuneOptions {
         this.autotuneVersion = autotuneVersion
         this.timeZone = timeZone
         this.emailAddress = emailAddress
+        this.basalIncrement = basalIncrement
     }
 
 }
@@ -70,8 +73,6 @@ export class Recommendation {
 
     public readonly recommendedValue: number
 
-    public readonly roundedRecommendation: number
-
     /**
      * Create a new `Recommendation`.
      * @param type The type of this recommendation.
@@ -79,18 +80,18 @@ export class Recommendation {
      * @param recommended The recommended profile value.
      */
     constructor(type: RecommendationType, current: number, recommended: number) {
-        this.type = type;
-        this.currentValue = current;
-        this.recommendedValue = recommended;
-        this.roundedRecommendation = parseFloat((Math.ceil(recommended * 20 - 0.5) / 20).toFixed(2));
+        this.type = type
+        this.currentValue = current
+        this.recommendedValue = recommended
     }
 
     /**
      * Creates a new `Recommendation` or a subtype based on the given line.
      * @param line A line from an autotune recommendations log file.
+     * @param basalIncrement The basal increment of the users pump. Recommendations are rounded to this value.
      * @returns The parsed `Recommendation`, or `undefined` if the line does not contain a recommendation.
      */
-    static create_from_line(line: string): Recommendation | undefined {
+    static create_from_line(line: string, basalIncrement: number): Recommendation | undefined {
         let ln = line.trim()
 
         // Columns are: [parameter, pump, autotune, days_missing]
@@ -118,13 +119,13 @@ export class Recommendation {
                 }
             }
 
-            // let when = timeParse('%H:%M')(hour_string);
             const when = parse(hour_string, 'HH:mm', new Date())
             return new BasalRecommendation(
                 when, 
                 parseFloat(columns[1].trim()), 
                 parseFloat(columns[2].trim()), 
-                parseInt(columns[3])
+                parseInt(columns[3]),
+                basalIncrement
             )
         }
 
@@ -141,18 +142,24 @@ export class BasalRecommendation extends Recommendation {
 
     public readonly daysMissing: number
 
+    public readonly roundedRecommendation: number
+
     /**
      * Create a new `Recommendation`.
      * @param when The time of day of this recommendation, parsed from the format `%H:%M`.
      * @param current The current profile value.
      * @param recommended The recommended profile value.
      * @param daysMissing The amount of days without data.
+     * @param increment The minimal pump basal increment.
      */
-    constructor(when: Date, current: number, recommended: number, daysMissing: number) {
-        super(RecommendationType.BASAL, current, recommended);
+    constructor(when: Date, current: number, recommended: number, daysMissing: number, increment: number) {
+        super(RecommendationType.BASAL, current, recommended)
 
-        this.when = when;
-        this.daysMissing = daysMissing;
+        this.when = when
+        this.daysMissing = daysMissing
+
+        const factor = 1 / increment
+        this.roundedRecommendation = parseFloat((Math.ceil(recommended * factor - 0.5) / factor).toFixed(2))
     }
 }
 
@@ -181,7 +188,7 @@ export class AutotuneResult {
 
         let recommendations = [];
         for await (const line of file.readLines()) {
-            let r = Recommendation.create_from_line(line);
+            let r = Recommendation.create_from_line(line, options.basalIncrement);
             if (r instanceof Recommendation) {
                 recommendations.push(r);
             }

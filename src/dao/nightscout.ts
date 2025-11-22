@@ -126,7 +126,8 @@ export class NightscoutDao {
                     uam: config.job.settings.uam_as_basal,
                     autotuneVersion: '0.7.1', // TODO read from manifest
                     timeZone: config.job.settings.oaps_profile_data.timezone,
-                    emailAddress: config.job.settings.email_address
+                    emailAddress: config.job.settings.email_address,
+                    basalIncrement: config.job.settings.pump_basal_increment,
                 })
                 await callback(null, recommendations)                
             } else {

@@ -44,7 +44,7 @@
                         <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Time</th>
                         <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Original</th>
                         <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Autotune Result</th>
-                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Rounded&nbsp;to 0.05</th>
+                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Rounded&nbsp;to <%= result.options.basalIncrement || 'pump increment' %></th>
                     </tr>
                 </thead>
                 <tbody style="tr:nth-child(odd) { background-color: #f9f9f9 }">
