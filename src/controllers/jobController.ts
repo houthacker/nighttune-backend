@@ -1,7 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
+import { MailDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
 import { SqliteDao, SqliteError } from '../dao/sqlite.js'
-import { MailDao } from '../dao/mail.js'
+import logger from '../logger.js'
 
 import {
     AutotuneConfig,
@@ -28,7 +29,7 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
     return async (error: AutotuneError | null, recommendations?: AutotuneResult): Promise<void> => {
         if (error) {
             sqlite.onJobFailed(error.jobId, error.type)
-            console.error(`[job ${error.jobId}] error: ${error.log}`)
+            logger.warn(`[job ${error.jobId}] failed: `, error.log)
         } else {
             const report = recommendations!
             const opts = report.options as AutotuneOptions
@@ -37,8 +38,6 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
             if (report.options.emailAddress) {
                 await mail.sendReport(report.options.emailAddress!, report)
             }
-
-            console.log(`[job ${opts.jobId}] success.`)
         }
     }
 }
