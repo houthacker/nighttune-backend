@@ -1,9 +1,10 @@
+import { tz } from '@date-fns/tz'
+import { format, parseISO } from 'date-fns'
+import ejs from 'ejs'
 import Mailjet from 'node-mailjet'
 import { fileURLToPath } from 'node:url'
-import ejs from 'ejs'
-import { format, parseISO } from 'date-fns'
-import { tz } from '@date-fns/tz'
 
+import logger from '../logger.js'
 import { AutotuneResult } from '../services/recommendationsParser.js'
 
 export interface MailDao {
@@ -55,7 +56,7 @@ export class MailjetDao implements MailDao {
             })
             return true
         } catch (error: any) {
-            console.log(`Cannot send report: ${JSON.stringify(error)}`)
+            logger.error(`Failed to send autotune report to [${recipient}]: `, error)
         }
 
         return false

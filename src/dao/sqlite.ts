@@ -1,9 +1,10 @@
 import sqlite from 'better-sqlite3'
-import { JobId, JobMeta, AutotuneJob as AutotuneJobT } from '../models/job.js'
-import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
-import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
+
 import { tz } from '@date-fns/tz'
-import { inspect } from 'node:util'
+import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
+import logger from '../logger.js'
+import { AutotuneJob as AutotuneJobT, JobId, JobMeta } from '../models/job.js'
+import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -173,7 +174,7 @@ export class SqliteDao {
                 return true
             }
         } catch (error) {
-            console.error(inspect(error))
+            logger.error('Cannot store job results: ', error)
             this.rollback()
         }
 

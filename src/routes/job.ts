@@ -1,17 +1,17 @@
-import type { NextFunction, Request, Response } from 'express'
 import type { CorsOptions } from 'cors'
+import type { NextFunction, Request, Response } from 'express'
 
+import { type } from 'arktype'
 import cors from 'cors'
 import { Router } from 'express'
-import { type } from 'arktype'
-import { inspect } from 'node:util'
 
-import { AutotuneJob, JobAlreadyEnqueuedError, GenericDatabaseError, JobExecutionError } from '../models/job.js'
-import { getSession } from '../controllers/sessionController.js'
 import { JobController } from '../controllers/jobController.js'
-import { SqliteDao } from '../dao/sqlite.js'
-import { NightscoutDao } from '../dao/nightscout.js'
+import { getSession } from '../controllers/sessionController.js'
 import { MailjetDao } from '../dao/mail.js'
+import { NightscoutDao } from '../dao/nightscout.js'
+import { SqliteDao } from '../dao/sqlite.js'
+import logger from '../logger.js'
+import { AutotuneJob, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError } from '../models/job.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -25,14 +25,14 @@ router.use(async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
     if (session.turnstileTestPassed !== true) {
-        console.error('Client has not (yet) passed turnstile test.')
+        logger.warn('Client has not (yet) passed turnstile test.')
         response.status(403).json({ message: 'Please verify turnstile test first.'})
         return next('route')
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
         } catch (error) {
-            console.error('`Nightscout URL not verified.')
+            logger.warn('Nightscout URL not verified')
             response.status(403).json({ message: 'Please verify the Nightscout URL and token first.'})
             return next('route')
         }
@@ -48,7 +48,7 @@ router.options('/', cors(corsOptions))
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const jobRequest = AutotuneJob(request.body)
     if (jobRequest instanceof type.errors) {
-        console.error(`Request body not accepted [${JSON.stringify(request.body)}]`)
+        logger.warn('Request body not accepted', request.body)
         response.status(400).json({ message: jobRequest.summary })
     } else {
 
@@ -57,13 +57,12 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
             response.status(200).json({ jobId })
         } catch (error: any) {
             if (error instanceof JobAlreadyEnqueuedError) {
-                console.error(`[job ${error.jobId}]: ${inspect(error)}`)
-                response.status(400).json({jobId: error.jobId, message: 'Job already enqueued.'})
+                logger.warn(`[job ${error.jobId}] job already enqueued.`)
             } else if (error instanceof GenericDatabaseError || error instanceof JobExecutionError) {
-                console.error(`[job ${error.jobId}]: ${inspect(error)}`)
+                logger.error(`[job ${error.jobId}] job execution failed: `, error)
                 response.status(500).json({ jobId: error.jobId })
             } else {
-                console.error(`[job <unknown>]: ${inspect(error)}`)
+                logger.error(`[job ${error.jobId}] generic job error: `, error)
                 response.status(500).json({message: 'Generic error running job with unknown id.'})
             }
         }
@@ -83,7 +82,7 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
             response.status(200).json({ result })
         }
     } catch (error) {
-        console.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}: ${inspect(error)}`)
+        logger.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}: `, error)
         response.status(500).json({message: 'Error while retrieving job results.'})
     }
 
@@ -99,7 +98,7 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         const jobs = await controller.all(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ jobs })
     } catch (error: any) {
-        console.error(`Error retrieving jobs: ${inspect(error)}`)
+        logger.error('Error retrieving jobs', error)
         response.status(500).json({ message: 'Error retrieving jobs' })
     }
 
@@ -114,7 +113,7 @@ router.get('/latest', cors(corsOptions), async(request: Request, response: Respo
         const job = await controller.latest(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ job })
     } catch (error: any) {
-        console.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}': ${inspect(error)}`)
+        logger.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}': `, error)
         response.status(500).json({ message: 'Error retrieving latest job'})
     }
 

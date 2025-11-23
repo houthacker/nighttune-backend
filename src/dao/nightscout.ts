@@ -4,9 +4,10 @@ import { spawn } from 'node:child_process'
 import { subtle } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
-import { AutotuneResult } from '../services/recommendationsParser.js'
 
+import logger from '../logger.js'
 import { AutotuneConfig, AutotuneErrorType, JobId } from '../models/job.js'
+import { AutotuneResult } from '../services/recommendationsParser.js'
 
 const hash_access_token = async (token: string): Promise<string> => {
     const encoder = new TextEncoder()
@@ -57,9 +58,9 @@ export class NightscoutDao {
                 return true
             }
 
-            console.error(`Nightscout API verification failed. HTTP ${response.status}: ${response.statusText}`)
+            logger.warn(`Verification of Nightscout API at '${url.href}' failed: `, {status: response.status, text: response.statusText})
         } catch (error) {
-            console.error('Nightscout API verification failed: ', error)
+            logger.error(`Verification of Nightscout API at '${url.href}' failed: `, error)
         }
         
         return false;
@@ -75,8 +76,9 @@ export class NightscoutDao {
         const startDate = subDays(endDate, config.job.settings.autotune_days)
 
         // Prepare autotune working directory structure
+        // TODO have dir removed after run
         const tempdir = await fs.mkdtemp('/tmp/autotune')
-        console.log(`Preparing oref0-autotune directory structure in ${tempdir}`)
+        logger.info(`[${config.job.nightscout_url}] Preparing oref0-autotune directory structure in ${tempdir}`)
         const settingsPath = join(tempdir, 'settings')
         await fs.mkdir(settingsPath)
 
@@ -115,7 +117,7 @@ export class NightscoutDao {
         oref0_autotune.on('close', async (code: number) => {
             const ok = code === 0
             if (ok) {
-                console.log('Autotune successful, processing results.')
+                logger.info(`[${config.job.nightscout_url}] Autotune successful.`)
                 
                 const autotune_log = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
                 const recommendations = await AutotuneResult.parseLog(autotune_log, {
