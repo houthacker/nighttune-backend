@@ -5,7 +5,7 @@
     "@date-fns/tz": "^1.4.1",
     "@dotenvx/dotenvx": "^1.51.0",
     "@tsconfig/node24": "^24.0.1",
-    "arktype": "^2.1.23",
+    "arktype": "^2.1.27",
     "better-sqlite3": "^12.4.1",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
