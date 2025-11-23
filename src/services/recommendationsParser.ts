@@ -1,5 +1,6 @@
 import { open } from 'node:fs/promises'
 import { parse } from 'date-fns'
+import { tz } from '@date-fns/tz'
 
 import type { PathLike } from 'node:fs'
 import { JobId } from '../models/job.js'
@@ -89,9 +90,10 @@ export class Recommendation {
      * Creates a new `Recommendation` or a subtype based on the given line.
      * @param line A line from an autotune recommendations log file.
      * @param basalIncrement The basal increment of the users pump. Recommendations are rounded to this value.
+     * @param timezone The profile time zone.
      * @returns The parsed `Recommendation`, or `undefined` if the line does not contain a recommendation.
      */
-    static create_from_line(line: string, basalIncrement: number): Recommendation | undefined {
+    static create_from_line(line: string, basalIncrement: number, timezone: string): Recommendation | undefined {
         let ln = line.trim()
 
         // Columns are: [parameter, pump, autotune, days_missing]
@@ -119,7 +121,7 @@ export class Recommendation {
                 }
             }
 
-            const when = parse(hour_string, 'HH:mm', new Date())
+            const when = parse(hour_string, 'HH:mm', new Date(), { in: tz(timezone) })
             return new BasalRecommendation(
                 when, 
                 parseFloat(columns[1].trim()), 
@@ -188,7 +190,7 @@ export class AutotuneResult {
 
         let recommendations = [];
         for await (const line of file.readLines()) {
-            let r = Recommendation.create_from_line(line, options.basalIncrement);
+            let r = Recommendation.create_from_line(line, options.basalIncrement, options.timeZone);
             if (r instanceof Recommendation) {
                 recommendations.push(r);
             }
