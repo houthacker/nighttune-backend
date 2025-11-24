@@ -25,14 +25,14 @@ router.use(async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
     if (session.turnstileTestPassed !== true) {
-        logger.warn('Client has not (yet) passed turnstile test.')
+        logger.debug('Client has not (yet) passed turnstile test.')
         response.status(403).json({ message: 'Please verify turnstile test first.'})
         return next('route')
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
         } catch (error) {
-            logger.warn('Nightscout URL not verified')
+            logger.debug(`Denying access to [${request.ip}] because Nightscout URL is not verified`)
             response.status(403).json({ message: 'Please verify the Nightscout URL and token first.'})
             return next('route')
         }
@@ -48,7 +48,7 @@ router.options('/', cors(corsOptions))
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const jobRequest = AutotuneJob(request.body)
     if (jobRequest instanceof type.errors) {
-        logger.warn('Request body not accepted', request.body)
+        logger.warn(`Request body not accepted: ${jobRequest.summary}`, jobRequest.summary)
         response.status(400).json({ message: jobRequest.summary })
     } else {
 

@@ -29,7 +29,7 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
     return async (error: AutotuneError | null, recommendations?: AutotuneResult): Promise<void> => {
         if (error) {
             sqlite.onJobFailed(error.jobId, error.type)
-            logger.warn(`[job ${error.jobId}] failed: `, error.log)
+            logger.warn(`[job ${error.jobId}] failed: \n`, error)
         } else {
             const report = recommendations!
             const opts = report.options as AutotuneOptions
