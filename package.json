@@ -3,7 +3,7 @@
   "author": "houthacker",
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
-    "@dotenvx/dotenvx": "^1.51.0",
+    "@dotenvx/dotenvx": "^1.51.1",
     "@tsconfig/node24": "^24.0.3",
     "arktype": "^2.1.27",
     "better-sqlite3": "^12.4.6",
