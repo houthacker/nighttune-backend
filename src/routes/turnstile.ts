@@ -29,7 +29,7 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
         
         response.status(200)
     } else {
-        logger.error('Invalid turnstile verification: ', validation['error-codes'])
+        logger.error(`Invalid turnstile verification: \n\t[${validation['error-codes'].join(',')}]`)
         response.status(400).json({ message: 'Turnstile verification failed.'})
     }
 

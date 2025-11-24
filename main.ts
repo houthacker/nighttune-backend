@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 
 import RateLimit from 'express-rate-limit'
 
+import logger from './src/logger.js'
 import turnstileRouter from './src/routes/turnstile.js'
 import jobRouter from './src/routes/job.js'
 import verifyRouter from './src/routes/verify.js'
@@ -40,5 +41,5 @@ app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 
 app.listen(port, () => {
-    console.log(`listening at port ${port}`)
+    logger.info(`listening at port ${port}`)
 })

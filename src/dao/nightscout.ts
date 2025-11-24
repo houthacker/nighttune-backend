@@ -58,9 +58,9 @@ export class NightscoutDao {
                 return true
             }
 
-            logger.warn(`Verification of Nightscout API at '${url.href}' failed: `, {status: response.status, text: response.statusText})
+            logger.warn(`Verification of Nightscout API at '${url.href}' failed: HTTP ${response.status} (${response.statusText}) `)
         } catch (error) {
-            logger.error(`Verification of Nightscout API at '${url.href}' failed: `, error)
+            logger.error(`Verification of Nightscout API at '${url.href}' failed: \n`, error)
         }
         
         return false;
@@ -78,7 +78,7 @@ export class NightscoutDao {
         // Prepare autotune working directory structure
         // TODO have dir removed after run
         const tempdir = await fs.mkdtemp('/tmp/autotune')
-        logger.info(`[${config.job.nightscout_url}] Preparing oref0-autotune directory structure in ${tempdir}`)
+        logger.debug(`[${config.job.nightscout_url}] Preparing oref0-autotune directory structure in ${tempdir}`)
         const settingsPath = join(tempdir, 'settings')
         await fs.mkdir(settingsPath)
 
@@ -117,7 +117,7 @@ export class NightscoutDao {
         oref0_autotune.on('close', async (code: number) => {
             const ok = code === 0
             if (ok) {
-                logger.info(`[${config.job.nightscout_url}] Autotune successful.`)
+                logger.debug(`[${config.job.nightscout_url}] Autotune successful.`)
                 
                 const autotune_log = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
                 const recommendations = await AutotuneResult.parseLog(autotune_log, {
