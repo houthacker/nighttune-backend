@@ -3,6 +3,26 @@ import { type } from 'arktype';
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
 export const Unit = "'mg/dl' | 'mg/dL' | 'mmol' | 'mmol/l' | 'mmol/L'"
+export const SmoothingLevel = "'none' | 'low' | 'medium' | 'high'"
+
+export const POST_PROCESSING_REPLACER = (k: any, v: any): any => {
+    if (v instanceof Map) {
+        return {
+            dt: 'Map',
+            v: [...v]
+        }
+    }
+
+    return v
+}
+
+export const POST_PROCESSING_REVIVER = (k: any, v: any): any => {
+    if (typeof v === 'object' && v.dt === 'Map') {
+        return new Map(v.v)
+    }
+
+    return v
+}
 
 export type JobId = string
 
@@ -283,6 +303,12 @@ export const JobSettings = type({
      * An optional e-mail address to send the autotune results to.
      */
     "email_address?": "string.email",
+
+    /**
+     * Whether to smooth the basal values to align them more with actual
+     * physiological values. It defaults to 'none'.
+     */
+    "basal_smoothing": [type(SmoothingLevel), "=", "none"],
 
     /**
      * The (converted) OpenAPS profile.

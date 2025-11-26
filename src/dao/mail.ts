@@ -5,7 +5,7 @@ import Mailjet from 'node-mailjet'
 import { fileURLToPath } from 'node:url'
 
 import logger from '../logger.js'
-import { AutotuneResult } from '../services/recommendationsParser.js'
+import { AutotuneResult, roundToNext } from '../services/recommendationsParser.js'
 
 export interface MailDao {
     sendReport(recipient: string, report: AutotuneResult): Promise<boolean>;
@@ -38,7 +38,8 @@ export class MailjetDao implements MailDao {
                     return format(date, 'HH:mm', {
                         in: tz(report.options.timeZone)
                     })
-                }
+                },
+                roundToNext
             })
 
             await this.api.post('send', { version: 'v3.1' }).request({

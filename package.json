@@ -16,6 +16,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "iron-session": "^8.0.4",
+    "ml-savitzky-golay-generalized": "^4.2.0",
     "node-fetch": "^3.3.2",
     "node-mailjet": "^6.0.11",
     "piscina": "^5.1.4",
@@ -31,7 +32,6 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.10.1",
     "@types/node-fetch": "^2.6.13",
-    "@types/uuid": "^11.0.0",
     "copyfiles": "^2.4.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"

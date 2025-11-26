@@ -18,10 +18,19 @@ function is_numeric(str: string): boolean {
     return !isNaN(Number(str));
 }
 
+export function roundToNext(value: number, increment: number): number {
+    const factor = 1 / increment
+    return parseFloat((Math.ceil(value * factor - 0.5) / factor).toFixed(2))
+}
+
 export enum RecommendationType {
     ISF = 'ISF',
     CR = 'CR',
     BASAL = 'BASAL'
+}
+
+export enum PostProcessType {
+    SMOOTH = 'SMOOTH'
 }
 
 /**
@@ -144,7 +153,7 @@ export class BasalRecommendation extends Recommendation {
 
     public readonly daysMissing: number
 
-    public readonly roundedRecommendation: number
+    public readonly postProcessed: Map<PostProcessType, number>
 
     /**
      * Create a new `Recommendation`.
@@ -159,9 +168,11 @@ export class BasalRecommendation extends Recommendation {
 
         this.when = when
         this.daysMissing = daysMissing
+        this.postProcessed = new Map<PostProcessType, number>()
+    }
 
-        const factor = 1 / increment
-        this.roundedRecommendation = parseFloat((Math.ceil(recommended * factor - 0.5) / factor).toFixed(2))
+    smoothedRecommendation(): number | undefined {
+        return this.postProcessed.get(PostProcessType.SMOOTH)
     }
 }
 
