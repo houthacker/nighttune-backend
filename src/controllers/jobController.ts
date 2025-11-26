@@ -17,7 +17,6 @@ import { AutotuneOptions, AutotuneResult } from '../services/recommendationsPars
 
 import type { AutotuneError } from '../dao/nightscout.js'
 
-
 type AutotuneJob = typeof AutotuneJobT.infer
 
 const SQLITE_ERROR: string = 'SQLITE_ERROR'
