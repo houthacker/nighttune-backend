@@ -1,13 +1,30 @@
 import { tz } from '@date-fns/tz'
 import { format, startOfYesterday, subDays } from 'date-fns'
+import { sgg } from 'ml-savitzky-golay-generalized'
 import { spawn } from 'node:child_process'
 import { subtle } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
 
 import logger from '../logger.js'
-import { AutotuneConfig, AutotuneErrorType, JobId } from '../models/job.js'
-import { AutotuneResult } from '../services/recommendationsParser.js'
+import { AutotuneConfig, AutotuneErrorType, AutotuneJob as AutotuneJobT, JobId, SmoothingLevel } from '../models/job.js'
+import { AutotuneResult, BasalRecommendation, PostProcessType } from '../services/recommendationsParser.js'
+
+type SmoothingLevel = typeof AutotuneJobT.infer.settings.basal_smoothing
+const smoothingOptions = {
+    low: { 
+        windowSize: 11,
+        polynomial: 6,
+    },
+    medium: { 
+        windowSize: 17,
+        polynomial: 5,
+    },
+    high: { 
+        windowSize: 23,
+        polynomial: 3,
+    }
+}
 
 const hash_access_token = async (token: string): Promise<string> => {
     const encoder = new TextEncoder()
@@ -34,6 +51,26 @@ function chunks_to_string(chunks: any[]): string {
 
 export type AutotuneError = { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }
 export type AutotuneCallback = (error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
+
+
+/**
+ * Smoothens the given basal recommendations in place by the given `level`.
+ * 
+ * @param level The smoothing intensity level.
+ * @param recommendations The recommendations to smoothen.
+ */
+const smoothen = (level: SmoothingLevel, recommendations: Array<BasalRecommendation>): void => {
+    if (level === 'none') {
+        return
+    }
+
+    const recommendedValues = recommendations.map(r => r.recommendedValue)
+    const filtered = sgg(recommendedValues, 1, smoothingOptions[level])
+
+    recommendations.forEach((r, i) => {
+        r.postProcessed.set(PostProcessType.SMOOTH, filtered[i])
+    })
+}
 
 export class NightscoutDao {
 
@@ -102,6 +139,7 @@ export class NightscoutDao {
             `--categorize-uam-as-basal=${config.job.settings.uam_as_basal}`
         ],
         {
+            // TODO causes zombie?
             detached: true,
             env: {...process.env, 'API_SECRET': token},
             shell: '/usr/bin/bash',
@@ -131,6 +169,10 @@ export class NightscoutDao {
                     emailAddress: config.job.settings.email_address,
                     basalIncrement: config.job.settings.pump_basal_increment,
                 })
+
+                if (config.job.settings.basal_smoothing !== 'none') {
+                    smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
+                }
                 await callback(null, recommendations)                
             } else {
                 const error = {

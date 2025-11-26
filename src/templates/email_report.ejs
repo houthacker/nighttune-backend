@@ -58,7 +58,7 @@
                             <th style="border-top: solid 1px #ddd; padding: 8px"><%= formatTime(b.when); %></th>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.currentValue %></td>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.recommendedValue %></td>
-                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.roundedRecommendation %></td>
+                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.recommendedValue, result.options.basalIncrement) b.roundedRecommendation %></td>
                         </tr>
                     <% }; %>
                 </tbody>

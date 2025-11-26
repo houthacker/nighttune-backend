@@ -3,7 +3,7 @@ import sqlite from 'better-sqlite3'
 import { tz } from '@date-fns/tz'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
 import logger from '../logger.js'
-import { AutotuneJob as AutotuneJobT, JobId, JobMeta } from '../models/job.js'
+import { AutotuneJob as AutotuneJobT, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
@@ -169,7 +169,7 @@ export class SqliteDao {
                 this.run('UPDATE `jobs` SET `state` = \'success\', `done_ts` = @doneTs WHERE `uuid` = @uuid', 
                     { doneTs: getUnixTime(constructNow(tz('UTC'))), uuid })
                 this.run('INSERT INTO `job_results` (`job_id`, `recommendations`) VALUES(@id, @recommendations)', 
-                    { id: row.id, recommendations: JSON.stringify(recommendations) })
+                    { id: row.id, recommendations: JSON.stringify(recommendations, POST_PROCESSING_REPLACER) })
                 this.commit()
                 return true
             }
@@ -189,7 +189,7 @@ export class SqliteDao {
              WHERE `jobs`.`uuid` = @uuid\
              AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
-        return row.recommendations === undefined ? undefined : JSON.parse(row.recommendations)
+        return row.recommendations === undefined ? undefined : JSON.parse(row.recommendations, POST_PROCESSING_REVIVER)
     }
 
     /**

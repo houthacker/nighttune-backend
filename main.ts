@@ -9,6 +9,7 @@ import logger from './src/logger.js'
 import turnstileRouter from './src/routes/turnstile.js'
 import jobRouter from './src/routes/job.js'
 import verifyRouter from './src/routes/verify.js'
+import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
 
 // Read .env file
 dotenv.config()
@@ -33,7 +34,12 @@ app.use(limiter)
 app.use(compression())
 
 // Accept 'text/plain' and '*/json' as json content types.
-app.use(express.json({ type: ['*/json', 'text/plain']}))
+app.use(express.json({ 
+    reviver: POST_PROCESSING_REVIVER,
+    type: ['*/json', 'text/plain']
+}))
+
+app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
 app.use('/turnstile', turnstileRouter)
