@@ -168,6 +168,7 @@ export class NightscoutDao {
                     timeZone: config.job.settings.oaps_profile_data.timezone,
                     emailAddress: config.job.settings.email_address,
                     basalIncrement: config.job.settings.pump_basal_increment,
+                    basalSmoothing: config.job.settings.basal_smoothing,
                 })
 
                 if (config.job.settings.basal_smoothing !== 'none') {
