@@ -56,8 +56,10 @@ export class AutotuneOptions {
 
     public readonly basalIncrement: number
 
+    public readonly basalSmoothing: string
+
     constructor(jobId: JobId, nsHost: string, dateFrom: string, dateTo: string, uam: boolean, autotuneVersion: string,
-        timeZone: string, emailAddress: string | undefined = undefined, basalIncrement: number
+        timeZone: string, emailAddress: string | undefined = undefined, basalIncrement: number, basalSmoothing: string
     ) {
         this.jobId = jobId
         this.nsHost = nsHost
@@ -68,6 +70,7 @@ export class AutotuneOptions {
         this.timeZone = timeZone
         this.emailAddress = emailAddress
         this.basalIncrement = basalIncrement
+        this.basalSmoothing = basalSmoothing
     }
 
 }
