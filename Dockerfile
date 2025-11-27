@@ -17,5 +17,14 @@ RUN npm install
 
 COPY . .
 
+# Must be supplied using --build-arg
+ARG NT_VERSION
+ENV NT_VERSION=${NT_VERSION:-unknown}
+
+# Move the .sqliterc file to the home directory
+RUN mv .sqliterc ~/
+
+# Build the backend
 RUN npm run build
+
 CMD ["npm", "start"]
