@@ -7,12 +7,16 @@
     <body style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: rgb(51, 51, 51);">
         <header>
             <h2>Report created using data of <a href="<%= result.options.nsHost %>"><%= result.options.nsHost %></a></h2>
-            <p>Based on data entered between <%= formatDateString(result.options.dateFrom) %> and <%= formatDateString(result.options.dateTo) %></p>
+            <p>Based on data entered between <%= formatDateString(result.options.dateFrom) %> and <%= formatDateString(result.options.dateTo) %> (<%= result.options.timeZone %>)</p>
             <% if (result.options.uam) { %>
                 <p>
                     Unannounced meals were ignored and counted towards basal recommendations. If not all carbs were recorded, re-run while unchecking the '<code>Categorize UAM as basal</code>' option.
                 </p>
             <% } %>
+            <% if (result.options.basalSmoothing) {%>
+                <p>Basal smoothing: <%= result.options.basalSmoothing %></p>
+            <%} %>
+            
         </header>
         <main>
             <table width="50%">
@@ -41,10 +45,13 @@
             <table width="50%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Time</th>
-                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Original</th>
-                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Autotune Result</th>
-                        <th width="25%" style="border-top: solid 1px #ddd; padding: 8px">Rounded&nbsp;to <%= result.options.basalIncrement || 'pump increment' %></th>
+                        <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Time</th>
+                        <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Original</th>
+                        <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Autotune Result</th>
+                        <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Rounded&nbsp;to <%= result.options.basalIncrement || 'pump increment' %></th>
+                        <% if (haveBasalSmoothing) {%>
+                            <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Smoothed</th>
+                        <%} %>
                     </tr>
                 </thead>
                 <tbody style="tr:nth-child(odd) { background-color: #f9f9f9 }">
@@ -58,7 +65,10 @@
                             <th style="border-top: solid 1px #ddd; padding: 8px"><%= formatTime(b.when); %></th>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.currentValue %></td>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.recommendedValue %></td>
-                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.recommendedValue, result.options.basalIncrement) b.roundedRecommendation %></td>
+                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.recommendedValue, result.options.basalIncrement).toFixed(2) %></td>
+                            <% if (haveBasalSmoothing) {%>
+                                <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.smoothedRecommendation(), result.options.basalIncrement).toFixed(2) %></td>
+                            <%} %>
                         </tr>
                     <% }; %>
                 </tbody>
