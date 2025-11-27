@@ -98,11 +98,10 @@ export class Recommendation {
     /**
      * Creates a new `Recommendation` or a subtype based on the given line.
      * @param line A line from an autotune recommendations log file.
-     * @param basalIncrement The basal increment of the users pump. Recommendations are rounded to this value.
      * @param timezone The profile time zone.
      * @returns The parsed `Recommendation`, or `undefined` if the line does not contain a recommendation.
      */
-    static create_from_line(line: string, basalIncrement: number, timezone: string): Recommendation | undefined {
+    static create_from_line(line: string, timezone: string): Recommendation | undefined {
         let ln = line.trim()
 
         // Columns are: [parameter, pump, autotune, days_missing]
@@ -135,8 +134,7 @@ export class Recommendation {
                 when, 
                 parseFloat(columns[1].trim()), 
                 parseFloat(columns[2].trim()), 
-                parseInt(columns[3]),
-                basalIncrement
+                parseInt(columns[3])
             )
         }
 
@@ -161,9 +159,8 @@ export class BasalRecommendation extends Recommendation {
      * @param current The current profile value.
      * @param recommended The recommended profile value.
      * @param daysMissing The amount of days without data.
-     * @param increment The minimal pump basal increment.
      */
-    constructor(when: Date, current: number, recommended: number, daysMissing: number, increment: number) {
+    constructor(when: Date, current: number, recommended: number, daysMissing: number) {
         super(RecommendationType.BASAL, current, recommended)
 
         this.when = when
@@ -201,7 +198,7 @@ export class AutotuneResult {
 
         let recommendations = [];
         for await (const line of file.readLines()) {
-            let r = Recommendation.create_from_line(line, options.basalIncrement, options.timeZone);
+            let r = Recommendation.create_from_line(line, options.timeZone);
             if (r instanceof Recommendation) {
                 recommendations.push(r);
             }
