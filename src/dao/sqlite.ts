@@ -142,7 +142,7 @@ export class SqliteDao {
             if (row !== undefined) {
                 this.begin()
                 this.run('UPDATE `jobs` SET `state` = \'error\' WHERE `uuid` = @uuid', { uuid })
-                this.run('INSERT INTO `job_errors` (`job_id`, `reason_code`) VALUES (@id, @errorCode)', { id: row.id, errorCode: reasonCode })
+                this.run('INSERT INTO `job_errors` (`job_id`, `error_code`) VALUES (@id, @errorCode)', { id: row.id, errorCode: reasonCode })
                 this.commit()
                 return true
             }
