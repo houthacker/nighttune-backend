@@ -124,8 +124,8 @@ export class SqliteDao {
     submit(uuid: JobId, url: URL, settings: AutotuneJob): sqlite.RunResult {
         const parameters = JSON.stringify(settings)
         return this.executeInTransaction(
-            'INSERT INTO `jobs` (`uuid`, `ns_url`, `parameters`) VALUES (@id, @url, @parameters)', 
-            {id: uuid, url: url.href, parameters})
+            'INSERT INTO `jobs` (`uuid`, `ns_url`, `backend_version`, `parameters`) VALUES (@id, @url, @version, @parameters)', 
+            {id: uuid, url: url.href, version: process.env.NT_VERSION!, parameters})
     }
 
     /**
