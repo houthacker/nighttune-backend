@@ -29,12 +29,16 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
         // Calling VerificationRequest() also validates if body.nightscout_url is a valid url.
         const url = new URL(verification.nightscout_url)
         const session = await getSession(request, response)
-        session.verifiedNightscoutUrl = await nightscout.verify(url, verification.nightscout_access_token)
-            ? url.href
-            : undefined
 
+        if (await nightscout.verify(url, verification.nightscout_access_token)) {
+            session.verifiedNightscoutUrl = url.href
+            response.status(200)
+        } else {
+            session.verifiedNightscoutUrl = undefined
+            response.status(407 /* Proxy Authentication Required */)
+        }
+        
         await session.save()
-        response.status(200)
     }
 
     response.end()
