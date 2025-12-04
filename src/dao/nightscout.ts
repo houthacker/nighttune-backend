@@ -65,7 +65,11 @@ const smoothen = (level: SmoothingLevel, recommendations: Array<BasalRecommendat
     }
 
     const recommendedValues = recommendations.map(r => r.recommendedValue)
-    const filtered = sgg(recommendedValues, 1, smoothingOptions[level])
+    const settings = {
+        ...smoothingOptions[level],
+        windowSize: Math.min(smoothingOptions[level].windowSize, recommendedValues.length),
+    }
+    const filtered = sgg(recommendedValues, 1, settings)
 
     recommendations.forEach((r, i) => {
         r.postProcessed.set(PostProcessType.SMOOTH, filtered[i])
@@ -172,8 +176,13 @@ export class NightscoutDao {
                 })
 
                 if (config.job.settings.basal_smoothing !== 'none') {
-                    smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
+                    try {
+                        smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
+                    } catch (error: any) {
+                        logger.error(`[job ${config.id}] Smoothing failed.`, error)
+                    }
                 }
+                
                 await callback(null, recommendations)                
             } else {
                 const error = {
