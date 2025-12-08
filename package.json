@@ -21,7 +21,7 @@
     "node-mailjet": "^6.0.11",
     "piscina": "^5.1.4",
     "uuid": "^13.0.0",
-    "winston": "^3.18.3"
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
