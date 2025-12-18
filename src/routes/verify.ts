@@ -32,9 +32,11 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
 
         if (await nightscout.verify(url, verification.nightscout_access_token)) {
             session.verifiedNightscoutUrl = url.href
+            session.verifiedNightscoutToken = verification.nightscout_access_token
             response.status(200)
         } else {
             session.verifiedNightscoutUrl = undefined
+            session.verifiedNightscoutToken = undefined
             response.status(407 /* Proxy Authentication Required */)
         }
         
