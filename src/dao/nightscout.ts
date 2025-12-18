@@ -76,6 +76,26 @@ const smoothen = (level: SmoothingLevel, recommendations: Array<BasalRecommendat
     })
 }
 
+/**
+ * If present, encode and add the given token to the url query parameter 'token'.
+ * If token is not present, this method just returns the given URL.
+ * @returns The URL with the added query parameter.
+ */
+const addToken = async (url: URL, token?: string): Promise<URL> => {
+    if (token) {
+        const encoder = new TextEncoder()
+        const data = encoder.encode(token)
+        const hash_buffer = await crypto.subtle.digest('SHA-1', data)
+        const hash_array = Array.from(new Uint8Array(hash_buffer))
+        url.searchParams.append('token', hash_array
+            .map((b) => b.toString(16).padStart(2, '0'))
+            .join('')
+        )
+    }
+
+    return url
+}
+
 export class NightscoutDao {
 
     /**
@@ -105,6 +125,25 @@ export class NightscoutDao {
         }
         
         return false;
+    }
+
+    async profiles(nsUrl: URL, token?: string): Promise<any> {
+        const url = await addToken(new URL("api/v1/profile.json", nsUrl), token)
+
+        try {
+            const response = await fetch(url)
+
+            if (response.ok) {
+                const body: Array<any> = await response.json() as any
+                return Promise.resolve(body[0])
+            } 
+
+            logger.warn(`Failed to fetch user profiles from ${nsUrl.href}: HTTP ${response.status}: ${response.statusText}`)
+            return Promise.reject(new Error(`Failed to fetch user profiles: NS instance returned HTTP error status ${response.status}`))
+        } catch (error: any) {
+            logger.warn(`Error while fethching user profiles from ${nsUrl.href}`, error)
+            return Promise.reject(new Error('Error while fetching user profiles.'))
+        }
     }
 
     /**

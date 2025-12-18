@@ -9,6 +9,8 @@ import logger from './src/logger.js'
 import turnstileRouter from './src/routes/turnstile.js'
 import jobRouter from './src/routes/job.js'
 import verifyRouter from './src/routes/verify.js'
+import profileRouter from './src/routes/profile.js'
+
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
 
 // Read .env file
@@ -45,6 +47,7 @@ app.set('json replacer', POST_PROCESSING_REPLACER)
 app.use('/turnstile', turnstileRouter)
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
+app.use('/profile', profileRouter)
 
 app.listen(port, () => {
     logger.info(`listening at port ${port}`)
