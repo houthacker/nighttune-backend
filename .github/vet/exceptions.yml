@@ -1,0 +1,7 @@
+description: Exceptions for nighttune-backend vet scans.
+exceptions:
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: buildcheck-popularity
+    name: 'buildcheck'
+    version: 0.0.7
