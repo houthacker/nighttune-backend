@@ -62,6 +62,9 @@ export type AutotuneCallback = (error: AutotuneError | null, recommendations?: A
 const smoothen = (level: SmoothingLevel, recommendations: Array<BasalRecommendation>): void => {
     if (level === 'none') {
         return
+    } else if (recommendations.length < 5) {
+        logger.debug('Smoothing skipped: smoothing less than 5 recommendations is not accepted by smoothing algorithm.')
+        return
     }
 
     const recommendedValues = recommendations.map(r => r.recommendedValue)
@@ -214,12 +217,10 @@ export class NightscoutDao {
                     basalSmoothing: config.job.settings.basal_smoothing,
                 })
 
-                if (config.job.settings.basal_smoothing !== 'none') {
-                    try {
-                        smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
-                    } catch (error: any) {
-                        logger.error(`[job ${config.id}] Smoothing failed.`, error)
-                    }
+                try {
+                    smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
+                } catch (error: any) {
+                    logger.error(`[job ${config.id}] Smoothing failed.`, error)
                 }
                 
                 await callback(null, recommendations)                
