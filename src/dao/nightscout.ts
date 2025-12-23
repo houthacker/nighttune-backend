@@ -26,6 +26,10 @@ const smoothingOptions = {
     }
 }
 
+const roundDownToOdd = (n: number): number => {
+    return 2 * (Math.trunc((n - 1) / 2) ) + 1
+}
+
 const hash_access_token = async (token: string): Promise<string> => {
     const encoder = new TextEncoder()
     const encoded_token = encoder.encode(token)
@@ -70,7 +74,7 @@ const smoothen = (level: SmoothingLevel, recommendations: Array<BasalRecommendat
     const recommendedValues = recommendations.map(r => r.recommendedValue)
     const settings = {
         ...smoothingOptions[level],
-        windowSize: Math.min(smoothingOptions[level].windowSize, recommendedValues.length),
+        windowSize: Math.min(smoothingOptions[level].windowSize, roundDownToOdd(recommendedValues.length)),
     }
     const filtered = sgg(recommendedValues, 1, settings)
 
