@@ -17,7 +17,15 @@ export const POST_PROCESSING_REPLACER = (k: any, v: any): any => {
 }
 
 export const POST_PROCESSING_REVIVER = (k: any, v: any): any => {
-    if (typeof v === 'object' && v.dt === 'Map') {
+    const isIterable = (x: any): boolean => {
+        if (x === null) {
+            return false
+        }
+
+        return typeof x[Symbol.iterator] === 'function'
+    }
+    
+    if (v !== null && typeof v === 'object' && v.dt === 'Map' && isIterable(v.v)) {
         return new Map(v.v)
     }
 
