@@ -1,0 +1,18 @@
+name: capjs
+
+services:
+  cap:
+    image: tiago2/cap:latest
+    container_name: cap
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3334:3000"
+    environment:
+      ADMIN_KEY: <admin key>
+      RATELIMIT_IP_HEADER: X-Forwarded-For
+      CORS_ORIGIN: https://nighttune.app
+      ENABLE_ASSETS_SERVER: true
+    volumes:
+      - type: bind
+        source: /home/houthacker/capjs/data
+        target: /usr/src/app/.data
