@@ -20,13 +20,13 @@ const corsOptions: CorsOptions = {
 const router = Router()
 const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao())
 
-// All requests must have the session cookie, have passed the turnstile- and Nightscout access test.
+// All requests must have the session cookie, have passed the captcha- and Nightscout access test.
 router.use(async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
-    if (session.turnstileTestPassed !== true) {
-        logger.debug('Client has not (yet) passed turnstile test.')
-        response.status(403).json({ message: 'Please verify turnstile test first.'})
+    if (session.captchaTestPassed !== true) {
+        logger.debug('Client has not (yet) passed captcha test.')
+        response.status(403).json({ message: 'Please verify captcha test first.'})
         return next('route')
     } else {
         try {

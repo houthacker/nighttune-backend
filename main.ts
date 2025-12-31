@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-import express from 'express'
 import compression from 'compression'
 import dotenv from 'dotenv'
+import express from 'express'
 
 import RateLimit from 'express-rate-limit'
 
 import logger from './src/logger.js'
-import turnstileRouter from './src/routes/turnstile.js'
+import captchaRouter from './src/routes/captcha.js'
 import jobRouter from './src/routes/job.js'
-import verifyRouter from './src/routes/verify.js'
 import profileRouter from './src/routes/profile.js'
+import verifyRouter from './src/routes/verify.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
 
@@ -19,8 +19,11 @@ dotenv.config()
 const app = express()
 const port = process.env.NT_PORT || 3333
 
-if (!process.env.NT_TURNSTILE_SECRET) {
-    throw new Error('Missing required env variable NT_TURNSTILE_SECRET')
+const REQUIRED_ENV_VARS = ['NT_CAPTCHA_SITEKEY', 'NT_CAPTCHA_SECRET']
+for (const v of REQUIRED_ENV_VARS) {
+    if (!process.env[v]) {
+        throw new Error(`Missing required env variable ${v}`)
+    }
 }
 
 const limiter = RateLimit({
@@ -44,7 +47,7 @@ app.use(express.json({
 app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
-app.use('/turnstile', turnstileRouter)
+app.use('/captcha', captchaRouter)
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)

@@ -18,8 +18,8 @@ export const sessionOptions: SessionOptions = {
 export async function getSession(request: IncomingMessage | Request, response: Response | ServerResponse<IncomingMessage>): Promise<IronSession<SessionData>> {
     const session = await getIronSession<SessionData>(request, response, sessionOptions);
 
-    if (session.turnstileTestPassed === undefined) {
-        session.turnstileTestPassed = defaultSession.turnstileTestPassed;
+    if (session.captchaTestPassed === undefined) {
+        session.captchaTestPassed = defaultSession.captchaTestPassed;
     }
 
     return session;
