@@ -6,7 +6,6 @@ The API server of nighttune.
     1. [Configure ufw](#configure-ufw)
     2. [Install nginx](#install-nginx)
     3. [Install certbot](#install-certbot-and-configure-certifciate)
-    4. [Install sqlite3](#install-sqlite3)
 
 ### Installing
 
@@ -16,9 +15,7 @@ Please ensure the following prerequisites have been installed:
 | :--- | :--- |
 | [Docker Engine](https://docs.docker.com/engine/install/) | |
 | [nvm](https://github.com/nvm-sh/nvm) | Node Version Manager |
-| [dotenvx](https://dotenvx.com/docs/install) | secure dotenv files |
 | [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
-| [sqlite3](https://sqlite.org/) | An SQL database engine |
 
 ### Configure ufw
 Deny all incoming traffic by default, but leave ssh, http and https open.
@@ -40,14 +37,17 @@ $ sudo ufw allow https
 $ sudo ufw default deny incoming
 ```
 
-### Configure Cloudflare Turnstile
-The frontend uses Cloudflare Turnstile for bot protection and the backend handles the verification.
-How to configure Turnstile is described at [Cloudflare](https://developers.cloudflare.com/turnstile/).
+### Configure Cap
+The frontend uses Cap for bot protection and the backend handles the verification.
+How to install and configure Cap is described at [Cap](https://capjs.js.org/guide/standalone/).
+
+#### Cap Docker Compose
+Copy the template [cap-compose.example.yaml](./examples/cap-compose.example.yaml) to a suitable directory in your vm and set the `ADMIN_KEY` environment
+variable to the admin key of your Cap installation. Ensure any directories mentioned in the compose file have been created.
 
 ### Copy .env file
-Copy your secured (production) .env file to the vm. See [.env.example](./examples/.env.example) for its format.
+Copy your (production) .env file to a suitable directory in your vm. See [.env.example](./examples/.env.example) for its format.
 ```bash
-$ scp .env.keys nightscout.app:~
 $ scp .env.production nightscout.app:~
 ```
 
@@ -57,14 +57,20 @@ $ scp .env.production nightscout.app:~
 $ mkdir -p ~/nighttune-backend/data
 
 # Create or migrate the database
-$ docker run --rm --mount type=bind,src=/home/user/nighttune-backend/data,dst=/data ghcr.io/houthacker/nighttune-backend:main bash -c 'npx initdb /data/nighttune-backend-prod.db'
+$ docker run --rm --mount type=bind,src=/home/houthacker/nighttune-backend/data,dst=/data ghcr.io/houthacker/nighttune-backend:latest bash -c 'npx initdb /data/nighttune-backend-prod.db'
 ```
 
-### Run the backend Docker container 
-Ensure the container does not expose its ports to the internet.
-```bash
-$ backend_port=3333
-$ docker run --name nighttune-backend -v /home/user/nighttune-backend/.env.production:/app/.env.production -v /home/user/nighttune-backend/.env.keys:/app/.env.keys -p 127.0.0.1:$backend_port:$backend_port --detach ghcr.io/houthacker/nighttune-backend:main
+### Run the backend Docker container
+Copy the template [compose.example.yaml](./examples/compose.example.yaml) to a suitable directory in your vm and run it using `docker compose up -d`. Optionally add a service for the [Nighttune frontend](https://github.com/houthacker/nighttune):
+```yaml
+services:
+  nighttune:
+    image: ghcr.io/houthacker/nighttune:latest
+    container_name: nighttune
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+
 ```
 
 ### Install nginx
@@ -101,25 +107,97 @@ $ sudo apt install certbot python3-certbot-nginx
 $ sudo certbot --nginx
 ```
 
-### Add reverse proxy config
+### Add captcha.nighttune.app site config
+```bash
+server {
+
+  server_name captcha.nighttune.app;
+
+  location / {
+    proxy_pass http://127.0.0.1:3334;
+    proxy_buffering off;
+
+    # Let Cap know the IP address of solvers.
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    include proxy_params;
+  }
+
+  location /ws/ {
+    proxy_pass http://127.0.0.1:3334;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    include proxy_params;
+  }
+
+  listen 443 ssl; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/nighttune.app/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/nighttune.app/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+server {
+  if ($host = captcha.nighttune.app) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
+
+
+  listen 80;
+
+  server_name captcha.nighttune.app;
+  return 404; # managed by Certbot
+}
+
+```
+
+### Add api.nighttune.app site config
 Edit the site config to allow reverse proxying to the backend (or docker container). An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
 Usually, `backend_ip` will be `127.0.0.1` and `backend_port` will be `3333`.
 ```bash
+server {
+
+  server_name api.nighttune.app;
+
   location / {
-    proxy_pass http://$backend_ip:$backend_port;
+    proxy_pass http://127.0.0.1:3333;
     proxy_buffering off;
 
     include proxy_params;
   }
 
-	location /ws/ {
-		proxy_pass http://$backend_ip:$backend_port;
-		proxy_http_version 1.1;
-		proxy_set_header Upgrade $http_upgrade;
-		proxy_set_header Connection "upgrade";
-		
-		include proxy_params;
-	}
+  location /ws/ {
+    proxy_pass http://127.0.0.1:3333;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    include proxy_params;
+  }
+
+  listen 443 ssl; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/nighttune.app/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/nighttune.app/privkey.pem; # managed by Certbot
+  include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+  if ($host = api.nighttune.app) {
+      return 301 https://$host$request_uri;
+  } # managed by Certbot
+
+
+  listen 80;
+
+  server_name api.nighttune.app;
+  return 404; # managed by Certbot
+}
+
 ```
 
 ### Check site-config 
@@ -135,32 +213,3 @@ $ sudo systemctl reload nginx
 ```
 
 Afther this, the backend should be reachable at the location you configured; congrats!
-
-### Install sqlite3
-```bash
-$ sudo apt install sqlite3
-```
-
-### Initialize the database
-```bash
-# Using default values (src/config/db.sql and nighttune-backend-test.db)
-$ npm run initdb
-
-# Or using custom values
-$ npm run initdb -- /tmp/db.sql /tmp/nightscout-backend.db
-```
-
-### Clone and install oref0
-Installing oref0 globally is required to successfully spawn a child process that runs autotune.
-```bash
-$ git clone --branch v0.7.1 https://github.com/openaps/oref0.git
-$ cd oref0
-$ npm run global-install
-```
-
-### Install and run nighttune-backend
-```bash
-$ npm install
-$ npm run build
-$ npm start
-```
