@@ -2,9 +2,9 @@
 export interface SessionData {
 
     /**
-     * Whether the user has passed the turnstile test.
+     * Whether the user has passed the captcha test.
      */
-    turnstileTestPassed: boolean
+    captchaTestPassed: boolean
 
     /**
      * The nightscout url
@@ -18,7 +18,7 @@ export interface SessionData {
 };
 
 export const defaultSession: SessionData = {
-    turnstileTestPassed: false,
+    captchaTestPassed: false,
     verifiedNightscoutUrl: undefined,
     verifiedNightscoutToken: undefined,
 };
