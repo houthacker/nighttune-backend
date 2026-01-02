@@ -214,7 +214,7 @@ export const OAPSProfile = type({
     /**
      * The minimum carb absorption in grams, per 5 minutes.
      */
-    min_5m_carbimpact: "number.integer > 0",
+    min_5m_carbimpact: "number > 0",
 
     /**
      * The type of insulin, indicating how fast the insulin acts and decays.
@@ -283,7 +283,7 @@ export const JobSettings = type({
     /**
      * The minimum cab absorption per 5 minutes, in grams.
      */
-    min_5m_carbimpact: "number.integer > 0",
+    min_5m_carbimpact: "number > 0",
     
     /**
      * The minimum step of basal units the pump can handle.
