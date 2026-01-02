@@ -180,16 +180,16 @@ export class NightscoutDao {
         // sanitizing the user input (config.*) first to prevent arbitrary
         // command execution.
         const autotune_err: any[] = []
-        const oref0_autotune = spawn('oref0-autotune', 
-        [
+        const command = 'oref0-autotune'
+        const flags = [
             `--dir=${tempdir}`,
             `--ns-host=${config.job.nightscout_url}`,
             `--start-date=${format(startDate, 'yyyy-MM-dd')}`,
             `--end-date=${format(endDate, 'yyyy-MM-dd')}`,
             `--categorize-uam-as-basal=${config.job.settings.uam_as_basal}`
-        ],
+        ]
+        const oref0_autotune = spawn(`${command} ${flags.join(' ')}`,
         {
-            // TODO causes zombie?
             detached: true,
             env: {...process.env, 'API_SECRET': token},
             shell: '/usr/bin/bash',
