@@ -39,3 +39,8 @@ test('revive from non-array post processing values', (t) => {
         JSON.parse(str, POST_PROCESSING_REVIVER)
     })
 })
+
+test('allow min_5m_carb_impact to contain a decimal number', (t) => {
+    const request = AutotuneJob(jsonFixture('job_request_min_5m_carb_impact_decimal.json'))
+    assert(!(request instanceof type.errors), 'Expect a decimal to be a valid value for min_5m_carb_impact.')
+})
