@@ -203,18 +203,6 @@ export class NightscoutDao {
         })
 
         oref0_autotune.on('close', async (code: number) => {
-            if (process.env.NT_AUTOTUNE_REMOVE_TEMP_DIRS! === 'true') {
-                // Try to remove the temp directory containing the autotune files.
-                try {
-                    await fs.rm(tempdir, {
-                        force: true,
-                        recursive: true
-                    })
-                } catch(error: any) {
-                    logger.warn(`[job ${config.id}] Could not remove autotune temp dir ${tempdir}.`)
-                }
-            }
-
             const ok = code === 0
             if (ok) {
                 logger.debug(`[${config.job.nightscout_url}] Autotune successful.`)
@@ -248,6 +236,18 @@ export class NightscoutDao {
                     log: chunks_to_string(autotune_err)
                 }
                 await callback(error)
+            }
+
+            if (process.env.NT_AUTOTUNE_REMOVE_TEMP_DIRS! === 'true') {
+                // Try to remove the temp directory containing the autotune files.
+                try {
+                    await fs.rm(tempdir, {
+                        force: true,
+                        recursive: true
+                    })
+                } catch(error: any) {
+                    logger.warn(`[job ${config.id}] Could not remove autotune temp dir ${tempdir}.`)
+                }
             }
         })
 
