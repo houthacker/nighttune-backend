@@ -61,7 +61,7 @@ export class MailjetDao implements MailDao {
             })
             return true
         } catch (error: any) {
-            logger.error(`Failed to send autotune report to [${recipient}]: `, error)
+            logger.error(`Failed to send autotune report to [${recipient}]:\n${JSON.stringify(error)}`)
         }
 
         return false

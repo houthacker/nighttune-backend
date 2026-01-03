@@ -127,8 +127,8 @@ export class NightscoutDao {
             }
 
             logger.warn(`Verification of Nightscout API at '${url.href}' failed: HTTP ${response.status} (${response.statusText}) `)
-        } catch (error) {
-            logger.error(`Verification of Nightscout API at '${url.href}' failed: \n`, error)
+        } catch (error: any) {
+            logger.error(`Verification of Nightscout API at '${url.href}' failed: \n${JSON.stringify(error)}`)
         }
         
         return false;
@@ -148,7 +148,7 @@ export class NightscoutDao {
             logger.warn(`Failed to fetch user profiles from ${nsUrl.href}: HTTP ${response.status}: ${response.statusText}`)
             return Promise.reject(new Error(`Failed to fetch user profiles: NS instance returned HTTP error status ${response.status}`))
         } catch (error: any) {
-            logger.warn(`Error while fethching user profiles from ${nsUrl.href}`, error)
+            logger.warn(`Error while fethching user profiles from ${nsUrl.href}:\n${JSON.stringify(error)}`)
             return Promise.reject(new Error('Error while fetching user profiles.'))
         }
     }
@@ -224,7 +224,7 @@ export class NightscoutDao {
                 try {
                     smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
                 } catch (error: any) {
-                    logger.error(`[job ${config.id}] Smoothing failed.`, error)
+                    logger.error(`[job ${config.id}] Smoothing failed:\n${JSON.stringify(error)}`)
                 }
                 
                 await callback(null, recommendations)                
