@@ -5,3 +5,8 @@ exceptions:
     id: buildcheck-popularity
     name: 'buildcheck'
     version: 0.0.7
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: dotenvx-command-execution
+    name: 'dotenvx'
+    version: 1.51.4
