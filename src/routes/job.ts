@@ -59,10 +59,10 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
             if (error instanceof JobAlreadyEnqueuedError) {
                 logger.warn(`[job ${error.jobId}] job already enqueued.`)
             } else if (error instanceof GenericDatabaseError || error instanceof JobExecutionError) {
-                logger.error(`[job ${error.jobId}] job execution failed: `, error)
+                logger.error(`[job ${error.jobId}] job execution failed:\n${JSON.stringify(error)}`)
                 response.status(500).json({ jobId: error.jobId })
             } else {
-                logger.error(`[job ${error.jobId}] generic job error: `, error)
+                logger.error(`[job ${error.jobId}] generic job error:\n${JSON.stringify(error)}`)
                 response.status(500).json({message: 'Generic error running job with unknown id.'})
             }
         }
@@ -82,7 +82,7 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
             response.status(200).json({ result })
         }
     } catch (error) {
-        logger.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}: `, error)
+        logger.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}:\n${JSON.stringify(error)}`)
         response.status(500).json({message: 'Error while retrieving job results.'})
     }
 
@@ -98,7 +98,7 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         const jobs = await controller.all(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ jobs })
     } catch (error: any) {
-        logger.error('Error retrieving jobs', error)
+        logger.error(`Error retrieving jobs:\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error retrieving jobs' })
     }
 
@@ -113,7 +113,7 @@ router.get('/latest', cors(corsOptions), async(request: Request, response: Respo
         const job = await controller.latest(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ job })
     } catch (error: any) {
-        logger.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}': `, error)
+        logger.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}':\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error retrieving latest job'})
     }
 

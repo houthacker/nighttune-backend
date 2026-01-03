@@ -174,7 +174,7 @@ export class SqliteDao {
                 return true
             }
         } catch (error) {
-            logger.error('Cannot store job results: \n', error)
+            logger.error(`Cannot store job results:\n${JSON.stringify(error)}`)
             this.rollback()
         }
 
