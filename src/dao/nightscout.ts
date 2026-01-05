@@ -53,9 +53,8 @@ function chunks_to_string(chunks: any[]): string {
     return ''
 }
 
-export type AutotuneError = { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }
-export type AutotuneCallback = (error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
-
+export type AutotuneError = { data: { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }, autotuneLogFile: string}
+export type AutotuneCallback = ( error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
 
 /**
  * Smoothens the given basal recommendations in place by the given `level`.
@@ -203,12 +202,13 @@ export class NightscoutDao {
         })
 
         oref0_autotune.on('close', async (code: number) => {
+            const autotuneLogFile = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
+
             const ok = code === 0
             if (ok) {
                 logger.debug(`[${config.job.nightscout_url}] Autotune successful.`)
-                
-                const autotune_log = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
-                const recommendations = await AutotuneResult.parseLog(autotune_log, {
+
+                const recommendations = await AutotuneResult.parseLog(autotuneLogFile, {
                     jobId: config.id,
                     nsHost: config.job.nightscout_url,
                     dateFrom: startDate.toISOString(),
@@ -229,13 +229,15 @@ export class NightscoutDao {
                 
                 await callback(null, recommendations)                
             } else {
-                const error = {
-                    jobId: config.id,
-                    exitCode: code,
-                    type: AutotuneErrorType.AutotuneFailed,
-                    log: chunks_to_string(autotune_err)
-                }
-                await callback(error)
+                await callback({
+                    data: {
+                        jobId: config.id,
+                        exitCode: code,
+                        type: AutotuneErrorType.AutotuneFailed,
+                        log: chunks_to_string(autotune_err)
+                    },
+                    autotuneLogFile
+                })
             }
 
             if (process.env.NT_AUTOTUNE_REMOVE_TEMP_DIRS! === 'true') {

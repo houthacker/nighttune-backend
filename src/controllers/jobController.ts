@@ -1,3 +1,4 @@
+import { readFile} from 'node:fs/promises'
 import { v4 as uuidv4 } from 'uuid'
 import { MailDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
@@ -25,10 +26,17 @@ const SQLITE_CONSTRAINT_TRIGGER: string = 'SQLITE_CONSTRAINT_TRIGGER'
 const SQLITE_CONSTRAINT_UNIQUE: string = 'SQLITE_CONSTRAINT_UNIQUE'
 
 const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
-    return async (error: AutotuneError | null, recommendations?: AutotuneResult): Promise<void> => {
+    return async (error: AutotuneError| null, recommendations?: AutotuneResult): Promise<void> => {
         if (error) {
-            sqlite.onJobFailed(error.jobId, error.type)
-            logger.warn(`[job ${error.jobId}] failed: \n${JSON.stringify(error)}`)
+            sqlite.onJobFailed(error.data.jobId, error.data.type)
+            logger.warn(`[job ${error.data.jobId}] failed: \n${JSON.stringify(error)}`)
+
+            try {
+                const logFileContents = await readFile(error.autotuneLogFile, { encoding: 'utf8'})
+                logger.warn(`[job ${error.data.jobId}] Autotune log file contents:\n${logFileContents}`)
+            } catch(_: any) {
+                logger.warn(`[job ${error.data.jobId}] could not read autotune log.`)
+            }
         } else {
             const report = recommendations!
             const opts = report.options as AutotuneOptions
