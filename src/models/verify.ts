@@ -1,4 +1,7 @@
-import { type } from 'arktype';
+import { type } from 'arktype'
+
+// The minimum length of a Nightscout access token (16 + '-' + abbreviated name.)
+export const NIGHTSCOUT_TOKEN_MIN_LENGTH: number = 18
 
 export const VerificationRequest = type({
 
