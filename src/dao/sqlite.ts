@@ -318,7 +318,10 @@ export class SqliteDao {
         return undefined
     }
 
-    userData(url: URL): GDPRUserData {
+    /**
+     * Retrieve all GDPR user data related to the given Nightscout url.
+     */
+    retrieveGDPRData(url: URL): GDPRUserData {
         this.begin()
 
         try {
@@ -328,7 +331,12 @@ export class SqliteDao {
         }
     }
 
-    deleteAll(url: URL): GDPRUserData {
+    /**
+     * Remove all GDPR user data related to the given Nightscout url.
+     * 
+     * @returns The removed GDPR data.
+     */
+    deleteAllGDPRData(url: URL): GDPRUserData {
         this.begin()
 
         try {
@@ -341,7 +349,7 @@ export class SqliteDao {
             if (this.db.inTransaction) {
                 this.rollback()
             }
-            
+
             logger.error(`Error while removing all user data for Nightscout URL ${url.href}`)
             throw error
         }
