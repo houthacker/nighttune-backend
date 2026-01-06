@@ -61,13 +61,13 @@ export class SqliteDao {
             })
             this.db.pragma('journal_mode = WAL')
             this.db.pragma('foreign_keys = ON')
+        } else {
+            assert(isDatabase(arg), new TypeError('Cannot create SqliteDao: constructor argument must be a path string or an sqlite.Database'))
+            
+            arg.pragma('journal_mode = WAL')
+            arg.pragma('foreign_keys = ON')
+            this.db = arg
         }
-
-        assert(isDatabase(arg), new TypeError('Cannot create SqliteDao: constructor argument must be a path string or an sqlite.Database'))
-        
-        arg.pragma('journal_mode = WAL')
-        arg.pragma('foreign_keys = ON')
-        this.db = arg
     }
 
     /**
