@@ -181,11 +181,11 @@ export class BasalRecommendation extends Recommendation {
  */
 export class AutotuneResult {
 
-    public readonly options: AutotuneOptions
+    public readonly options: AutotuneOptions | undefined
 
     private readonly recommendations: Recommendation[]
 
-    constructor(recommendations: Recommendation[], options: AutotuneOptions) {
+    constructor(recommendations: Recommendation[], options: AutotuneOptions | undefined) {
         this.options = options
         this.recommendations = recommendations;
     }
