@@ -13,6 +13,8 @@ export type JobStatus = 'submitted' | 'processing' | 'error'
 
 type AutotuneJob = typeof AutotuneJobT.infer
 type JobRow = {id: number, uuid: string, submit_ts: number, done_ts?: number , state: string, parameters: string}
+type AutotuneResultRow = {id: number, uuid: string, recommendations: string}
+type FailedJobRow = {id: number, uuid: string, error_code: AutotuneErrorType}
 
 function isDatabase(arg: sqlite.Database): arg is sqlite.Database {
     return typeof arg === 'object' && typeof arg.memory === 'boolean'
@@ -120,6 +122,31 @@ export class SqliteDao {
 
     private all<T>(sql: string, ...parameters: unknown[]): Array<T> {
         return this.db.prepare(sql).all(...parameters) as Array<T>
+    }
+
+    private allJobs(url: URL): Array<JobMeta> {
+        return this.all<JobRow>(
+            'SELECT `uuid`, `submit_ts`, `done_ts`, `state`, `parameters` FROM `jobs` WHERE `ns_url` = @url;',
+            { url: url.href }
+        ).map(SqliteDao.jobFromRow)
+    }
+
+    private allJobResults(url: URL): Array<AutotuneResult> {
+        return this.all<AutotuneResultRow>(
+            'SELECT `r`.`job_id`, `r`.`recommendations` FROM `job_results` AS `r` INNER JOIN `jobs` AS `j` ON `j`.`id` = `r`.`job_id` WHERE `j`.`ns_url` = @url;',
+            { url: url.href }
+        ).map((row) => {
+            return new AutotuneResult(JSON.parse(row.recommendations, POST_PROCESSING_REVIVER), undefined)
+        })
+    }
+
+    private allFailedJobs(url: URL): Array<FailedJob> {
+        return this.all<FailedJobRow>(
+            'SELECT `e`.`job_id`, `j`.`uuid`, `e`.`error_code` FROM `job_errors` AS `e` INNER JOIN `jobs` AS `j` ON `j`.`id` = `e`.`job_id` WHERE `j`.`ns_url` = @url;',
+            { url: url.href }
+        ).map((row) => {
+            return new FailedJob(row.uuid, row.error_code)
+        })
     }
 
     /**
@@ -292,33 +319,31 @@ export class SqliteDao {
     }
 
     userData(url: URL): GDPRUserData {
-        type AutotuneResultRow = {id: number, uuid: string, recommendations: string}
-        type FailedJobRow = {id: number, uuid: string, error_code: AutotuneErrorType}
-
         this.begin()
 
         try {
-            const jobs = this.all<JobRow>(
-                'SELECT `uuid`, `submit_ts`, `done_ts`, `state`, `parameters` FROM `jobs` WHERE `ns_url` = @url;',
-                { url: url.href }
-            ).map(SqliteDao.jobFromRow)
-            const job_results = this.all<AutotuneResultRow>(
-                'SELECT `r`.`job_id`, `r`.`recommendations` FROM `job_results` AS `r` INNER JOIN `jobs` AS `j` ON `j`.`id` = `r`.`job_id` WHERE `j`.`ns_url` = @url;',
-                { url: url.href }
-            ).map((row) => {
-                return new AutotuneResult(JSON.parse(row.recommendations, POST_PROCESSING_REVIVER), undefined)
-            })
-            const failed_jobs = this.all<FailedJobRow>(
-                'SELECT `e`.`job_id`, `j`.`uuid`, `e`.`error_code` FROM `job_errors` AS `e` INNER JOIN `jobs` AS `j` ON `j`.`id` = `e`.`job_id` WHERE `j`.`ns_url` = @url;',
-                { url: url.href }
-            ).map((row) => {
-                return new FailedJob(row.uuid, row.error_code)
-            })
-
-            return new GDPRUserData(jobs, job_results, failed_jobs)
-
+            return new GDPRUserData(this.allJobs(url), this.allJobResults(url), this.allFailedJobs(url))
         } finally {
             this.commit()
+        }
+    }
+
+    deleteAll(url: URL): GDPRUserData {
+        this.begin()
+
+        try {
+            const allData = new GDPRUserData(this.allJobs(url), this.allJobResults(url), this.allFailedJobs(url))
+            this.run('DELETE FROM `jobs` WHERE `ns_url` = @url;', { url: url.href })
+            this.commit()
+
+            return allData
+        } catch (error: any) {
+            if (this.db.inTransaction) {
+                this.rollback()
+            }
+            
+            logger.error(`Error while removing all user data for Nightscout URL ${url.href}`)
+            throw error
         }
     }
 }
