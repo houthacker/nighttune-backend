@@ -9,6 +9,7 @@ import { GDPRController } from '../controllers/gdprController.js'
 import { getSession } from '../controllers/sessionController.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
+import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from 'src/models/verify.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -29,10 +30,19 @@ router.use(async (request: Request, response: Response, next: NextFunction) => {
         try {
             new URL(session.verifiedNightscoutUrl || '')
         } catch (error) {
-            logger.debug(`Denying access to [${request.ip}] because Nightscout URL is not verified`)
-            response.status(403).json({ message: 'Please verify the Nightscout URL and token first.'})
+            logger.debug(`Denying client access to [${request.path}] because Nightscout URL is not verified.`)
+            response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
             return next('route')
         }
+
+        // Token is required to be at least NIGHTSCOUT_TOKEN_MIN_LENGTH characters.
+        // @see https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/authorization/storage.js#L162
+        if (session.verifiedNightscoutToken === undefined || session.verifiedNightscoutToken.trim().length < NIGHTSCOUT_TOKEN_MIN_LENGTH) {
+            logger.debug(`Denying client access to [${request.path}] because Nightscout access token is missing or invalid.`)
+            response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
+            return next('route')
+        }
+
     }
 
     return next()
