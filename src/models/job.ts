@@ -362,9 +362,36 @@ export class JobMeta {
      */
     public readonly submittedAt: TZDate
 
-    constructor(id: JobId, status: typeof this.status, submittedAt: TZDate) {
+    /**
+     * The optional time at which the job finished, in the profile time zone.
+     */
+    public readonly doneAt: TZDate | undefined
+
+    constructor(id: JobId, status: typeof this.status, submittedAt: TZDate, doneAt: TZDate | undefined = undefined) {
         this.id = id
         this.status = status
         this.submittedAt = submittedAt
+        this.doneAt = doneAt
+    }
+}
+
+/**
+ * A description of a failed job.
+ */
+export class FailedJob {
+
+    /**
+     * The unique identifier of the related JobMeta.
+     */
+    public readonly job_id: JobId
+
+    /**
+     * The reason of failure.
+     */
+    public readonly error_code: AutotuneErrorType
+
+    constructor(job_id: JobId, error_code: AutotuneErrorType) {
+        this.job_id = job_id
+        this.error_code = error_code
     }
 }

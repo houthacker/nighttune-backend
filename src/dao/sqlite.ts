@@ -1,15 +1,22 @@
 import sqlite from 'better-sqlite3'
+import { strict as assert } from 'node:assert'
 
 import { tz } from '@date-fns/tz'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
+import { GDPRUserData } from '../models/gdpr.js'
 import logger from '../logger.js'
-import { AutotuneJob as AutotuneJobT, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
+import { AutotuneErrorType, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
 
 type AutotuneJob = typeof AutotuneJobT.infer
+type JobRow = {id: number, uuid: string, submit_ts: number, done_ts?: number , state: string, parameters: string}
+
+function isDatabase(arg: sqlite.Database): arg is sqlite.Database {
+    return typeof arg === 'object' && typeof arg.memory === 'boolean'
+}
 
 export class SqliteDao {
 
@@ -27,15 +34,38 @@ export class SqliteDao {
      * $ cat src/config/db.sql | sqlite3 database.db
      * ```
      * 
+     * @param db The database instance.
+     * @throws `TypeError` If `db` is not a database instance.
+     */
+    constructor(db: sqlite.Database)
+
+    /**
+     * Create a new `SqliteDao`, opening the database at `path`. The database must have been
+     * initialized before calling this. The initialization can be done using the `src/config/db.sql` file,
+     * and will run only those updates and migrations that haven't been executed yet.
+     * 
+     * ```bash
+     * $ cat src/config/db.sql | sqlite3 database.db
+     * ```
+     * 
      * @param path The path to the database.
      * @throws `Error` If the database file does not exist.
      */
-    constructor(path: string) {
-        this.db = new sqlite(path, {
-            fileMustExist: true
-        })
-        this.db.pragma('journal_mode = WAL')
-        this.db.pragma('foreign_keys = ON')
+    constructor(path: string)
+    constructor(arg: any) {
+        if (typeof arg === 'string') {
+            this.db = new sqlite(arg, {
+                fileMustExist: true
+            })
+            this.db.pragma('journal_mode = WAL')
+            this.db.pragma('foreign_keys = ON')
+        }
+
+        assert(isDatabase(arg), new TypeError('Cannot create SqliteDao: constructor argument must be a path string or an sqlite.Database'))
+        
+        arg.pragma('journal_mode = WAL')
+        arg.pragma('foreign_keys = ON')
+        this.db = arg
     }
 
     /**
@@ -84,12 +114,30 @@ export class SqliteDao {
         return this.db.prepare(sql).run(...parameters)
     }
 
-    private get<T>(sql: string, ...parameters: unknown[]): T  {
-        return this.db.prepare(sql).get(...parameters) as T
+    private get<T>(sql: string, ...parameters: unknown[]): T | undefined {
+        return this.db.prepare(sql).get(...parameters) as T | undefined
     }
 
     private all<T>(sql: string, ...parameters: unknown[]): Array<T> {
         return this.db.prepare(sql).all(...parameters) as Array<T>
+    }
+
+    /**
+     * Converts a row from the `jobs` table to a JobMeta instance.
+     */
+    private static jobFromRow(row: JobRow): JobMeta {
+        const parameters = JSON.parse(row.parameters) as AutotuneOptions
+
+        return new JobMeta(
+            row.uuid, 
+            row.state as JobMeta['status'], 
+            fromUnixTime(row.submit_ts, {
+                in: tz(parameters.timeZone)
+            }),
+            row.done_ts ? fromUnixTime(row.done_ts, {
+                in: tz(parameters.timeZone)
+            }) : undefined
+        )
     }
 
     /**
@@ -139,7 +187,7 @@ export class SqliteDao {
         try {
             const row = this.get<{ id: number }>('SELECT `id` FROM `jobs` WHERE `uuid` = @uuid', { uuid })
 
-            if (row !== undefined) {
+            if (row) {
                 this.begin()
                 this.run('UPDATE `jobs` SET `state` = \'error\' WHERE `uuid` = @uuid', { uuid })
                 this.run('INSERT INTO `job_errors` (`job_id`, `error_code`) VALUES (@id, @errorCode)', { id: row.id, errorCode: reasonCode })
@@ -164,7 +212,7 @@ export class SqliteDao {
         try {
             const row = this.get<{ id: number }>('SELECT `id` FROM `jobs` WHERE `uuid` = @uuid', { uuid })
 
-            if (row !== undefined) {
+            if (row) {
                 this.begin()
                 this.run('UPDATE `jobs` SET `state` = \'success\', `done_ts` = @doneTs WHERE `uuid` = @uuid', 
                     { doneTs: getUnixTime(constructNow(tz('UTC'))), uuid })
@@ -182,14 +230,14 @@ export class SqliteDao {
     }
 
     result(url: URL, uuid: JobId): AutotuneResult | undefined {
-        const row = this.get<{ recommendations: string | undefined}>(
+        const row = this.get<{recommendations: string}>(
             'SELECT `r`.`recommendations` \
              FROM `job_results` as `r` \
              JOIN `jobs` ON `jobs`.`id` = `r`.`job_id`\
              WHERE `jobs`.`uuid` = @uuid\
              AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
-        return row.recommendations === undefined ? undefined : JSON.parse(row.recommendations, POST_PROCESSING_REVIVER)
+        return row === undefined ? undefined : JSON.parse(row.recommendations, POST_PROCESSING_REVIVER) as AutotuneResult
     }
 
     /**
@@ -200,13 +248,13 @@ export class SqliteDao {
      * @returns The requested jobs, or an empty array if no jobs exist for `url`.
      */
     jobs(url: URL, limit: number): Array<JobMeta> {
-        const all = this.all<{uuid: string, submit_ts: number, state: string, parameters: string}>(
-            'SELECT `uuid`, `submit_ts`, `state`, `parameters` \
+        const all = this.all<JobRow>(
+            'SELECT `id`, `uuid`, `submit_ts`, `state`, `parameters` \
              FROM `jobs` \
              WHERE `ns_url` = @url \
              ORDER BY `submit_ts` DESC \
              LIMIT @limit;',
-            { url: url.toString(), limit }
+            { url: url.href, limit }
         )
 
         return all.map((row) => {
@@ -228,8 +276,8 @@ export class SqliteDao {
      * @returns The job, or `undefined` if there is no such job.
      */
     latest(url: URL): JobMeta | undefined {
-        const row = this.get<{ uuid: string, state: string, submit_ts: number, parameters: string}>(
-            'SELECT `uuid`, `state`, `submit_ts`, `parameters` \
+        const row = this.get<JobRow>(
+            'SELECT `id`, `uuid`, `state`, `submit_ts`, `parameters` \
              FROM `jobs` \
              WHERE `ns_url` = @url \
              ORDER BY `submit_ts` DESC \
@@ -237,16 +285,40 @@ export class SqliteDao {
             { url: url.href })
 
         if (row !== undefined) {
-            const parameters = JSON.parse(row.parameters) as AutotuneOptions
-            return new JobMeta(
-                row.uuid, 
-                row.state as JobMeta['status'],
-                fromUnixTime(row.submit_ts, {
-                    in: tz(parameters.timeZone)
-                })
-            )
+            return SqliteDao.jobFromRow(row)
         }
 
         return undefined
+    }
+
+    userData(url: URL): GDPRUserData {
+        type AutotuneResultRow = {id: number, uuid: string, recommendations: string}
+        type FailedJobRow = {id: number, uuid: string, error_code: AutotuneErrorType}
+
+        this.begin()
+
+        try {
+            const jobs = this.all<JobRow>(
+                'SELECT `uuid`, `submit_ts`, `done_ts`, `state`, `parameters` FROM `jobs` WHERE `ns_url` = @url;',
+                { url: url.href }
+            ).map(SqliteDao.jobFromRow)
+            const job_results = this.all<AutotuneResultRow>(
+                'SELECT `r`.`job_id`, `r`.`recommendations` FROM `job_results` AS `r` INNER JOIN `jobs` AS `j` ON `j`.`id` = `r`.`job_id` WHERE `j`.`ns_url` = @url;',
+                { url: url.href }
+            ).map((row) => {
+                return new AutotuneResult(JSON.parse(row.recommendations, POST_PROCESSING_REVIVER), undefined)
+            })
+            const failed_jobs = this.all<FailedJobRow>(
+                'SELECT `e`.`job_id`, `j`.`uuid`, `e`.`error_code` FROM `job_errors` AS `e` INNER JOIN `jobs` AS `j` ON `j`.`id` = `e`.`job_id` WHERE `j`.`ns_url` = @url;',
+                { url: url.href }
+            ).map((row) => {
+                return new FailedJob(row.uuid, row.error_code)
+            })
+
+            return new GDPRUserData(jobs, job_results, failed_jobs)
+
+        } finally {
+            this.commit()
+        }
     }
 }

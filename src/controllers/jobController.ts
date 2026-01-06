@@ -42,7 +42,7 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
             const opts = report.options as AutotuneOptions
             sqlite.onJobSuccessful(opts.jobId, report)
             
-            if (report.options.emailAddress) {
+            if (report.options?.emailAddress) {
                 await mail.sendReport(report.options.emailAddress!, report)
             }
         }

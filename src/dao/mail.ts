@@ -22,7 +22,7 @@ export class MailjetDao implements MailDao {
     }
 
     async sendReport(recipient: string, report: AutotuneResult): Promise<boolean> {
-        const haveBasalSmoothing = report.options.basalSmoothing && report.options.basalSmoothing !== 'none'
+        const haveBasalSmoothing = report.options!.basalSmoothing && report.options!.basalSmoothing !== 'none'
 
         try {
             const path = fileURLToPath(import.meta.resolve(import.meta.dirname + '/../templates/email_report.ejs'))
@@ -35,12 +35,12 @@ export class MailjetDao implements MailDao {
                 tableColumnWidth: haveBasalSmoothing ? '20%' : '25%',
                 formatDateString: (value: string): string => {
                     return format(parseISO(value), 'yyyy-MM-dd', {
-                        in: tz(report.options.timeZone)
+                        in: tz(report.options!.timeZone)
                     })
                 },
                 formatTime: (date: Date): string => {
                     return format(date, 'HH:mm', {
-                        in: tz(report.options.timeZone)
+                        in: tz(report.options!.timeZone)
                     })
                 },
                 roundToNext
