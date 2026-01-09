@@ -33,8 +33,6 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         }
             
     }
-
-    response.end()
 })
 
 export default router

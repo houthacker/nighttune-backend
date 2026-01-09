@@ -21,7 +21,7 @@ const router = Router()
 const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao())
 
 // All requests must have the session cookie, have passed the captcha- and Nightscout access test.
-router.use(async (request: Request, response: Response, next: NextFunction) => {
+router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
     if (session.captchaTestPassed !== true) {
@@ -58,6 +58,7 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
         } catch (error: any) {
             if (error instanceof JobAlreadyEnqueuedError) {
                 logger.warn(`[job ${error.jobId}] job already enqueued.`)
+                response.status(400).json({message: 'Job already enqueued.'})
             } else if (error instanceof GenericDatabaseError || error instanceof JobExecutionError) {
                 logger.error(`[job ${error.jobId}] job execution failed:\n${JSON.stringify(error)}`)
                 response.status(500).json({ jobId: error.jobId })
@@ -67,8 +68,6 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
             }
         }
     }
-
-    response.end()
 })
 
 router.get('/id/:id', cors(corsOptions), async (request: Request, response: Response) => {
@@ -85,8 +84,6 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
         logger.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}:\n${JSON.stringify(error)}`)
         response.status(500).json({message: 'Error while retrieving job results.'})
     }
-
-    response.end()
 })
 
 // GET the status of all current and previous jobs.
@@ -101,8 +98,6 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         logger.error(`Error retrieving jobs:\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error retrieving jobs' })
     }
-
-    response.end()
 })
 
 // GET the status of any queued job for the given Nightscout URL
@@ -116,8 +111,6 @@ router.get('/latest', cors(corsOptions), async(request: Request, response: Respo
         logger.error(`Error while retrieving latest job for URL '${session.verifiedNightscoutUrl!}':\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error retrieving latest job'})
     }
-
-    response.end()
 })
 
 export default router

@@ -26,12 +26,10 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
         session.captchaTestPassed = validation.success
         await session.save()
         
-        response.status(200)
+        response.status(200).end()
     } else {
         response.status(400).json({ message: 'Captcha verification failed.'})
     }
-
-    response.end();
 })
 
 export default router
