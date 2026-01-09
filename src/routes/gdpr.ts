@@ -9,7 +9,7 @@ import { GDPRController } from '../controllers/gdprController.js'
 import { getSession } from '../controllers/sessionController.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
-import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from 'src/models/verify.js'
+import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from '../models/verify.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -76,6 +76,10 @@ router.delete('/', compression(), cors(corsOptions), async (request: Request, re
 
     try {
         const data = controller.removeData(new URL(session.verifiedNightscoutUrl!))
+
+        // If the data has been retrieved and removed successfully, also destroy the session cookie.
+        session.destroy()
+        
         response.status(200).json({ data })
     } catch (error: any) {
         logger.error(`Error while removing GDPR data for url [${session.verifiedNightscoutUrl}]:\n${JSON.stringify(error)}`)
