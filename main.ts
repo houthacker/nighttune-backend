@@ -10,6 +10,7 @@ import captchaRouter from './src/routes/captcha.js'
 import jobRouter from './src/routes/job.js'
 import profileRouter from './src/routes/profile.js'
 import verifyRouter from './src/routes/verify.js'
+import gdprRouter from './src/routes/gdpr.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
 
@@ -51,6 +52,7 @@ app.use('/captcha', captchaRouter)
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)
+app.use('/gdpr', gdprRouter)
 
 app.listen(port, () => {
     logger.info(`listening at port ${port}`)
