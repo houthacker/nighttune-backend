@@ -19,7 +19,7 @@ const router = Router()
 const controller = new GDPRController(new SqliteDao(process.env.NT_DB_PATH!))
 
 // All requests must have the session cookie, have passed the captcha- and Nightscout access test.
-router.use(async (request: Request, response: Response, next: NextFunction) => {
+router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
     if (session.captchaTestPassed !== true) {
@@ -64,8 +64,6 @@ router.get('/', compression(), cors(corsOptions), async (request: Request, respo
         logger.error(`Error while retrieving GDPR data for url [${session.verifiedNightscoutUrl}]:\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error while retrieving all GDPR data.'})
     }
-
-    response.end()
 })
 
 /**
@@ -85,8 +83,6 @@ router.delete('/', compression(), cors(corsOptions), async (request: Request, re
         logger.error(`Error while removing GDPR data for url [${session.verifiedNightscoutUrl}]:\n${JSON.stringify(error)}`)
         response.status(500).json({ message: 'Error while removing all GDPR data.'})
     }
-
-    response.end()
 })
 
 export default router
