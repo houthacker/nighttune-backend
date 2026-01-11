@@ -41,9 +41,8 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
         }
         
         await session.save()
+        response.end()
     }
-
-    response.end()
 })
 
 export default router
