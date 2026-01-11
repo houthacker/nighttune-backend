@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import compression from 'compression'
 import dotenv from 'dotenv'
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 
 import RateLimit from 'express-rate-limit'
 
@@ -36,6 +36,27 @@ const limiter = RateLimit({
 if (process.env.NT_RATELIMIT_TRUST_PROXY) {
     app.set('trust proxy', process.env.NT_RATELIMIT_TRUST_PROXY.split(',').map(e => e.trim()))
 }
+
+// Monkey patch send/render to get a good stack trace for ERR_HTTP_HEADERS_SENT errors.
+app.use((request: Request, response: Response, next: NextFunction) => {
+    const render = response.render
+    const send = response.send
+    response.render = function renderWrapper(...args) {
+        Error.captureStackTrace(this)
+        return render.apply(this, args as any)
+    }
+    response.send = function sendWrapper(args: Parameters<typeof response.send>): ReturnType<typeof send> {
+        try {
+            return send.apply(this, args as any) as ReturnType<typeof send>
+        } catch (error: any) {
+            console.error(`Error in response.send | ${error.code} | ${error.message} | ${(response as Response & { stack: string }).stack}`)
+            throw error
+        }
+    }
+
+    next()
+})
+
 app.use(limiter)
 app.use(compression())
 
