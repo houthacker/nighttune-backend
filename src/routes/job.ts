@@ -27,7 +27,6 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
     if (session.captchaTestPassed !== true) {
         logger.debug('Client has not (yet) passed captcha test.')
         response.status(403).json({ message: 'Please verify captcha test first.'})
-        return next('route')
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
@@ -35,7 +34,6 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
         } catch (error) {
             logger.debug(`Denying access to [${request.ip}] because Nightscout URL is not verified`)
             response.status(403).json({ message: 'Please verify the Nightscout URL and token first.'})
-            return next('route')
         }
     }
 })
