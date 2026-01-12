@@ -25,14 +25,13 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
     if (session.captchaTestPassed !== true) {
         logger.debug('Client has not (yet) passed captcha test.')
         response.status(403).json({ message: 'Please verify captcha test first.'})
-        return next('route')
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
+            return next()
         } catch (error) {
             logger.debug(`Denying client access to [${request.path}] because Nightscout URL is not verified.`)
             response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
-            return next('route')
         }
 
         // Token is required to be at least NIGHTSCOUT_TOKEN_MIN_LENGTH characters.
@@ -40,12 +39,9 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
         if (session.verifiedNightscoutToken === undefined || session.verifiedNightscoutToken.trim().length < NIGHTSCOUT_TOKEN_MIN_LENGTH) {
             logger.debug(`Denying client access to [${request.path}] because Nightscout access token is missing or invalid.`)
             response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
-            return next('route')
         }
 
     }
-
-    return next()
 })
 
 // Handle CORS preflight
