@@ -41,13 +41,13 @@ if (process.env.NT_RATELIMIT_TRUST_PROXY) {
 app.use((request: Request, response: Response, next: NextFunction) => {
     const render = response.render
     const send = response.send
-    response.render = function renderWrapper(...args) {
+    response.render = function renderWrapper(args) {
         Error.captureStackTrace(this)
-        return render.apply(this, args as any)
+        return render.apply(this, [args])
     }
-    response.send = function sendWrapper(args: Parameters<typeof response.send>): ReturnType<typeof send> {
+    response.send = function sendWrapper(args: Parameters<typeof send>): ReturnType<typeof send> {
         try {
-            return send.apply(this, args as any) as ReturnType<typeof send>
+            return send.apply(this, [args])
         } catch (error: any) {
             console.error(`Error in response.send | ${error.code} | ${error.message} | ${(response as Response & { stack: string }).stack}`)
             throw error
