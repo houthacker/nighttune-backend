@@ -31,11 +31,15 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
             sqlite.onJobFailed(error.data.jobId, error.data.type)
             logger.warn(`[job ${error.data.jobId}] failed: \n${JSON.stringify(error)}`)
 
-            try {
-                const logFileContents = await readFile(error.autotuneLogFile, { encoding: 'utf8'})
-                logger.warn(`[job ${error.data.jobId}] Autotune log file contents:\n${logFileContents}`)
-            } catch(_: any) {
-                logger.warn(`[job ${error.data.jobId}] could not read autotune log.`)
+            if (error.autotuneLogFile) {
+                try {
+                    const logFileContents = await readFile(error.autotuneLogFile, { encoding: 'utf8'})
+                    logger.warn(`[job ${error.data.jobId}] Autotune log file contents:\n${logFileContents}`)
+                } catch(_: any) {
+                    logger.warn(`[job ${error.data.jobId}] could not read autotune log.`)
+                }
+            } else {
+                logger.warn(`[job ${error.data.jobId}] no autotune log file available.`)
             }
         } else {
             const report = recommendations!
