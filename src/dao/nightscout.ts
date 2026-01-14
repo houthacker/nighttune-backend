@@ -53,7 +53,7 @@ function chunks_to_string(chunks: any[]): string {
     return ''
 }
 
-export type AutotuneError = { data: { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }, autotuneLogFile: string}
+export type AutotuneError = { data: { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }, autotuneLogFile: string | undefined }
 export type AutotuneCallback = ( error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
 
 /**
@@ -100,6 +100,15 @@ const addToken = async (url: URL, token?: string): Promise<URL> => {
     }
 
     return url
+}
+
+const findAutotuneLogFile = async (tempdir: string): Promise<string | undefined> => {
+    const matches = await fs.readdir(join(tempdir, 'autotune')).then(files => {
+        const regex = /autotune\..*\.log/g
+        return files.filter(f => f.match(regex))
+    }, () => [])
+
+    return matches.length === 1 ? join(tempdir, 'autotune', matches[0]) : undefined
 }
 
 export class NightscoutDao {
@@ -202,13 +211,14 @@ export class NightscoutDao {
         })
 
         oref0_autotune.on('close', async (code: number) => {
-            const autotuneLogFile = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
+            const autotuneRecommendationsFile = join(tempdir, 'autotune', process.env.NT_AUTOTUNE_RECOMMENDATIONS_FILE!)
+            const autotuneLogFile = await findAutotuneLogFile(tempdir)
 
             const ok = code === 0
             if (ok) {
                 logger.debug(`[${config.job.nightscout_url}] Autotune successful.`)
 
-                const recommendations = await AutotuneResult.parseLog(autotuneLogFile, {
+                const recommendations = await AutotuneResult.parseLog(autotuneRecommendationsFile, {
                     jobId: config.id,
                     nsHost: config.job.nightscout_url,
                     dateFrom: startDate.toISOString(),
