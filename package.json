@@ -32,6 +32,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.6",
     "@types/node-fetch": "^2.6.13",
+    "concurrently": "^9.2.1",
     "copyfiles": "^2.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
@@ -56,6 +57,7 @@
     "postbuild": "npx copyfiles ./src/templates/*.ejs ./build",
     "initdb": "./scripts/initdb.sh",
     "start": "dotenvx run --convention=nextjs -- node build/main.js",
+    "dev": "dotenvx run --convention=nextjs -- concurrently \"tsc --watch\" \"nodemon build/main.js\" ",
     "test": "node --import tsx --test tests/**/*test.ts"
   },
   "type": "module",
