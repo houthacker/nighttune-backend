@@ -69,6 +69,14 @@ export class JobExecutionError extends JobError {
     }
 }
 
+export class NoSuchJobError extends JobError {
+    public readonly tag = 'NoSuchJobError'
+
+    constructor(jobId: JobId, message: string, cause?: any) {
+        super(jobId, message, cause)
+    }
+}
+
 export enum AutotuneErrorType {
     NightscoutVerificationFailed = 'NS_SITE_VERIFICATION_FAILED',
     AutotuneFailed = 'AUTOTUNE_FAILED'
@@ -340,6 +348,19 @@ export const AutotuneJob = type({
      * Job settings.
      */
     settings: JobSettings,
+})
+
+/**
+ * A request to create a new Nightscout profile based on previous
+ * job results. The `JobId` is passed as query parameter so only
+ * the profile name is required here.
+ */
+export const CreateProfileRequest = type({
+
+    /**
+     * The name of the profile.
+     */
+    name: "string",
 })
 
 /**
