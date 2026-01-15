@@ -7,6 +7,7 @@ import { GDPRUserData } from '../models/gdpr.js'
 import logger from '../logger.js'
 import { AutotuneErrorType, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
+import { type } from 'arktype'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -265,6 +266,33 @@ export class SqliteDao {
              AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
         return row === undefined ? undefined : JSON.parse(row.recommendations, POST_PROCESSING_REVIVER) as AutotuneResult
+    }
+
+    /**
+     * Retrieve the parameters of the job having the given uuid.
+     * 
+     * @param url The Nightscout site URL.
+     * @param uuid The UUID of the job.
+     * @returns The requested parameters, or `undefined` if no such job exists.
+     */
+    parameters(url: URL, uuid: JobId): AutotuneJob | undefined {
+        const row = this.get<{parameters: string}>(
+            'SELECT `parameters` \
+            FROM `jobs` \
+            WHERE `jobs`.`uuid` = @uuid \
+            AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
+
+        if (row) {
+            const parameters = AutotuneJobT(row!.parameters)
+            if (parameters instanceof type.errors) {
+                logger.error(`Cannot parse job[${uuid}].parameters into AutotuneJob:\n${parameters.summary}`)
+                throw new Error('Cannot parse job parameters into AutotuneJob')
+            }
+
+            return parameters as AutotuneJob
+        }
+
+        return undefined
     }
 
     /**
