@@ -6,9 +6,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-env:
-  TZ: "Europe/Amsterdam"
-
 jobs:
   run-tests:
     runs-on: ubuntu-latest
