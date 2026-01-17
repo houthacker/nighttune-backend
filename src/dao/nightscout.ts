@@ -5,11 +5,14 @@ import { spawn } from 'node:child_process'
 import { subtle } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
+import { type } from 'arktype'
 
 import logger from '../logger.js'
+import { NightscoutProfileStore as NightscoutProfileStoreT } from '../models/nightscout.js'
 import { AutotuneConfig, AutotuneErrorType, AutotuneJob as AutotuneJobT, JobId, SmoothingLevel } from '../models/job.js'
 import { AutotuneResult, BasalRecommendation, PostProcessType } from '../services/recommendationsParser.js'
 
+type NightscoutProfileStore = typeof NightscoutProfileStoreT.infer
 type SmoothingLevel = typeof AutotuneJobT.infer.settings.basal_smoothing
 const smoothingOptions = {
     low: { 
@@ -121,11 +124,7 @@ export class NightscoutDao {
      * @returns Whether the Nightscout API could be accessed.
      */
     async verify(url: URL, token?: string): Promise<boolean> {
-        const statusUrl = new URL('/api/v1/status.json', url)
-
-        if (token) {
-            statusUrl.searchParams.append('token', await hash_access_token(token))
-        }
+        const statusUrl = await addToken(new URL('/api/v1/status.json', url), token)
 
         try {
             const response = await fetch(statusUrl)
@@ -142,16 +141,25 @@ export class NightscoutDao {
         return false;
     }
 
-    async profiles(nsUrl: URL, token?: string): Promise<any> {
-        const url = await addToken(new URL("api/v1/profile.json", nsUrl), token)
+    async profiles(nsUrl: URL, token?: string): Promise<NightscoutProfileStore> {
+        const url = await addToken(new URL("api/v1/profile.json?count=1", nsUrl), token)
 
         try {
             const response = await fetch(url)
 
             if (response.ok) {
-                const body: Array<any> = await response.json() as any
-                return Promise.resolve(body[0])
-            } 
+                const body = await response.json() as any[]
+                const stores = NightscoutProfileStoreT.array()(body)
+
+                // Required for backwards compatibility
+                // TODO Remove after successfully running without errors for some time.
+                if (stores instanceof type.errors) {
+                    logger.error(`Falling back to lenient parsing: Cannot strictly parse response body into NightscoutProfileStore[]:\n${stores.summary}`)
+                    return Promise.resolve(body[0] as NightscoutProfileStore)
+                }
+
+                return Promise.resolve(stores[0])
+            }
 
             logger.warn(`Failed to fetch user profiles from ${nsUrl.href}: HTTP ${response.status}: ${response.statusText}`)
             return Promise.reject(new Error(`Failed to fetch user profiles: NS instance returned HTTP error status ${response.status}`))
@@ -171,7 +179,6 @@ export class NightscoutDao {
         const startDate = subDays(endDate, config.job.settings.autotune_days)
 
         // Prepare autotune working directory structure
-        // TODO have dir removed after run
         const tempdir = await fs.mkdtemp('/tmp/autotune')
         logger.debug(`[${config.job.nightscout_url}] Preparing oref0-autotune directory structure in ${tempdir}`)
         const settingsPath = join(tempdir, 'settings')
@@ -263,5 +270,30 @@ export class NightscoutDao {
             }
         })
 
+    }
+
+    /**
+     * Upload `profile` to the Nightscout site at `nsUrl`. This method returns a rejected
+     * promise if uploading the profile fails.
+     * 
+     * @param profile The Nightscout profile to upload.
+     * @param nsUrl The Nightscout site URL.
+     * @param token The optional Nightscout access token.
+     */
+    async addProfile(profile: NightscoutProfileStore, nsUrl: URL, token?: string): Promise<void> {
+        const url = await addToken(new URL("api/v1/profile", nsUrl), token)
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(profile)
+        })
+
+        if (response.ok) {
+            return Promise.resolve()
+        }
+
+        const msg = `Could not add profile to Nightscout site at ${nsUrl.href}: HTTP response code was ${response.status}`
+        logger.error(msg)
+        return Promise.reject(msg)
     }
 }
