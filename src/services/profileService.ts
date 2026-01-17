@@ -62,7 +62,7 @@ export class ProfileService {
         // Basal
         const basal = jobResults.find_basal()
         newProfile.basal = basal.map((b)=> {
-            const when = new TZDate(b.when)
+            const when = new TZDate(b.when, jobResults.options?.timeZone)
 
             // Return either smoothed- or regular recommendations based on parameters,
             // rounded to the next basal increment.
