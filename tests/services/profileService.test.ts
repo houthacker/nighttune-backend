@@ -30,5 +30,5 @@ test('Create a new profile from job results', (_) => {
     const profile = service.createProfileFromJobResults(profileName, profilesFromNightscout, parameters.settings.profile_name, new AutotuneResult(recommendations, options))
 
     const assert: AssertStrict = new Assert({ diff: 'full' })
-    assert.deepEqual(profile.store[profileName], expectedProfile.store[profileName])
+    assert.deepEqual(profile, expectedProfile)
 })

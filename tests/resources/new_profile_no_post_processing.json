@@ -2,8 +2,8 @@
     "_id": "6954e471176a2770620f0697",
     "defaultProfile": "Normaal 31-12-2025",
     "date": 1767171184071,
-    "created_at": "2026-01-14T14:35:21.810Z",
-    "startDate": "2025-12-31T08:53:00.000Z",
+    "created_at": "2026-01-14T14:35:21.810+01:00",
+    "startDate": "2025-12-31T08:53:00.000+01:00",
     "store": {
       "Normaal": {
         "dia": 5,
@@ -327,10 +327,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z",
+        "startDate": "1970-01-01T00:00:00.000+01:00",
         "units": "mmol"
       },
       "Vakantie": {
@@ -625,10 +625,10 @@
             "value": 6.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -952,10 +952,10 @@
             "value": 7
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -1279,10 +1279,10 @@
             "value": 7
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -1606,10 +1606,10 @@
             "value": 7
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -1933,10 +1933,10 @@
             "value": 7
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -2260,10 +2260,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -2587,10 +2587,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -2914,10 +2914,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -3241,10 +3241,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -3568,10 +3568,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -3895,10 +3895,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z"
+        "startDate": "1970-01-01T00:00:00.000+01:00"
       },
       "Normaal 31-12-2025": {
         "dia": 5,
@@ -4222,10 +4222,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z",
+        "startDate": "1970-01-01T00:00:00.000+01:00",
         "units": "mmol"
       },
       "Autotune": {
@@ -4440,10 +4440,10 @@
             "value": 5.5
           }
         ],
-        "timezone": "UTC",
+        "timezone": "Europe/Amsterdam",
         "carbs_hr": 20,
         "delay": 20,
-        "startDate": "1970-01-01T00:00:00.000Z",
+        "startDate": "1970-01-01T00:00:00.000+01:00",
         "units": "mmol"
       }
     },
