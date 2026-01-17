@@ -10,3 +10,38 @@ exceptions:
     id: dotenvx-command-execution
     name: 'dotenvx'
     version: 1.51.4
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: supports-color-8.1.1-maintenance
+    name: 'supports-color'
+    version: 8.1.1
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: supports-color-7.2.0-maintentance
+    name: 'supports-color'
+    version: 7.2.0
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: tslib-maintentance
+    name: 'tslib'
+    version: 2.8.1
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: sell-quote-maintentance
+    name: 'shell-quote'
+    version: 1.8.3
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: has-flag-maintentance
+    name: 'has-flag'
+    version: 4.0.0
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: rxjs-maintentance
+    name: 'rxjs'
+    version: 7.8.2
+  - ecosystem: npm
+    expires: "2026-06-01T00:00:00Z"
+    id: 'tree-kill-maintentance'
+    name: 'tree-kill'
+    version: 1.2.2
