@@ -332,7 +332,7 @@
                     "value": 5.5
                 }
             ],
-            "timezone": "Europe/London",
+            "timezone": "UTC",
             "carbs_hr": 20,
             "delay": 20,
             "startDate": "1970-01-01T00:00:00.000Z",
@@ -656,7 +656,7 @@
             },
             "min_5m_carbimpact": 8,
             "out_units": "mmol",
-            "timezone": "Europe/London"
+            "timezone": "UTC"
         }
     }
 }
