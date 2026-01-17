@@ -1,4 +1,4 @@
-import { readFile} from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { v4 as uuidv4 } from 'uuid'
 import { MailDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
@@ -13,7 +13,9 @@ import {
     JobExecutionError,
     JobId,
     JobMeta,
+    NoSuchJobError,
 } from '../models/job.js'
+import { ProfileService } from '../services/profileService.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
 import type { AutotuneError } from '../dao/nightscout.js'
@@ -61,10 +63,13 @@ export class JobController {
 
     private readonly mail: MailDao
 
-    constructor(sqlite: SqliteDao, nightscout: NightscoutDao, mail: MailDao) {
+    private readonly profileService: ProfileService
+
+    constructor(sqlite: SqliteDao, nightscout: NightscoutDao, mail: MailDao, profileService: ProfileService) {
         this.sqlite = sqlite
         this.nightscout = nightscout
         this.mail = mail
+        this.profileService = profileService
     }
 
     /**
@@ -116,6 +121,35 @@ export class JobController {
      */
     async result(url: URL, id: JobId): Promise<AutotuneResult | undefined> {
         return this.sqlite.result(url, id)
+    }
+
+    /**
+     * Create a new profile based on the results of the given job and upload it 
+     * to the related Nightscout instance.
+     * 
+     * This will *not* set the profile as the new default, users must explicitly
+     * select a profile that was created by Nighttune.
+     * 
+     * @param name The profile name. Must be unique within the current profile store.
+     * @param id The job id containing the settings to base the new profile on.
+     * @param url The URL of the Nightscout instance.
+     * @param token The optional Nightscout access token.
+     * 
+     * @throws `NoSuchJobError` If no job with `id` exists for the given `url`.
+     * @throws `NoSuchProfileError` If the profile used to execute the job doesn't exist anymore.
+     * @throws `ProfileAlreadyExistsError` If a profile with `name` already exists.
+     */
+    async createAndUploadProfile(name: string, id: JobId, url: URL, token?: string) {
+        const jobResults = this.sqlite.result(url, id)
+        if (jobResults === undefined) {
+            throw new NoSuchJobError(id, `No such job ${id} with Nightscout URL ${url ? url.href : 'undefined'}`)
+        }
+
+        // Retrieve the job parameters as well, since it contains the profile name used at the time.
+        const parameters = this.sqlite.parameters(url, id)
+        const profileStore = await this.nightscout.profiles(url, token)
+        const profile = this.profileService.createProfileFromJobResults(name, profileStore, parameters!.settings.profile_name, jobResults, undefined /* Do not apply smoothing */)
+        await this.nightscout.addProfile(profile, url, token)
     }
 
     /**

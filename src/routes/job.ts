@@ -5,20 +5,23 @@ import { type } from 'arktype'
 import cors from 'cors'
 import { Router } from 'express'
 
+
 import { JobController } from '../controllers/jobController.js'
 import { getSession } from '../controllers/sessionController.js'
 import { MailjetDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
-import { AutotuneJob, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError } from '../models/job.js'
+import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
+import { ProfileService } from '../services/profileService.js'
+import { NoSuchProfileError, ProfileAlreadyExistsError } from 'src/models/nightscout.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
     credentials: true,
 }
 const router = Router()
-const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao())
+const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao(), new ProfileService())
 
 // All requests must have the session cookie, have passed the captcha- and Nightscout access test.
 router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
@@ -80,6 +83,34 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
     } catch (error) {
         logger.error(`Error retrieving results of job '${request.params.id}' at Nightscout URL ${session.verifiedNightscoutUrl!}:\n${JSON.stringify(error)}`)
         response.status(500).json({message: 'Error while retrieving job results.'})
+    }
+})
+
+router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Request, response: Response) => {
+    const session = await getSession(request, response)
+    const createProfileRequest = CreateProfileRequest(request.body)
+    if (createProfileRequest instanceof type.errors) {
+        logger.warn(`Request body not accepted: ${createProfileRequest.summary}`)
+        response.status(400).json({ message: createProfileRequest.summary })
+    } else {
+
+        try {
+            await controller.createAndUploadProfile(createProfileRequest.name, request.params.id, new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
+        } catch (error: any) {
+            if (error instanceof NoSuchJobError) {
+                logger.error(`Cannot create profile for job ${request.params.id}: ${error.message}`)
+                response.status(404).json({message: `No such job ${request.params.id}`})
+            } else if (error instanceof NoSuchProfileError) {
+                logger.error(`Cannot create profile for job ${request.params.id}:\nProfile ${error.profileName} used to run job missing from store.`)
+                response.status(410).json({message: `Autotune job profile ${error.profileName} missing from store.`})
+            } else if (error instanceof ProfileAlreadyExistsError) {
+                logger.error(`Cannot create profile for job ${request.params.id}: A profile named ${error.profileName} already exists.`)
+                response.status(409).json({message: `A profile named ${error.profileName} already exists.`})
+            } else {
+                logger.error(`Error while creating a new profile at ${session.verifiedNightscoutUrl!} for job ${request.params.id}:\n${JSON.stringify(error)}`)
+                response.status(500).json({message: 'Error while creating profile.'})
+            }
+        }
     }
 })
 
