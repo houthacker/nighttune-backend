@@ -2,7 +2,7 @@ import { parseJSON } from 'date-fns'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { test } from 'node:test'
-import { strict as assert }  from 'node:assert'
+import { Assert, AssertStrict }  from 'node:assert'
 
 import { NightscoutProfileStore } from '../../src/models/nightscout.js'
 import { AutotuneJob as AutotuneJobT } from '../../src/models/job.js'
@@ -28,5 +28,6 @@ test('Create a new profile from job results', (_) => {
     const {options, recommendations} = jsonFixture('job_results.json') as {options: AutotuneOptions | undefined, recommendations: Recommendation[]}
     const profile = service.createProfileFromJobResults("Autotune", profilesFromNightscout, parameters.settings.profile_name, new AutotuneResult(recommendations, options))
 
+    const assert: AssertStrict = new Assert({ diff: 'full' })
     assert.deepEqual(profile, expectedProfile)
 })
