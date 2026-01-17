@@ -79,6 +79,8 @@ export class ProfileService {
                 timeAsSeconds: when.getHours() * 3600 + when.getMinutes() * 60 + when.getSeconds(),
                 value: basalValue(),
             }
+        }).sort((a, b) => {
+            return a.timeAsSeconds - b.timeAsSeconds
         })
 
         // Copy current store and add profile to it.
