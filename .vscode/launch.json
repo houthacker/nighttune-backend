@@ -5,18 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug nighttune-backend",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "name": "nodemon",
             "envFile": "${workspaceFolder}/.env.development.local",
-            "runtimeVersion": "25",
+            "request": "launch",
+            "restart": true,
+            "runtimeExecutable": "concurrently",
+            "args": [
+                "\"npx tsc --watch\"",
+                "\"nodemon ${workspaceFolder}/build/main.js\""
+            ],
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/build/main.js",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+            "type": "node"
         }
     ]
 }
