@@ -2,12 +2,12 @@ import sqlite from 'better-sqlite3'
 import { strict as assert } from 'node:assert'
 
 import { tz } from '@date-fns/tz'
+import { type } from 'arktype'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
-import { GDPRUserData } from '../models/gdpr.js'
 import logger from '../logger.js'
+import { GDPRUserData } from '../models/gdpr.js'
 import { AutotuneErrorType, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
-import { type } from 'arktype'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -313,14 +313,7 @@ export class SqliteDao {
         )
 
         return all.map((row) => {
-            const parameters = JSON.parse(row.parameters) as AutotuneOptions
-
-            return new JobMeta(
-                row.uuid, 
-                row.state as JobMeta['status'], 
-                fromUnixTime(row.submit_ts, {
-                    in: tz(parameters.timeZone)
-                }))
+            return SqliteDao.jobFromRow(row)
         })
     }
 
