@@ -328,7 +328,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z",
@@ -626,7 +626,7 @@
             "value": 6.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -953,7 +953,7 @@
             "value": 7
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -1280,7 +1280,7 @@
             "value": 7
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -1607,7 +1607,7 @@
             "value": 7
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -1934,7 +1934,7 @@
             "value": 7
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -2261,7 +2261,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -2588,7 +2588,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -2915,7 +2915,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -3242,7 +3242,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -3569,7 +3569,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -3896,7 +3896,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z"
@@ -4223,7 +4223,7 @@
             "value": 5.5
           }
         ],
-        "timezone": "Europe/Amsterdam",
+        "timezone": "Europe/London",
         "carbs_hr": 20,
         "delay": 20,
         "startDate": "1970-01-01T00:00:00.000Z",
@@ -4569,7 +4569,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -4864,7 +4864,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -5189,7 +5189,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -5514,7 +5514,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -5839,7 +5839,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -6164,7 +6164,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -6489,7 +6489,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -6814,7 +6814,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -7139,7 +7139,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -7464,7 +7464,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -7789,7 +7789,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -8114,7 +8114,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 31-12-2025": {
         "dia": 5,
@@ -8439,7 +8439,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -8779,7 +8779,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -9074,7 +9074,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -9399,7 +9399,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -9724,7 +9724,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -10049,7 +10049,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -10374,7 +10374,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -10699,7 +10699,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -11024,7 +11024,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -11349,7 +11349,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -11674,7 +11674,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -11999,7 +11999,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -12324,7 +12324,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 31-12-2025": {
         "dia": 5,
@@ -12649,7 +12649,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -12989,7 +12989,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -13284,7 +13284,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -13609,7 +13609,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -13934,7 +13934,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -14259,7 +14259,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -14584,7 +14584,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -14909,7 +14909,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -15234,7 +15234,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -15559,7 +15559,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -15884,7 +15884,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -16209,7 +16209,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -16534,7 +16534,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025 copy": {
         "dia": 5,
@@ -16859,7 +16859,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -17199,7 +17199,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -17494,7 +17494,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -17819,7 +17819,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -18144,7 +18144,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -18469,7 +18469,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -18794,7 +18794,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -19119,7 +19119,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -19444,7 +19444,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -19769,7 +19769,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -20094,7 +20094,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -20419,7 +20419,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -20744,7 +20744,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -21084,7 +21084,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -21379,7 +21379,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -21704,7 +21704,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -22029,7 +22029,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -22354,7 +22354,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -22679,7 +22679,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -23004,7 +23004,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -23329,7 +23329,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -23654,7 +23654,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -23979,7 +23979,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -24304,7 +24304,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -24629,7 +24629,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025 copy": {
         "dia": 5,
@@ -24954,7 +24954,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -25294,7 +25294,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -25589,7 +25589,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -25914,7 +25914,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -26239,7 +26239,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -26564,7 +26564,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -26889,7 +26889,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -27214,7 +27214,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -27539,7 +27539,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -27864,7 +27864,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -28189,7 +28189,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -28514,7 +28514,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -28839,7 +28839,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -29179,7 +29179,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -29474,7 +29474,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -29799,7 +29799,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -30124,7 +30124,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -30449,7 +30449,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -30774,7 +30774,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -31099,7 +31099,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -31424,7 +31424,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -31749,7 +31749,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -32074,7 +32074,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -32399,7 +32399,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 6,
@@ -32724,7 +32724,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -33064,7 +33064,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -33359,7 +33359,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -33684,7 +33684,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -34009,7 +34009,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -34334,7 +34334,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -34659,7 +34659,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -34984,7 +34984,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -35309,7 +35309,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -35634,7 +35634,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -35959,7 +35959,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -36284,7 +36284,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -36609,7 +36609,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",
@@ -36949,7 +36949,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Vakantie": {
         "dia": 5,
@@ -37244,7 +37244,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "at-2025-02-08": {
         "dia": 6,
@@ -37569,7 +37569,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 06-06-2025": {
         "dia": 5,
@@ -37894,7 +37894,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 22-06-2025": {
         "dia": 5,
@@ -38219,7 +38219,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 09-09-2025": {
         "dia": 5,
@@ -38544,7 +38544,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 19-09-2025": {
         "dia": 5,
@@ -38869,7 +38869,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 05-11-2025": {
         "dia": 5,
@@ -39194,7 +39194,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 07-11-2025": {
         "dia": 5,
@@ -39519,7 +39519,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 10-11-2025": {
         "dia": 5,
@@ -39844,7 +39844,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 11-11-2025": {
         "dia": 5,
@@ -40169,7 +40169,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       },
       "Normaal 24-11-2025": {
         "dia": 5,
@@ -40494,7 +40494,7 @@
           }
         ],
         "units": "mmol",
-        "timezone": "Europe/Amsterdam"
+        "timezone": "Europe/London"
       }
     },
     "app": "AAPS",

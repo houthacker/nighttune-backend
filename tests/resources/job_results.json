@@ -6,7 +6,7 @@
         "dateTo": "2026-01-12T00:00:00.000+01:00",
         "uam": true,
         "autotuneVersion": "0.7.1",
-        "timeZone": "Europe/Amsterdam",
+        "timeZone": "Europe/London",
         "basalIncrement": 0.01,
         "basalSmoothing": "medium"
     },
