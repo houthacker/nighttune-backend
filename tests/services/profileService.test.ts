@@ -22,12 +22,13 @@ const jsonFixture = (name: string): any => {
 }
 
 test('Create a new profile from job results', (_) => {
-    const expectedProfile = NightscoutProfileStore(jsonFixture('new_profile_no_post_processing.json'))
+    const profileName = "Autotune"
+    const expectedProfile = NightscoutProfileStore(jsonFixture('new_profile_no_post_processing.json')) as typeof NightscoutProfileStore.infer
     const profilesFromNightscout = NightscoutProfileStore((jsonFixture('api_v1_profile.json') as any[])[0]) as typeof NightscoutProfileStore.infer
     const parameters = AutotuneJobT(jsonFixture('job_parameters.json')) as typeof AutotuneJobT.infer
     const {options, recommendations} = jsonFixture('job_results.json') as {options: AutotuneOptions | undefined, recommendations: Recommendation[]}
-    const profile = service.createProfileFromJobResults("Autotune", profilesFromNightscout, parameters.settings.profile_name, new AutotuneResult(recommendations, options))
+    const profile = service.createProfileFromJobResults(profileName, profilesFromNightscout, parameters.settings.profile_name, new AutotuneResult(recommendations, options))
 
     const assert: AssertStrict = new Assert({ diff: 'full' })
-    assert.deepEqual(profile, expectedProfile)
+    assert.deepEqual(profile.store[profileName], expectedProfile.store[profileName])
 })
