@@ -1,0 +1,409 @@
+{
+    "options": {
+        "jobId": "b88be541-36b5-4a9c-bb1f-c3c173a68cd8",
+        "nsHost": "https://nightscout.url",
+        "dateFrom": "2026-01-05T00:00:00.000+01:00",
+        "dateTo": "2026-01-12T00:00:00.000+01:00",
+        "uam": true,
+        "autotuneVersion": "0.7.1",
+        "timeZone": "Europe/Amsterdam",
+        "basalIncrement": 0.01,
+        "basalSmoothing": "medium"
+    },
+    "recommendations": [
+        {
+            "type": "ISF",
+            "currentValue": 6,
+            "recommendedValue": 8.14
+        },
+        {
+            "type": "CR",
+            "currentValue": 11,
+            "recommendedValue": 11.035
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.25,
+            "recommendedValue": 0.3,
+            "when": "2026-01-13T00:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.3040144478844169
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.24,
+            "recommendedValue": 0.288,
+            "when": "2026-01-13T01:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.2860646284829722
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.24,
+            "recommendedValue": 0.288,
+            "when": "2026-01-13T02:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.2791478328173374
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.24,
+            "recommendedValue": 0.288,
+            "when": "2026-01-13T03:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.29015105779153777
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.27,
+            "recommendedValue": 0.326,
+            "when": "2026-01-13T04:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.3200158371040724
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.31,
+            "recommendedValue": 0.364,
+            "when": "2026-01-13T05:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.3651174386758752
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.35,
+            "recommendedValue": 0.376,
+            "when": "2026-01-13T06:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.41864406207827254
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.41,
+            "recommendedValue": 0.492,
+            "when": "2026-01-13T07:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.471976035960943
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.45,
+            "recommendedValue": 0.524,
+            "when": "2026-01-13T08:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.5160650154798762
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.48,
+            "recommendedValue": 0.553,
+            "when": "2026-01-13T09:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.535323648487735
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.49,
+            "recommendedValue": 0.562,
+            "when": "2026-01-13T10:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.5334698737794711
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.47,
+            "recommendedValue": 0.543,
+            "when": "2026-01-13T11:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.5110416765896642
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.42,
+            "recommendedValue": 0.426,
+            "when": "2026-01-13T12:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.4749788044772566
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.35,
+            "recommendedValue": 0.417,
+            "when": "2026-01-13T13:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.43225529888068576
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.32,
+            "recommendedValue": 0.384,
+            "when": "2026-01-13T14:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.39114979757085017
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.32,
+            "recommendedValue": 0.384,
+            "when": "2026-01-13T15:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.37275994284353414
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.32,
+            "recommendedValue": 0.384,
+            "when": "2026-01-13T16:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.37155576724616973
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.32,
+            "recommendedValue": 0.384,
+            "when": "2026-01-13T17:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.38657616892911006
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.34,
+            "recommendedValue": 0.409,
+            "when": "2026-01-13T18:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.4138472255298881
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.37,
+            "recommendedValue": 0.444,
+            "when": "2026-01-13T19:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.44568651266174486
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.39,
+            "recommendedValue": 0.467,
+            "when": "2026-01-13T20:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.4703710010319917
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.4,
+            "recommendedValue": 0.48,
+            "when": "2026-01-13T21:00:00.000+01:00",
+            "daysMissing": 3,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.4718049535603715
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.36,
+            "recommendedValue": 0.424,
+            "when": "2026-01-13T22:00:00.000+01:00",
+            "daysMissing": 2,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.42918782249742005
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "BASAL",
+            "currentValue": 0.25,
+            "recommendedValue": 0.318,
+            "when": "2026-01-13T23:00:00.000+01:00",
+            "daysMissing": 4,
+            "postProcessed": {
+                "dt": "Map",
+                "v": [
+                    [
+                        "SMOOTH",
+                        0.31668214654282767
+                    ]
+                ]
+            }
+        }
+    ]
+}
