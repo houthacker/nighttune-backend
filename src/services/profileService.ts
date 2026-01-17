@@ -1,4 +1,5 @@
 import { format } from 'date-fns'
+import { TZDate } from '@date-fns/tz'
 
 import { NightscoutProfile, NightscoutProfileStore as NightscoutProfileStoreT, NightscoutProfile as NightscoutProfileT, NoSuchProfileError, ProfileAlreadyExistsError } from '../models/nightscout.js'
 import { AutotuneResult, PostProcessType, roundToNext } from './recommendationsParser.js'
@@ -61,7 +62,7 @@ export class ProfileService {
         // Basal
         const basal = jobResults.find_basal()
         newProfile.basal = basal.map((b)=> {
-            const when = b.when
+            const when = new TZDate(b.when)
 
             // Return either smoothed- or regular recommendations based on parameters,
             // rounded to the next basal increment.
