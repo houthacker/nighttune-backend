@@ -265,7 +265,12 @@ export class SqliteDao {
              WHERE `jobs`.`uuid` = @uuid\
              AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
-        return row === undefined ? undefined : JSON.parse(row.recommendations, POST_PROCESSING_REVIVER) as AutotuneResult
+        if (row === undefined) {
+            return undefined
+        }
+
+        const obj = JSON.parse(row!.recommendations, POST_PROCESSING_REVIVER)
+        return new AutotuneResult(obj.recommendations, obj.options)
     }
 
     /**
@@ -283,7 +288,7 @@ export class SqliteDao {
             AND `jobs`.`ns_url` = @url', { url: url.href, uuid })
 
         if (row) {
-            const parameters = AutotuneJobT(row!.parameters)
+            const parameters = AutotuneJobT(JSON.parse(row!.parameters))
             if (parameters instanceof type.errors) {
                 logger.error(`Cannot parse job[${uuid}].parameters into AutotuneJob:\n${parameters.summary}`)
                 throw new Error('Cannot parse job parameters into AutotuneJob')

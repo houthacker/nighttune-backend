@@ -8,13 +8,12 @@
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "name": "nodemon",
-            "envFile": "${workspaceFolder}/.env.development.local",
             "request": "launch",
             "restart": true,
             "runtimeExecutable": "concurrently",
             "args": [
                 "\"npx tsc --watch\"",
-                "\"nodemon ${workspaceFolder}/build/main.js\""
+                "\"nodemon --env-file ${workspaceFolder}/.env.development.local ${workspaceFolder}/build/main.js\""
             ],
             "skipFiles": [
                 "<node_internals>/**"

@@ -1,6 +1,13 @@
 import { type } from 'arktype'
 import { Unit } from './job.js'
 
+export class UnauthorizedError extends Error {
+    
+    constructor(message: string, cause?: any) {
+        super(message, { cause })
+    }
+}
+
 export class NoSuchProfileError extends Error {
     public readonly profileName: string
 
