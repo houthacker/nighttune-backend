@@ -5,23 +5,23 @@ import { type } from 'arktype'
 import cors from 'cors'
 import { Router } from 'express'
 
-
 import { JobController } from '../controllers/jobController.js'
 import { getSession } from '../controllers/sessionController.js'
 import { MailjetDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
+import { NightscoutApiV1 } from '../dao/nightscout/v1.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
-import { ProfileService } from '../services/profileService.js'
 import { NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
+import { ProfileService } from '../services/profileService.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
     credentials: true,
 }
 const router = Router()
-const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(), new MailjetDao(), new ProfileService())
+const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(new NightscoutApiV1()), new MailjetDao(), new ProfileService())
 
 // All requests must have the session cookie, have passed the captcha- and Nightscout access test.
 router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
@@ -96,6 +96,7 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
 
         try {
             await controller.createAndUploadProfile(createProfileRequest.name, request.params.id, new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
+            response.status(200).end()
         } catch (error: any) {
             if (error instanceof UnauthorizedError) {
                 logger.error(`Uploading profile for job ${request.params.id} failed: Unauthorized.`)

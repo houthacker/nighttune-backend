@@ -147,9 +147,9 @@ export class JobController {
 
         // Retrieve the job parameters as well, since it contains the profile name used at the time.
         const parameters = this.sqlite.parameters(url, id)
-        const profileStore = await this.nightscout.profiles(url, token)
+        const profileStore = await this.nightscout.profileStore(url, token)
         const profile = this.profileService.createProfileFromJobResults(name, profileStore, parameters!.settings.profile_name, jobResults, undefined /* Do not apply smoothing */)
-        await this.nightscout.addProfile(profile, url, token)
+        await this.nightscout.createProfile(profile, url, token)
     }
 
     /**
