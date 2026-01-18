@@ -14,7 +14,7 @@ import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
 import { ProfileService } from '../services/profileService.js'
-import { NoSuchProfileError, ProfileAlreadyExistsError } from '../models/nightscout.js'
+import { NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -97,7 +97,10 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
         try {
             await controller.createAndUploadProfile(createProfileRequest.name, request.params.id, new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
         } catch (error: any) {
-            if (error instanceof NoSuchJobError) {
+            if (error instanceof UnauthorizedError) {
+                logger.error(`Uploading profile for job ${request.params.id} failed: Unauthorized.`)
+                response.status(401).json({message: 'Unauthorized. Maybe you\'re using a read-only token?'})
+            } else if (error instanceof NoSuchJobError) {
                 logger.error(`Cannot create profile for job ${request.params.id}: ${error.message}`)
                 response.status(404).json({message: `No such job ${request.params.id}`})
             } else if (error instanceof NoSuchProfileError) {
@@ -107,7 +110,7 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
                 logger.error(`Cannot create profile for job ${request.params.id}: A profile named ${error.profileName} already exists.`)
                 response.status(409).json({message: `A profile named ${error.profileName} already exists.`})
             } else {
-                logger.error(`Error while creating a new profile at ${session.verifiedNightscoutUrl!} for job ${request.params.id}:\n${JSON.stringify(error)}`)
+                logger.error(`Error while creating a new profile at ${session.verifiedNightscoutUrl!} for job ${request.params.id}:\n${error.message}`)
                 response.status(500).json({message: 'Error while creating profile.'})
             }
         }

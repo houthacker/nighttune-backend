@@ -4,13 +4,29 @@ import { sgg } from 'ml-savitzky-golay-generalized'
 import { spawn } from 'node:child_process'
 import { subtle } from 'node:crypto'
 import fs from 'node:fs/promises'
+import fsSync from 'node:fs'
 import { join } from 'node:path'
 import { type } from 'arktype'
 
 import logger from '../logger.js'
-import { NightscoutProfileStore as NightscoutProfileStoreT } from '../models/nightscout.js'
+import { NightscoutProfileStore as NightscoutProfileStoreT, UnauthorizedError } from '../models/nightscout.js'
 import { AutotuneConfig, AutotuneErrorType, AutotuneJob as AutotuneJobT, JobId, SmoothingLevel } from '../models/job.js'
 import { AutotuneResult, BasalRecommendation, PostProcessType } from '../services/recommendationsParser.js'
+
+const shell_executable = (): string => {
+    const shell = process.env.SHELL!
+
+    try {
+        const stat = fsSync.statSync(shell)
+        if (stat.isFile()) {
+            return shell
+        }
+
+        throw new Error(`No such shell ${shell}`)
+    } catch (error: any) {
+        throw new Error(`stat() failed: ${error.message}`)
+    }
+}
 
 type NightscoutProfileStore = typeof NightscoutProfileStoreT.infer
 type SmoothingLevel = typeof AutotuneJobT.infer.settings.basal_smoothing
@@ -116,6 +132,14 @@ const findAutotuneLogFile = async (tempdir: string): Promise<string | undefined>
 
 export class NightscoutDao {
 
+    private readonly shell: string
+
+    constructor() {
+        // If there is no shell in the $SHELL env variable, calling
+        // this method here will prevent nighttune-backend from starting up.
+        this.shell = shell_executable()
+    }
+
     /**
      * Verifies whether the Nightscout API can be accessed using the given url and optional token.
      * 
@@ -203,11 +227,12 @@ export class NightscoutDao {
             `--end-date=${format(endDate, 'yyyy-MM-dd')}`,
             `--categorize-uam-as-basal=${config.job.settings.uam_as_basal}`
         ]
+
         const oref0_autotune = spawn(`${command} ${flags.join(' ')}`,
         {
             detached: true,
             env: {...process.env, 'API_SECRET': token},
-            shell: '/usr/bin/bash',
+            shell: this.shell,
             stdio: ['pipe', 'ignore', 'pipe'],
             timeout: 5 * 60 * 1000
         })
@@ -279,10 +304,12 @@ export class NightscoutDao {
      * @param profile The Nightscout profile to upload.
      * @param nsUrl The Nightscout site URL.
      * @param token The optional Nightscout access token.
+     * 
+     * @throws `UnauthorizedError` if the Nightscout site returns an HTTP 401 status
+     * @throws `Error` In all other error cases.
      */
     async addProfile(profile: NightscoutProfileStore, nsUrl: URL, token?: string): Promise<void> {
         const url = await addToken(new URL("api/v1/profile", nsUrl), token)
-
         const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(profile)
@@ -292,8 +319,12 @@ export class NightscoutDao {
             return Promise.resolve()
         }
 
-        const msg = `Could not add profile to Nightscout site at ${nsUrl.href}: HTTP response code was ${response.status}`
-        logger.error(msg)
-        return Promise.reject(msg)
+        switch (response.status) {
+            case 401: throw new UnauthorizedError(nsUrl.href)
+            default:
+                const msg = `Could not add profile to Nightscout site at ${nsUrl.href}: HTTP response code was ${response.status}`
+                logger.error(msg)
+                return Promise.reject(new Error(msg))
+        }
     }
 }

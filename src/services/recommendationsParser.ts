@@ -185,7 +185,7 @@ export class AutotuneResult {
 
     private readonly recommendations: Recommendation[]
 
-    constructor(recommendations: Recommendation[], options: AutotuneOptions | undefined) {
+    constructor(recommendations: Recommendation[], options?: AutotuneOptions) {
         this.options = options
         this.recommendations = recommendations;
     }
