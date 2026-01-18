@@ -83,8 +83,8 @@ export class ProfileService {
             return a.timeAsSeconds - b.timeAsSeconds
         })
 
-        // Copy current store and add profile to it.
-        const newStore = {...profileStore} as NightscoutProfileStore
+        // Copy current store and add profile to it. Remove the id to ensure a new id will be asssigned.
+        const {_id, ...newStore} = {...profileStore} as NightscoutProfileStore
         newStore.store[name] = newProfile
 
         return newStore
