@@ -1,5 +1,9 @@
 import { type } from 'arktype'
-import { Unit } from './job.js'
+import { AutotuneErrorType, Unit, JobId, AutotuneConfig } from './job.js'
+import { AutotuneResult } from '../services/recommendationsParser.js'
+
+export type AutotuneError = { data: { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }, autotuneLogFile: string | undefined }
+export type AutotuneCallback = ( error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
 
 export class UnauthorizedError extends Error {
     
@@ -45,11 +49,11 @@ export const NightscoutProfile = type({
 
     timezone: "string",
 
-    carbs_hr: "number >= 0",
+    "carbs_hr?": "number >= 0",
 
-    delay: "20",
+    "delay?": "number",
 
-    startDate: "string",
+    "startDate?": "string",
 
     "units?": Unit,
 
@@ -65,7 +69,7 @@ export const NightscoutProfile = type({
 })
 
 export const NightscoutProfileStore  = type({
-    _id: "string",
+    "_id?": "string",
 
     defaultProfile: "string",
 
@@ -87,9 +91,54 @@ export const NightscoutProfileStore  = type({
 
     subject: "string",
 
-    mills: "number.integer",
+    "mills?": "number.integer",
 
-    units: Unit,
+    "units?": Unit,
 
     store: type({"[string]": NightscoutProfile}),
 })
+
+export interface NightscoutApi {
+
+    /**
+     * Verifies whether the Nightscout API can be accessed using the given url and optional token.
+     * 
+     * @param url The Nightscout base url.
+     * @param token The optional access token. Required if the Nightscout instance is locked down.
+     * @returns Whether the Nightscout API could be accessed.
+     */
+    verify(url: URL, token?: string): Promise<boolean>
+
+    /**
+     * Retrieve the latest Nightscout profile store.
+     * 
+     * @param url The Nightscout base url.
+     * @param token The optional access token. Required if the Nightscout instance is locked down.
+     * @returns The Nightscout profile store.
+     * @throws `Error` If an error occurs while querying the Nightscout API
+     */
+    profileStore(url: URL, token?: string): Promise<typeof NightscoutProfileStore.infer>
+
+    /**
+     * Run autotune using the given configuration.
+     * 
+     * **Note:** This always uses the Nightscout v1 api.
+     * 
+     * @param config The autotune configuration
+     * @return The autotune result.
+     */
+    autotune(config: AutotuneConfig, callback: AutotuneCallback): Promise<void>
+
+    /**
+     * Upload `profile` to the Nightscout site . This method returns a rejected
+     * promise if uploading the profile fails.
+     * 
+     * @param profile The Nightscout profile to upload.
+     * @param nsUrl The Nightscout site URL.
+     * @param token The optional Nightscout access token.
+     * 
+     * @throws `UnauthorizedError` if the Nightscout site returns an HTTP 401 status
+     * @throws `Error` In all other error cases.
+     */
+    createProfile(profile: typeof NightscoutProfileStore.infer, url: URL, token?: string): Promise<void>
+}

@@ -3,6 +3,7 @@ import { Router } from 'express'
 import { type } from 'arktype'
 
 import { NightscoutDao } from '../dao/nightscout.js'
+import { NightscoutApiV1 } from '../dao/nightscout/v1.js'
 import { VerificationRequest } from '../models/verify.js'
 import { getSession } from '../controllers/sessionController.js'
 
@@ -14,7 +15,7 @@ const corsOptions: CorsOptions = {
     credentials: true,
 }
 
-const nightscout = new NightscoutDao()
+const nightscout = new NightscoutDao(new NightscoutApiV1())
 const router = Router()
 
 // CORS preflight

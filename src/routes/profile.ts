@@ -2,6 +2,7 @@ import cors from 'cors'
 import { Router } from 'express'
 
 import { NightscoutDao } from '../dao/nightscout.js'
+import { NightscoutApiV1 } from '../dao/nightscout/v1.js'
 import { getSession } from '../controllers/sessionController.js'
 
 import type { Request, Response } from 'express'
@@ -12,7 +13,7 @@ const corsOptions: CorsOptions = {
     credentials: true,
 }
 
-const nightscout = new NightscoutDao()
+const nightscout = new NightscoutDao(new NightscoutApiV1())
 const router = Router()
 
 // CORS preflight
@@ -26,7 +27,7 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         response.status(407 /* Proxy Authentication Required */).json({message: 'Please verify your Nightscout site first.'})
     } else {
         try {
-            const profiles = await nightscout.profiles(new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
+            const profiles = await nightscout.profileStore(new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
             response.status(200).json(profiles)
         } catch (error: any) {
             response.status(500).json({ message: error.message})
