@@ -6,7 +6,7 @@
     "@dotenvx/dotenvx": "^1.51.2",
     "@tsconfig/node24": "^24.0.3",
     "arktype": "^2.1.29",
-    "better-sqlite3": "^12.6.0",
+    "better-sqlite3": "^12.6.2",
     "compression": "^1.8.1",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
