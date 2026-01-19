@@ -159,6 +159,7 @@ export class SqliteDao {
         return new JobMeta(
             row.uuid, 
             row.state as JobMeta['status'], 
+            parameters.basalSmoothing as any,
             fromUnixTime(row.submit_ts, {
                 in: tz(parameters.timeZone)
             }),

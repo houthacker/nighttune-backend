@@ -1,9 +1,10 @@
-import { TZDate } from '@date-fns/tz';
-import { type } from 'arktype';
+import { TZDate } from '@date-fns/tz'
+import { type } from 'arktype'
 
 export const InsulinType = "'rapid-acting' | 'ultra-rapid' | '__default__'"
 export const Unit = "'mg/dl' | 'mg/dL' | 'mmol' | 'mmol/l' | 'mmol/L'"
-export const SmoothingLevel = "'none' | 'low' | 'medium' | 'high'"
+const SmoothingLevel = "'none' | 'low' | 'medium' | 'high'"
+
 
 export const POST_PROCESSING_REPLACER = (k: any, v: any): any => {
     if (v instanceof Map) {
@@ -379,6 +380,11 @@ export class JobMeta {
     public readonly status: 'submitted' | 'processing' | 'error' | 'finished'
 
     /**
+     * The used level of smoothing.
+     */
+    public readonly smoothing: typeof AutotuneJob.infer.settings.basal_smoothing
+
+    /**
      * The time at which the job was submitted, in the profile time zone.
      */
     public readonly submittedAt: TZDate
@@ -388,9 +394,10 @@ export class JobMeta {
      */
     public readonly doneAt: TZDate | undefined
 
-    constructor(id: JobId, status: typeof this.status, submittedAt: TZDate, doneAt: TZDate | undefined = undefined) {
+    constructor(id: JobId, status: typeof this.status, smoothing: typeof this.smoothing, submittedAt: TZDate, doneAt: TZDate | undefined = undefined) {
         this.id = id
         this.status = status
+        this.smoothing = smoothing
         this.submittedAt = submittedAt
         this.doneAt = doneAt
     }
