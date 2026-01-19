@@ -6,7 +6,7 @@ import { type } from 'arktype'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
 import logger from '../logger.js'
 import { GDPRUserData } from '../models/gdpr.js'
-import { AutotuneErrorType, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
+import { AutotuneErrorType, AutotuneJob, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
@@ -154,17 +154,17 @@ export class SqliteDao {
      * Converts a row from the `jobs` table to a JobMeta instance.
      */
     private static jobFromRow(row: JobRow): JobMeta {
-        const parameters = JSON.parse(row.parameters) as AutotuneOptions
+        const parameters = AutotuneJobT(JSON.parse(row.parameters)) as AutotuneJob
 
         return new JobMeta(
             row.uuid, 
             row.state as JobMeta['status'], 
-            parameters.basalSmoothing as any,
+            parameters.settings.basal_smoothing,
             fromUnixTime(row.submit_ts, {
-                in: tz(parameters.timeZone)
+                in: tz(parameters.settings.oaps_profile_data.timezone)
             }),
             row.done_ts ? fromUnixTime(row.done_ts, {
-                in: tz(parameters.timeZone)
+                in: tz(parameters.settings.oaps_profile_data.timezone)
             }) : undefined
         )
     }
