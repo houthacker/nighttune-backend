@@ -49,9 +49,11 @@ export const NightscoutProfile = type({
 
     timezone: "string",
 
-    "carbs_hr?": "number >= 0",
+    "carbs_hr?": type("string.numeric.parse | number").narrow((n, ctx) => 
+        n < 0 ? ctx.mustBe("positive") : true
+    ),
 
-    "delay?": "number",
+    "delay?": "string.numeric.parse | number",
 
     "startDate?": "string",
 
@@ -73,25 +75,25 @@ export const NightscoutProfileStore  = type({
 
     defaultProfile: "string",
 
-    date: "number.integer > 0",
+    "date?": "number.integer > 0",
 
-    created_at: "string",
+    "created_at?": "string",
 
     startDate: "string",
 
-    app: "string",
+    "app?": "string",
 
-    utcOffset: "number.integer",
+    "utcOffset?": "number.integer",
 
-    identifier: "string",
+    "identifier?": "string",
 
     "srvModified?": "number.integer",
 
-    srvCreated: "number.integer",
+    "srvCreated?": "number.integer",
 
     subject: "string",
 
-    "mills?": "number.integer",
+    "mills?": "string.integer.parse | number.integer",
 
     "units?": Unit,
 
