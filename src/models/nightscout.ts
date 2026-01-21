@@ -91,7 +91,7 @@ export const NightscoutProfileStore  = type({
 
     "srvCreated?": "number.integer",
 
-    subject: "string",
+    "subject?": "string",
 
     "mills?": "string.integer.parse | number.integer",
 
