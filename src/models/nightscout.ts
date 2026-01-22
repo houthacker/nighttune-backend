@@ -37,7 +37,7 @@ export const TimedValue = type({
 
     timeAsSeconds: "number.integer >= 0",
 
-    value: "number >= 0",
+    value: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
     "minutes?": "number.integer >= 0",
 
