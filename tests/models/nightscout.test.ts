@@ -39,4 +39,10 @@ test('TimedValue', (_) => {
         timeAsSeconds: 0,
         value: 1.03
     }).value, 1.03, 'Expect TimedValue.value to be 1.03 when parsed from a number 1.03')
+
+    assert.equal(parse({
+        time: "01:00",
+        timeAsSeconds: "3600",
+        value: 1.03
+    }).timeAsSeconds, 3600, 'Expect TimedValue.timeAsSeconds to be 3600 when parsed from a string "3600"')
 })
