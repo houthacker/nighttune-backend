@@ -100,12 +100,12 @@ export const NormalizedTimedValue = type({
     /**
      * The time of day represented in seconds, e.g. `14400` for `04:00`.
      */
-    timeAsSeconds: "number.integer",
+    timeAsSeconds: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     /**
      * The time of day represented in minutes, e.g. `240` for `04:00`.
      */
-    minutes: "number.integer",
+    minutes: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     /**
      * The time of day in a `%H:%M` representation, e.g. `14:00`.
@@ -120,7 +120,7 @@ export const NormalizedTimedValue = type({
     /**
      * The value to average.
      */
-    value: "number",
+    value: type("number | string.numeric.parse"),
 })
 
 export const BasalTimeslot = type.merge(NormalizedTimedValue, {
@@ -128,12 +128,12 @@ export const BasalTimeslot = type.merge(NormalizedTimedValue, {
     /**
      * The index of this timeslot within the containing array.
      */
-    i: "number.integer",
+    i: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     /**
      * The basal rate of this time slot.
      */
-    rate: "number",
+    rate: type("number | string.numeric.parse"),
 })
 
 export const ScheduleSlot = type({
@@ -141,7 +141,7 @@ export const ScheduleSlot = type({
     /**
      * The index of this ratio within the containing array.
      */
-    i: "number.integer",
+    i: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     /**
      * The start time of this time slot, formatted as %H:%M:%S.
@@ -151,7 +151,7 @@ export const ScheduleSlot = type({
     /**
      * The offset from 00:00 in minutes.
      */
-    offset: "number.integer",
+    offset: type("number.integer | string.integer.parse"),
 })
 
 export const BgTimeslot = type.merge(ScheduleSlot, {
@@ -159,22 +159,22 @@ export const BgTimeslot = type.merge(ScheduleSlot, {
     /**
      * The lower bound of the bg target in `units`.
      */
-    low: "number",
+    low: type("number | string.numeric.parse"),
 
     /**
      * The minimum bg in `units`.
      */
-    min_bg: "number",
+    min_bg: type("number | string.numeric.parse"),
 
     /**
      * The upper bound of the bg target in `units`.
      */
-    high: "number",
+    high: type("number | string.numeric.parse"),
 
     /**
      * The maximum bg in `units`.
      */
-    max_bg: 'number',
+    max_bg: type("number | string.numeric.parse"),
 })
 
 export const CarbRatioTimeslot = type.merge(ScheduleSlot, {
@@ -182,7 +182,7 @@ export const CarbRatioTimeslot = type.merge(ScheduleSlot, {
     /**
      * The Insulin / Carb Ratio
      */
-    ratio: "number",
+    ratio: type("number | string.numeric.parse"),
 })
 
 export const SensitivityTimeslot = type.merge(ScheduleSlot, {
@@ -190,7 +190,7 @@ export const SensitivityTimeslot = type.merge(ScheduleSlot, {
     /**
      * The Insulin Sensitivity Factor.
      */
-    sensitivity: "number",
+    sensitivity: type("number | string.numeric.parse"),
 })
 
 export const OAPSProfile = type({
@@ -198,12 +198,12 @@ export const OAPSProfile = type({
     /**
      * The maximum autosens factor. Defaults to 1.2.
      */
-    autosens_max: "number",
+    autosens_max: type("number | string.numeric.parse"),
 
     /**
      * The minimum autosens factor. Defaults to 0.7.
      */
-    autosens_min: "number",
+    autosens_min: type("number | string.numeric.parse"),
 
     /**
      * The basal profile timeslots.
@@ -213,17 +213,17 @@ export const OAPSProfile = type({
     /**
      * The carb ratio to use if only a single value is to be used.
      */
-    carb_ratio: "number",
+    carb_ratio: type("number | string.numeric.parse"),
 
     /**
      * The Duration of Insulin Activity.
      */
-    dia: "number > 0",
+    dia: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
     /**
      * The minimum carb absorption in grams, per 5 minutes.
      */
-    min_5m_carbimpact: "number > 0",
+    min_5m_carbimpact: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
     /**
      * The type of insulin, indicating how fast the insulin acts and decays.
@@ -250,7 +250,7 @@ export const OAPSProfile = type({
     },
 
     carb_ratios: {
-        first: "number.integer > 0",
+        first: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
         /**
          * The carb units, defaults to 'grams'.
@@ -264,7 +264,7 @@ export const OAPSProfile = type({
     },
 
     isfProfile: {
-        first: "number.integer > 0",
+        first: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
         /**
          * The Insulin Sensitivity Factor time slots.
@@ -277,12 +277,12 @@ export const JobSettings = type({
     /**
      * The lowest autosens factor.
      */
-    autosens_min: "number > 0",
+    autosens_min: type("number > 0").or(type("string.numeric.parse").to("number > 0")),
 
     /**
      * The highest autosens factor.
      */
-    autosens_max: "number > 0",
+    autosens_max: type("number > 0").or(type("string.numeric.parse").to("number > 0")),
 
     /**
      * The name of the Nightscout profile.
@@ -292,12 +292,12 @@ export const JobSettings = type({
     /**
      * The minimum cab absorption per 5 minutes, in grams.
      */
-    min_5m_carbimpact: "number > 0",
+    min_5m_carbimpact: type("number > 0").or(type("string.numeric.parse").to("number > 0")),
     
     /**
      * The minimum step of basal units the pump can handle.
      */
-    pump_basal_increment: "number",
+    pump_basal_increment: type("number | string.numeric.parse"),
 
     /**
      * Whether to count unannounced meals towards basal. 
