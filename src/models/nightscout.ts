@@ -35,17 +35,17 @@ export class ProfileAlreadyExistsError extends Error {
 export const TimedValue = type({
     time: "string",
 
-    timeAsSeconds: "number.integer >= 0",
+    timeAsSeconds: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     value: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
-    "minutes?": "number.integer >= 0",
+    "minutes?": type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     "start?": "string"
 })
 
 export const NightscoutProfile = type({
-    dia: "number > 0",
+    dia: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
     timezone: "string",
 
