@@ -19,7 +19,7 @@
             
         </header>
         <main>
-            <table width="50%">
+            <table width="65%">
                 <thead>
                     <tr>
                         <th style="border-top: solid 1px #ddd; padding: 8px">Parameter</th>
@@ -42,7 +42,7 @@
             </table>
 
             <h2>Basal Suggestions</h2>
-            <table width="50%" cellspacing="0">
+            <table width="65%" cellspacing="0">
                 <thead>
                     <tr>
                         <th width="<%= tableColumnWidth %>" style="border-top: solid 1px #ddd; padding: 8px">Time</th>
@@ -65,13 +65,28 @@
                             <th style="border-top: solid 1px #ddd; padding: 8px"><%= formatTime(b.when); %></th>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.currentValue %></td>
                             <td style="border-top: solid 1px #ddd; padding: 8px"><%= b.recommendedValue %></td>
-                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.recommendedValue, result.options.basalIncrement).toFixed(2) %></td>
+                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= parseFloat(roundToNext(b.recommendedValue, result.options.basalIncrement).toFixed(2)) %></td>
                             <% if (haveBasalSmoothing) {%>
-                                <td style="border-top: solid 1px #ddd; padding: 8px"><%= roundToNext(b.smoothedRecommendation(), result.options.basalIncrement).toFixed(2) %></td>
+                                <td style="border-top: solid 1px #ddd; padding: 8px"><%= parseFloat(roundToNext(b.smoothedRecommendation(), result.options.basalIncrement).toFixed(2)) %></td>
                             <%} %>
                         </tr>
                     <% }; %>
                 </tbody>
+                <tfoot>
+                    <tr style="background-color:lightgray;">
+                        <th style="border-top: solid 1px #ddd; padding: 8px">Totals</th>
+                        <td style="border-top: solid 1px #ddd; padding: 8px"><%= basal.reduce((accumulator, b) => accumulator + b.currentValue, 0).toFixed(2) %></td>
+                        <td style="border-top: solid 1px #ddd; padding: 8px"><%= basal.reduce((accumulator, b) => accumulator + b.recommendedValue, 0).toFixed(3) %></td>
+                        <td style="border-top: solid 1px #ddd; padding: 8px"><%= Math.round(basal.reduce((accumulator, b) => {
+                            return accumulator + parseFloat(roundToNext(b.recommendedValue, result.options.basalIncrement).toFixed(2))
+                        }, 0) * 100) / 100 %></td>
+                        <% if (haveBasalSmoothing) {%>
+                            <td style="border-top: solid 1px #ddd; padding: 8px"><%= Math.round(basal.reduce((accumulator, b) => {
+                                return accumulator + parseFloat(roundToNext(b.smoothedRecommendation(), result.options.basalIncrement).toFixed(2))
+                            }, 0) * 100) / 100 %></td>
+                        <%} %>
+                    </tr>
+                </tfoot>
             </table>
         </main>
         <footer>
