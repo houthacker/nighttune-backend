@@ -8,7 +8,7 @@
     "arktype": "^2.1.29",
     "better-sqlite3": "^12.6.2",
     "compression": "^1.8.1",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "date-fns": "^4.1.0",
     "dockerode": "^4.0.9",
     "ejs": "^4.0.1",
