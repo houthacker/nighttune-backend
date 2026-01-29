@@ -41,10 +41,8 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
     }
 })
 
-// Handle CORS preflight
-router.options('/', cors(corsOptions))
-
 // POST a new job request
+router.options('/', cors(corsOptions))
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const jobRequest = AutotuneJob(request.body)
     if (jobRequest instanceof type.errors) {
@@ -86,6 +84,7 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
     }
 })
 
+router.options('/id/:id/create-ns-profile', cors(corsOptions))
 router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
     const createProfileRequest = CreateProfileRequest(request.body)
