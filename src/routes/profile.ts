@@ -18,6 +18,7 @@ const router = Router()
 
 // CORS preflight
 router.options('/', cors(corsOptions))
+router.options('/all', cors(corsOptions))
 
 // GET profile request
 router.get('/all', cors(corsOptions), async (request: Request, response: Response) => {
