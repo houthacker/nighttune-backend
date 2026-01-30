@@ -1,7 +1,9 @@
 # nighttune-backend
+
 The API server of nighttune.
 
 ## Table of Contents
+
 1. [Prerequisites](#1-prerequisites)
     1. [Configure ufw](#configure-ufw)
     2. [Install nginx](#install-nginx)
@@ -10,7 +12,9 @@ The API server of nighttune.
 ### Installing
 
 #### 1. Prerequisites
+
 Please ensure the following prerequisites have been installed:
+
 | Prerequisite | Notes |
 | :--- | :--- |
 | [Docker Engine](https://docs.docker.com/engine/install/) | |
@@ -18,7 +22,9 @@ Please ensure the following prerequisites have been installed:
 | [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
 
 ### Configure ufw
+
 Deny all incoming traffic by default, but leave ssh, http and https open.
+
 ```bash
 $ sudo systemctl enable ufw
 $ sudo ufw enable
@@ -38,20 +44,26 @@ $ sudo ufw default deny incoming
 ```
 
 ### Configure Cap
+
 The frontend uses Cap for bot protection and the backend handles the verification.
 How to install and configure Cap is described at [Cap](https://capjs.js.org/guide/standalone/).
 
 #### Cap Docker Compose
+
 Copy the template [cap-compose.example.yaml](./examples/cap-compose.example.yaml) to a suitable directory in your vm and set the `ADMIN_KEY` environment
 variable to the admin key of your Cap installation. Ensure any directories mentioned in the compose file have been created.
 
 ### Copy .env file
+
 Copy your (production) .env file to a suitable directory in your vm. See [.env.example](./examples/.env.example) for its format.
+
 ```bash
+# Copy env file to nightscout
 $ scp .env.production nightscout.app:~
 ```
 
 ### Ensure an initialized database exists
+
 ```bash
 # Create a directory to hold the database
 $ mkdir -p ~/nighttune-backend/data
@@ -61,7 +73,9 @@ $ docker run --rm --mount type=bind,src=/home/houthacker/nighttune-backend/data,
 ```
 
 ### Run the backend Docker container
+
 Copy the template [compose.example.yaml](./examples/compose.example.yaml) to a suitable directory in your vm and run it using `docker compose up -d`. Optionally add a service for the [Nighttune frontend](https://github.com/houthacker/nighttune):
+
 ```yaml
 services:
   nighttune:
@@ -74,14 +88,16 @@ services:
 ```
 
 ### Install nginx
+
 nighttune-backend uses `nginx` as a reverse proxy that also provides the ssl certificates using certbot.
 
 ```bash
-$ sudo apt install nginx -y
+sudo apt install nginx -y
 ```
 
 Check if nginx is running. The output should look like the
 following:
+
 ```bash
 $ sudo systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy server
@@ -101,13 +117,16 @@ $ sudo systemctl status nginx
 ```
 
 ### Install certbot and configure certifciate
+
 Answer the questions asked by certbot and have your certificates deployed.
+
 ```bash
-$ sudo apt install certbot python3-certbot-nginx
-$ sudo certbot --nginx
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx
 ```
 
 ### Add captcha.nighttune.app site config
+
 ```bash
 server {
 
@@ -156,8 +175,10 @@ server {
 ```
 
 ### Add api.nighttune.app site config
+
 Edit the site config to allow reverse proxying to the backend (or docker container). An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
 Usually, `backend_ip` will be `127.0.0.1` and `backend_port` will be `3333`.
+
 ```bash
 server {
 
@@ -200,8 +221,10 @@ server {
 
 ```
 
-### Check site-config 
+### Check site-config
+
 If checking the site configuration is successful, reload nginx.
+
 ```bash
 $ sudo nginx -t
 [sudo] password for houthacker:
