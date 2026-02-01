@@ -1,16 +1,20 @@
 #!/usr/bin/env node
+
+// Must be imported first.
+import './instrumentation.js'
+
 import compression from 'compression'
 import dotenv from 'dotenv'
-import express, { Request, Response, NextFunction } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 
 import RateLimit from 'express-rate-limit'
 
 import logger from './src/logger.js'
 import captchaRouter from './src/routes/captcha.js'
+import gdprRouter from './src/routes/gdpr.js'
 import jobRouter from './src/routes/job.js'
 import profileRouter from './src/routes/profile.js'
 import verifyRouter from './src/routes/verify.js'
-import gdprRouter from './src/routes/gdpr.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
 
@@ -49,7 +53,7 @@ app.use((request: Request, response: Response, next: NextFunction) => {
         try {
             return send.apply(this, [args])
         } catch (error: any) {
-            console.error(`Error in response.send | ${error.code} | ${error.message} | ${(response as Response & { stack: string }).stack}`)
+            logger.error(`Error in response.send | ${error.code} | ${error.message} | ${(response as Response & { stack: string }).stack}`)
             throw error
         }
     }
