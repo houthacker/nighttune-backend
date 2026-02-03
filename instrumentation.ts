@@ -21,7 +21,7 @@ const sdk = new NodeSDK({
         [ATTR_SERVICE_NAME]: process.env.NT_DTRACE_SERVICE_NAME!,
     }),
     resourceDetectors: getResourceDetectors(),
-    sampler: new TraceIdRatioBasedSampler(1.0),
+    sampler: new TraceIdRatioBasedSampler(0.1),
     traceExporter,
     logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
     instrumentations: [getNodeAutoInstrumentations({
