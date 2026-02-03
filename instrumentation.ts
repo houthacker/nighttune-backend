@@ -6,6 +6,7 @@ import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
 import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations, getResourceDetectors } from '@opentelemetry/auto-instrumentations-node'
+import { TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node'
 
 const logExporter = new OTLPLogExporter({
     url: process.env.NT_DLOG_URL!,
@@ -20,6 +21,7 @@ const sdk = new NodeSDK({
         [ATTR_SERVICE_NAME]: process.env.NT_DTRACE_SERVICE_NAME!,
     }),
     resourceDetectors: getResourceDetectors(),
+    sampler: new TraceIdRatioBasedSampler(0.1),
     traceExporter,
     logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
     instrumentations: [getNodeAutoInstrumentations({
