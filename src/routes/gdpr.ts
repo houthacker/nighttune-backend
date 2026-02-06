@@ -28,19 +28,25 @@ router.use(cors(corsOptions), async (request: Request, response: Response, next:
     } else {
         try {
             new URL(session.verifiedNightscoutUrl || '')
-            return next()
+
+            // Token is required to be at least NIGHTSCOUT_TOKEN_MIN_LENGTH characters.
+            // @see https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/authorization/storage.js#L162
+            if (session.verifiedNightscoutToken === undefined) {
+                logger.debug(`Denying client access to [${request.path}] because Nightscout access token is missing.`)
+                response.status(403).json({ message: 'To use this endpoint, a valid Nightscout access token is required.'})
+            } else {
+                const tokenLength = session.verifiedNightscoutToken.length
+                if (tokenLength < NIGHTSCOUT_TOKEN_MIN_LENGTH) {
+                    logger.debug(`Denying client access to [${request.path}] because Nightscout token is too short (${tokenLength}/${NIGHTSCOUT_TOKEN_MIN_LENGTH})`)
+                    response.status(403).json({message: 'Not a Nightscout access token. Are you using the ADMIN_TOKEN instead?'})
+                } else {
+                    return next()
+                }
+            }
         } catch (error) {
             logger.debug(`Denying client access to [${request.path}] because Nightscout URL is not verified.`)
-            response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
+            response.status(403).json({ message: 'You must verify your Nightscout URL first.'})
         }
-
-        // Token is required to be at least NIGHTSCOUT_TOKEN_MIN_LENGTH characters.
-        // @see https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/authorization/storage.js#L162
-        if (session.verifiedNightscoutToken === undefined || session.verifiedNightscoutToken.trim().length < NIGHTSCOUT_TOKEN_MIN_LENGTH) {
-            logger.debug(`Denying client access to [${request.path}] because Nightscout access token is missing or invalid.`)
-            response.status(403).json({ message: 'This endpoint requires a verified Nightscout URL and valid access token.'})
-        }
-
     }
 })
 
