@@ -27,6 +27,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.1.0",
     "iron-session": "^8.0.4",
+    "jwt-decode": "^4.0.0",
     "ml-savitzky-golay-generalized": "^4.2.0",
     "node-fetch": "^3.3.2",
     "node-mailjet": "^6.0.11",
