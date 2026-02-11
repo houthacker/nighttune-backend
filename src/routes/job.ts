@@ -5,15 +5,17 @@ import { type } from 'arktype'
 import cors from 'cors'
 import { Router } from 'express'
 
+import { IronSession } from 'iron-session'
 import { JobController } from '../controllers/jobController.js'
 import { getSession } from '../controllers/sessionController.js'
 import { MailjetDao } from '../dao/mail.js'
 import { NightscoutDao } from '../dao/nightscout.js'
-import { NightscoutApiV1 } from '../dao/nightscout/v1.js'
+import { NightscoutApiFactory } from '../dao/nightscout/api.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
 import { NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
+import { SessionData } from '../models/session.js'
 import { ProfileService } from '../services/profileService.js'
 
 const corsOptions: CorsOptions = {
@@ -21,7 +23,15 @@ const corsOptions: CorsOptions = {
     credentials: true,
 }
 const router = Router()
-const controller = new JobController(new SqliteDao(process.env.NT_DB_PATH!), new NightscoutDao(new NightscoutApiV1()), new MailjetDao(), new ProfileService())
+
+const createController = async (session: IronSession<SessionData>): Promise<JobController> => {
+    return new JobController(
+        new SqliteDao(process.env.NT_DB_PATH!), 
+        new NightscoutDao(NightscoutApiFactory.getApi(session.nightscoutApiVersion)),
+        new MailjetDao(), 
+        new ProfileService()
+    )
+}
 
 // All requests must have the session cookie, have passed the captcha- and Nightscout access test.
 router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
@@ -51,6 +61,7 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
     } else {
 
         try {
+            const controller = await createController(await getSession(request, response))
             const jobId = await controller.submit(jobRequest)
             response.status(200).json({ jobId })
         } catch (error: any) {
@@ -70,6 +81,7 @@ router.post('/', cors(corsOptions), async (request: Request, response: Response)
 
 router.get('/id/:id', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
+    const controller = await createController(session)
 
     try {
         const result = await controller.result(new URL(session.verifiedNightscoutUrl!), request.params.id)
@@ -87,7 +99,9 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
 router.options('/id/:id/create-ns-profile', cors(corsOptions))
 router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
+    const controller = await createController(session)
     const createProfileRequest = CreateProfileRequest(request.body)
+
     if (createProfileRequest instanceof type.errors) {
         logger.warn(`Request body not accepted: ${createProfileRequest.summary}`)
         response.status(400).json({ message: createProfileRequest.summary })
@@ -121,6 +135,7 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
 router.options('/all', cors(corsOptions))
 router.get('/all', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
+    const controller = await createController(session)
 
     try {
         const jobs = await controller.all(new URL(session.verifiedNightscoutUrl!))
@@ -134,6 +149,7 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
 // GET the status of any queued job for the given Nightscout URL
 router.get('/latest', cors(corsOptions), async(request: Request, response: Response) => {
     const session = await getSession(request, response)
+    const controller = await createController(session)
 
     try {
         const job = await controller.latest(new URL(session.verifiedNightscoutUrl!))

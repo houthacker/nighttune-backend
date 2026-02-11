@@ -2,6 +2,18 @@ import { type } from 'arktype'
 import { AutotuneErrorType, Unit, JobId, AutotuneConfig } from './job.js'
 import { AutotuneResult } from '../services/recommendationsParser.js'
 
+export enum NightscoutApiVersion {
+    /**
+     * Nightscout API version 1
+     */
+    v1 = 1,
+
+    /**
+     * Nightscout API version 3
+     */
+    v3 = 3,
+}
+
 export type AutotuneError = { data: { jobId: JobId, exitCode: number, type: AutotuneErrorType, log: string }, autotuneLogFile: string | undefined }
 export type AutotuneCallback = ( error: AutotuneError | null, recommendations?: AutotuneResult) => Promise<void>
 
