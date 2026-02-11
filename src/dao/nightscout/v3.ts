@@ -1,11 +1,12 @@
-import { NightscoutApi } from '../../models/nightscout.js'
+import { NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT } from '../../models/nightscout.js'
 import { NightscoutApiV1 } from './v1.js'
 
 import { jwtDecode, JwtPayload } from 'jwt-decode'
-
-import { HeadersInit } from 'node-fetch'
+import { type } from 'arktype'
+import { type HeadersInit } from 'node-fetch'
 import logger from '../../logger.js'
 
+type ProfileStore = typeof NightscoutProfileStoreT.infer
 type NightscoutAccessToken = string
 
 class JWT {
@@ -64,6 +65,19 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         this.tokenCache = new Map()
     }
 
+    private async getRequiredHeaders(url: URL, token?: NightscoutAccessToken): Promise<HeadersInit> {
+        const headers: HeadersInit = {
+            'Accept': 'application/json'
+        }
+
+        if (token) {
+            const jwt = await this.acquireValidToken(url, token!)
+            headers['Authorization'] = `Bearer ${jwt.raw}`
+        }
+
+        return headers
+    }
+
     private async acquireValidToken(url: URL, accessToken: NightscoutAccessToken): Promise<JWT> {
         let jwt = this.tokenCache.get({url: url.href, token: accessToken})
         if (jwt && jwt.isValid()) {
@@ -78,17 +92,10 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
 
     override async verify(url: URL, token?: NightscoutAccessToken): Promise<boolean> {
         const statusUrl = new URL('/api/v3/status', url)
-        const headers: HeadersInit = {
-            'Accept': 'application/json',
-        }
 
         try {
-            if (token) {
-                const jwt = await this.acquireValidToken(url, token!)
-                headers['Authorization'] = `Bearer ${jwt.raw}`
-            }
-
-            const response = await fetch(statusUrl, { headers })
+            const headers = await this.getRequiredHeaders(url, token)
+            const response = await fetch(statusUrl, { headers } as RequestInit)
             if (response.ok) {
                 return true
             }
@@ -100,5 +107,38 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         }
 
         return false
+    }
+
+    override async profileStore(url: URL, token?: string): Promise<ProfileStore> {
+        const profileStoreUrl = new URL('/api/v3/profile', url)
+        profileStoreUrl.searchParams.append('sort$desc', 'srvCreated')
+        profileStoreUrl.searchParams.append('limit', '1')
+        profileStoreUrl.searchParams.append('skip', '0')
+        profileStoreUrl.searchParams.append('fields', '_all')
+
+        try {
+            const headers = await this.getRequiredHeaders(url, token)
+            const response = await fetch(profileStoreUrl, { headers } as RequestInit)
+
+            if (response.ok) {
+                const body = await response.json() as any[]
+                const stores = NightscoutProfileStoreT.array()(body)
+
+                // Required for backwards compatibility
+                // TODO Remove after successfully running without errors for some time.
+                if (stores instanceof type.errors) {
+                    logger.error(`Falling back to lenient parsing: Cannot strictly parse response body into NightscoutProfileStore[]:\n${stores.summary}`)
+                    return Promise.resolve(body[0] as ProfileStore)
+                }
+
+                return Promise.resolve(stores[0])
+            }
+
+            logger.warn(`Failed to fetch user profiles from ${profileStoreUrl.href}: HTTP ${response.status}: ${response.statusText}`)
+            return Promise.reject(new Error(`Failed to fetch user profiles: NS instance returned HTTP error status ${response.status}`))
+        } catch (error: any) {
+            logger.warn(`Error while fethching user profiles from ${profileStoreUrl.href}:\n${JSON.stringify(error)}`)
+            return Promise.reject(new Error('Error while fetching user profiles.'))
+        }
     }
 }
