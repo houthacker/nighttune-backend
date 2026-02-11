@@ -1,3 +1,4 @@
+import { NightscoutApiVersion } from './nightscout.js'
 
 export interface SessionData {
 
@@ -15,10 +16,16 @@ export interface SessionData {
      * The optional nightscout access token
      */
     verifiedNightscoutToken: string | undefined
-};
+
+    /**
+     * The Nightscout API version to use
+     */
+    nightscoutApiVersion: NightscoutApiVersion
+}
 
 export const defaultSession: SessionData = {
     captchaTestPassed: false,
     verifiedNightscoutUrl: undefined,
     verifiedNightscoutToken: undefined,
-};
+    nightscoutApiVersion: NightscoutApiVersion.v1
+}
