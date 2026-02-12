@@ -1,4 +1,4 @@
-import { NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT } from '../../models/nightscout.js'
+import { AccessDeniedError, NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT, NoSuchProfileError, ProfileModificationError, UnauthorizedError } from '../../models/nightscout.js'
 import { NightscoutApiV1 } from './v1.js'
 
 import { jwtDecode, JwtPayload } from 'jwt-decode'
@@ -65,7 +65,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         this.tokenCache = new Map()
     }
 
-    private async getRequiredHeaders(url: URL, token?: NightscoutAccessToken): Promise<HeadersInit> {
+    private async requiredHeaders(url: URL, token?: NightscoutAccessToken): Promise<HeadersInit> {
         const headers: HeadersInit = {
             'Accept': 'application/json'
         }
@@ -94,7 +94,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         const statusUrl = new URL('/api/v3/status', url)
 
         try {
-            const headers = await this.getRequiredHeaders(url, token)
+            const headers = await this.requiredHeaders(url, token)
             const response = await fetch(statusUrl, { headers } as RequestInit)
             if (response.ok) {
                 return true
@@ -117,7 +117,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         profileStoreUrl.searchParams.append('fields', '_all')
 
         try {
-            const headers = await this.getRequiredHeaders(url, token)
+            const headers = await this.requiredHeaders(url, token)
             const response = await fetch(profileStoreUrl, { headers } as RequestInit)
 
             if (response.ok) {
@@ -139,6 +139,40 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         } catch (error: any) {
             logger.warn(`Error while fethching user profiles from ${profileStoreUrl.href}:\n${JSON.stringify(error)}`)
             return Promise.reject(new Error('Error while fetching user profiles.'))
+        }
+    }
+
+    override async createProfile(profile: ProfileStore, url: URL, token?: string): Promise<void> {
+        const profileUrl = new URL('/api/v3/profile', url)
+
+        try {
+            const headers = {
+                'Content-Type' : 'application/json',
+                ...await this.requiredHeaders(url, token)
+            }
+            const response = await fetch(profileUrl, {
+                method: 'POST',
+                body: JSON.stringify(profile),
+                headers
+            })
+
+            if (response.ok) {
+                return Promise.resolve()
+            }
+
+            switch(response.status) {
+                case 401: throw new UnauthorizedError(url.href)
+                case 403: throw new AccessDeniedError(url.href)
+                case 422: throw new ProfileModificationError(url.href)
+                default:
+                    const msg = `Could not add profile to Nightscout site at ${url.href}: HTTP response code was ${response.status}`
+                    logger.error(msg)
+                    return Promise.reject(new Error(msg))
+            }
+
+        } catch (error: any) {
+            logger.error(`Creating profile at ${url.href} failed: ${JSON.stringify(error)}`)
+            return Promise.reject()
         }
     }
 }

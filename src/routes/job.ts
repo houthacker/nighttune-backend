@@ -14,7 +14,7 @@ import { NightscoutApiFactory } from '../dao/nightscout/api.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
-import { NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
+import { AccessDeniedError, NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
 import { SessionData } from '../models/session.js'
 import { ProfileService } from '../services/profileService.js'
 
@@ -113,7 +113,10 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
         } catch (error: any) {
             if (error instanceof UnauthorizedError) {
                 logger.error(`Uploading profile for job ${request.params.id} failed: Unauthorized.`)
-                response.status(401).json({message: 'Unauthorized. Maybe you\'re using a read-only token?'})
+                response.status(407).json({message: 'Unauthorized. To create a profile at your site, an access token is required.'})
+            } else if (error instanceof AccessDeniedError) {
+                logger.error(`Insufficient permissions to create profile for job ${request.params.id} at ${error.message}`)
+                response.status(403).json({message: 'Unauthorized. The token you provided has insufficient permissions.'})
             } else if (error instanceof NoSuchJobError) {
                 logger.error(`Cannot create profile for job ${request.params.id}: ${error.message}`)
                 response.status(404).json({message: `No such job ${request.params.id}`})

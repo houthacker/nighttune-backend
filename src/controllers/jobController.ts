@@ -135,9 +135,12 @@ export class JobController {
      * @param url The URL of the Nightscout instance.
      * @param token The optional Nightscout access token.
      * 
-     * @throws `NoSuchJobError` If no job with `id` exists for the given `url`.
-     * @throws `NoSuchProfileError` If the profile used to execute the job doesn't exist anymore.
-     * @throws `ProfileAlreadyExistsError` If a profile with `name` already exists.
+     * @throws `NoSuchJobError` if no job with `id` exists for the given `url`.
+     * @throws `NoSuchProfileError` if the profile used to execute the job doesn't exist anymore.
+     * @throws `ProfileAlreadyExistsError` if a profile with `name` already exists.
+     * @throws `UnauthorizedError` if the Nightscout site requires authorization, but none was provided.
+     * @throws `AccessDeniedError` if the supplied token lacks authorization to create a new profile.
+     * @throws `ProfileModificationError` if an attempt was made to modify a read-only profile.
      */
     async createAndUploadProfile(name: string, id: JobId, url: URL, token?: string) {
         const jobResults = this.sqlite.result(url, id)
