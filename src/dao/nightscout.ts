@@ -47,6 +47,8 @@ export class NightscoutDao {
      * @param token The optional Nightscout access token.
      * 
      * @throws `UnauthorizedError` if the Nightscout site returns an HTTP 401 status
+     * @throws `AccessDeniedError` if the Nightscout site returns an HTTP 403 status
+     * @throws `ProfileModificationError` if the Nightscout site returns an HTTP 422 status
      * @throws `Error` In all other error cases.
      */
     async createProfile(profile: NightscoutProfileStore, url: URL, token?: string): Promise<void> {

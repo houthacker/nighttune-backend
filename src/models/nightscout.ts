@@ -24,6 +24,17 @@ export class UnauthorizedError extends Error {
     }
 }
 
+/**
+ * An `AccessDeniedError` os thrown when access to the requested
+ * resource is denied.
+ */
+export class AccessDeniedError extends Error {
+
+    constructor(message: string, cause?: any) {
+        super(message, { cause })
+    }
+}
+
 export class NoSuchProfileError extends Error {
     public readonly profileName: string
 
@@ -31,6 +42,17 @@ export class NoSuchProfileError extends Error {
         super(message, { cause })
 
         this.profileName = profileName
+    }
+}
+
+/**
+ * A `ProfileModificationError` is thrown when an attempt is made to
+ * modify a read-only profile. 
+ */
+export class ProfileModificationError extends Error {
+
+    constructor(message: string, cause?: any) {
+        super(message, { cause })
     }
 }
 
