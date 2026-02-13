@@ -121,14 +121,14 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             const response = await fetch(profileStoreUrl, { headers } as RequestInit)
 
             if (response.ok) {
-                const body = await response.json() as any[]
-                const stores = NightscoutProfileStoreT.array()(body)
+                const body = await response.json() as { status: number, result: any[] }
+                const stores = NightscoutProfileStoreT.array()(body.result)
 
                 // Required for backwards compatibility
                 // TODO Remove after successfully running without errors for some time.
                 if (stores instanceof type.errors) {
                     logger.error(`Falling back to lenient parsing: Cannot strictly parse response body into NightscoutProfileStore[]:\n${stores.summary}`)
-                    return Promise.resolve(body[0] as ProfileStore)
+                    return Promise.resolve(body.result[0] as ProfileStore)
                 }
 
                 return Promise.resolve(stores[0])
