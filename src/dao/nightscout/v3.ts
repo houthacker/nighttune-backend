@@ -172,7 +172,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
 
         } catch (error: any) {
             logger.error(`Creating profile at ${url.href} failed: ${JSON.stringify(error)}`)
-            return Promise.reject()
+            throw error
         }
     }
 }
