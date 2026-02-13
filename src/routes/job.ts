@@ -14,7 +14,7 @@ import { NightscoutApiFactory } from '../dao/nightscout/api.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
-import { AccessDeniedError, NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
+import { AccessDeniedError, NightscoutApiVersion, NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
 import { SessionData } from '../models/session.js'
 import { ProfileService } from '../services/profileService.js'
 
@@ -105,6 +105,9 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
     if (createProfileRequest instanceof type.errors) {
         logger.warn(`Request body not accepted: ${createProfileRequest.summary}`)
         response.status(400).json({ message: createProfileRequest.summary })
+    } else if (session.nightscoutApiVersion !== NightscoutApiVersion.v3) {
+        logger.error(`Cannot create profile for job ${request.params.id}: incorrect API version ${session.nightscoutApiVersion}`)
+        response.status(400).json({message: `Wrong Nightscout API version ${session.nightscoutApiVersion}`})
     } else {
 
         try {
