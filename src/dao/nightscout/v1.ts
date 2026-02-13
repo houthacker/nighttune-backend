@@ -284,26 +284,7 @@ export class NightscoutApiV1 implements NightscoutApi {
      * @inheritdoc
      */
     async createProfile(profile: ProfileStore, url: URL, token?: string): Promise<void> {
-        const tokenizedUrl = await NightscoutApiV1.addToken(new URL("api/v1/profile/", url), token)
-        const response = await fetch(tokenizedUrl, {
-            method: 'POST',
-            body: JSON.stringify(profile),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-
-        if (response.ok) {
-            return Promise.resolve()
-        }
-
-        switch (response.status) {
-            case 401: throw new UnauthorizedError(url.href)
-            default:
-                const msg = `Could not add profile to Nightscout site at ${url.href}: HTTP response code was ${response.status}`
-                logger.error(msg)
-                return Promise.reject(new Error(msg))
-        }
+        throw new Error('Creating a new profile is not supported in Nightscout API v1')
     }
 
 }
