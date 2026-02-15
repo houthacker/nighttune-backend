@@ -31,7 +31,7 @@ class JWT {
             return new JWT(body.token)
         }
 
-        logger.warn(`Failed to get JTW for url [${url.href}]: returned HTTP status ${response.status}`)
+        logger.warn(`Failed to get JWT for url [${url.href}]: returned HTTP status ${response.status}`)
         return Promise.reject<JWT>(new Error('JWT request failed.'))
     }
 
@@ -55,7 +55,7 @@ class JWT {
 export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
 
     /**
-     * A cache of JTW tokens, indexed by their URL and Access Token.
+     * A cache of JWT tokens, indexed by their URL and Access Token.
      */
     private tokenCache: Map<{url: string, token: NightscoutAccessToken}, JWT>
 
