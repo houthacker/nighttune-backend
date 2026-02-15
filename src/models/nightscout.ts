@@ -69,7 +69,7 @@ export class ProfileAlreadyExistsError extends Error {
 export const TimedValue = type({
     time: "string",
 
-    timeAsSeconds: type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
+    "timeAsSeconds?": type("number.integer >= 0").or(type("string.integer.parse").to("number.integer >= 0")),
 
     value: type("number >= 0").or(type("string.numeric.parse").to("number >= 0")),
 
