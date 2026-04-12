@@ -3,6 +3,13 @@
 // Must be imported first.
 import './instrumentation.js'
 
+import { OptionalService } from './src/models/services.js'
+
+// Global storage of which services have been disabled.
+declare global {
+    var enabledServices: Set<OptionalService>
+}
+
 import compression from 'compression'
 import dotenv from 'dotenv'
 import express, { NextFunction, Request, Response } from 'express'
@@ -17,19 +24,13 @@ import profileRouter from './src/routes/profile.js'
 import verifyRouter from './src/routes/verify.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
+import { calculateEnabledOptionalServices } from './src/utils/optionalServiceUtil.js'
 
 // Read .env file
 dotenv.config()
 
 const app = express()
 const port = process.env.NT_PORT || 3333
-
-const REQUIRED_ENV_VARS = ['NT_CAPTCHA_SITEKEY', 'NT_CAPTCHA_SECRET']
-for (const v of REQUIRED_ENV_VARS) {
-    if (!process.env[v]) {
-        throw new Error(`Missing required env variable ${v}`)
-    }
-}
 
 const limiter = RateLimit({
     windowMs: parseInt(process.env.NT_RATELIMIT_WINDOW_MS!) || 60_000,
@@ -40,6 +41,9 @@ const limiter = RateLimit({
 if (process.env.NT_RATELIMIT_TRUST_PROXY) {
     app.set('trust proxy', process.env.NT_RATELIMIT_TRUST_PROXY.split(',').map(e => e.trim()))
 }
+
+// Store disabled services globally
+globalThis.enabledServices = calculateEnabledOptionalServices()
 
 // Monkey patch send/render to get a good stack trace for ERR_HTTP_HEADERS_SENT errors.
 app.use((request: Request, response: Response, next: NextFunction) => {
@@ -73,7 +77,9 @@ app.use(express.json({
 app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
-app.use('/captcha', captchaRouter)
+if (globalThis.enabledServices.has(OptionalService.Captcha)) {
+    app.use('/captcha', captchaRouter)
+}
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)

@@ -10,6 +10,8 @@ import { getSession } from '../controllers/sessionController.js'
 import { SqliteDao } from '../dao/sqlite.js'
 import logger from '../logger.js'
 import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from '../models/verify.js'
+import { OptionalService } from '../models/services.js'
+import { isServiceEnabled } from '../utils/optionalServiceUtil.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -22,7 +24,7 @@ const controller = new GDPRController(new SqliteDao(process.env.NT_DB_PATH!))
 router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
-    if (session.captchaTestPassed !== true) {
+    if (isServiceEnabled(OptionalService.Captcha) && session.captchaTestPassed !== true) {
         logger.debug('Client has not (yet) passed captcha test.')
         response.status(403).json({ message: 'Please verify captcha test first.'})
     } else {
