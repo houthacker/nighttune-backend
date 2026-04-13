@@ -1,4 +1,5 @@
 import { OptionalService } from '../models/services.js'
+import logger from '../logger.js'
 
 function all(vars: any[]): boolean {
     return !vars.some((v) => v === undefined || String(v).trim().length === 0)
@@ -14,6 +15,8 @@ export function scanEnabledOptionalServices(): void {
     const captchaEnvVars: any[] = [process.env.NT_CAPTCHA_SITEKEY, process.env.NT_CAPTCHA_SECRET]
     if (all(captchaEnvVars)) {
         scannedServices.add(OptionalService.Captcha)
+    } else {
+        logger.debug('Disabling captcha service because the related environment variables are not configured.')
     }
 
     // Mail service scanning
@@ -25,6 +28,8 @@ export function scanEnabledOptionalServices(): void {
     ]
     if (all(mailEnvVars)) {
         scannedServices.add(OptionalService.Sendmail)
+    } else {
+        logger.debug('Disabling mailing service because the related environment variables are not configured.')
     }
 
     globalThis.enabledServices = scannedServices
