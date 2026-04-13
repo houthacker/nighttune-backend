@@ -1,20 +1,20 @@
 import { OptionalService } from '../models/services.js'
 
 /**
- * Calculate and return the set of enabled optional services for the current runtime.
+ * Scan the process environment to determine enabled optional services for the current runtime.
  */
-export function calculateEnabledOptionalServices():  Set<OptionalService> {
+export function scanEnabledOptionalServices(): void {
 
     // Determine whether the captcha environment variables are missing or empty.
     const captchaEnvVars: any[] = [process.env.NT_CAPTCHA_SITEKEY, process.env.NT_CAPTCHA_SECRET]
     const captchaEnabled = !captchaEnvVars.some((v) => v === undefined || String(v).trim().length === 0)
 
-    const enabled = new Set<OptionalService>()
+    const enabledSerbvices = new Set<OptionalService>()
     if (captchaEnabled) {
-        enabled.add(OptionalService.Captcha)
+        enabledSerbvices.add(OptionalService.Captcha)
     }
 
-    return enabled
+    globalThis.enabledServices = enabledSerbvices
 }
 
 /**
@@ -22,4 +22,17 @@ export function calculateEnabledOptionalServices():  Set<OptionalService> {
  */
 export function isServiceEnabled(service: OptionalService): boolean {
     return globalThis.enabledServices.has(service)
+}
+
+/**
+ * If `service` is enabled, run `fn`, else run `elseFn` if it has been provided.
+ */
+export function runIfEnabled(service: OptionalService, fn: () => void, elseFn: (() => void) | undefined = undefined): void {
+    if (isServiceEnabled(service)) {
+        fn()
+    } else {
+        if (elseFn !== undefined) {
+            elseFn()
+        }
+    }
 }
