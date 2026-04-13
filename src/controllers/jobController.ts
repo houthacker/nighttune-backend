@@ -17,6 +17,8 @@ import {
 } from '../models/job.js'
 import { ProfileService } from '../services/profileService.js'
 import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
+import { OptionalService, ServiceError } from '../models/services.js'
+import { isServiceEnabled } from '../utils/optionalServiceUtil.js'
 
 import type { AutotuneError } from '../dao/nightscout.js'
 
@@ -27,7 +29,7 @@ const SQLITE_CONSTRAINT: string = 'SQLITE_CONSTRAINT'
 const SQLITE_CONSTRAINT_TRIGGER: string = 'SQLITE_CONSTRAINT_TRIGGER'
 const SQLITE_CONSTRAINT_UNIQUE: string = 'SQLITE_CONSTRAINT_UNIQUE'
 
-const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
+const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao | undefined = undefined) => {
     return async (error: AutotuneError| null, recommendations?: AutotuneResult): Promise<void> => {
         if (error) {
             sqlite.onJobFailed(error.data.jobId, error.data.type)
@@ -48,7 +50,7 @@ const createAutotuneCallback = (sqlite: SqliteDao, mail: MailDao) => {
             const opts = report.options as AutotuneOptions
             sqlite.onJobSuccessful(opts.jobId, report)
             
-            if (report.options?.emailAddress) {
+            if (mail !== undefined && report.options?.emailAddress) {
                 await mail.sendReport(report.options.emailAddress!, report)
             }
         }
@@ -61,11 +63,25 @@ export class JobController {
 
     private readonly nightscout: NightscoutDao
 
-    private readonly mail: MailDao
+    private readonly mail: MailDao | undefined
 
     private readonly profileService: ProfileService
 
-    constructor(sqlite: SqliteDao, nightscout: NightscoutDao, mail: MailDao, profileService: ProfileService) {
+    /**
+     * Create a new `JobController`. 
+     * 
+     * @param sqlite The sqlite dao
+     * @param nightscout The nightscout dao
+     * @param profileService The nightscout profile service
+     * @param mail The optional mail sending service. If the mail service is enabled, this parameter is mandatory.
+     * 
+     * @throws `ServiceError` when the mail service is enabled but no `MailDao` is provided.
+     */
+    constructor(sqlite: SqliteDao, nightscout: NightscoutDao, profileService: ProfileService, mail?: MailDao) {
+        if (isServiceEnabled(OptionalService.Sendmail) && mail === undefined) {
+            throw new ServiceError(OptionalService.Sendmail, 'Mailing service enabled, but mandatory MailDao parameter is missing.')
+        }
+
         this.sqlite = sqlite
         this.nightscout = nightscout
         this.mail = mail

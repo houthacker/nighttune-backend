@@ -30,8 +30,8 @@ const createController = async (session: IronSession<SessionData>): Promise<JobC
     return new JobController(
         new SqliteDao(process.env.NT_DB_PATH!), 
         new NightscoutDao(NightscoutApiFactory.getApi(session.nightscoutApiVersion)),
-        new MailjetDao(), 
-        new ProfileService()
+        new ProfileService(),
+        isServiceEnabled(OptionalService.Sendmail) ? new MailjetDao() : undefined, 
     )
 }
 
