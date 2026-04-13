@@ -1,9 +1,4 @@
-import { OptionalService } from '../models/services.js'
-import logger from '../logger.js'
-
-function all(vars: any[]): boolean {
-    return !vars.some((v) => v === undefined || String(v).trim().length === 0)
-}
+import { OptionalService, unsafeIsEnabled } from '../models/services.js'
 
 /**
  * Scan the process environment to determine enabled optional services for the current runtime.
@@ -11,27 +6,20 @@ function all(vars: any[]): boolean {
 export function scanEnabledOptionalServices(): void {
     const _enabledServices = new Set<OptionalService>()
 
-    function scan(service: OptionalService, vars: any[]) {
-        if (all(vars)) {
+    function scan(service: OptionalService) {
+        if (unsafeIsEnabled(service)) {
             _enabledServices.add(service)
         } else {
-            logger.debug(`Disabling ${service} service because the related environment variables are not configured.`)
+            // Log to the console and do not use the logger, since this file is imported before
+            // the instrumentation runs.
+            console.debug(`[service-scanner] Disabling ${service} service because the related environment variables are not configured.`)
         }
     }
 
     // Scan optional services
-    scan(OptionalService.Captcha, [process.env.NT_CAPTCHA_SITEKEY, process.env.NT_CAPTCHA_SECRET])
-    scan(OptionalService.Sendmail, [
-        process.env.NT_MAIL_APIKEY_PUBLIC, 
-        process.env.NT_MAIL_APIKEY_PRIVATE, 
-        process.env.NT_MAIL_SENDER_ADDRESS,
-        process.env.NT_MAIL_SENDER_NAME,
-    ])
-    scan(OptionalService.DistributedTracing, [
-        process.env.NT_DTRACE_SERVICE_NAME,
-        process.env.NT_DTRACE_URL,
-        process.env.NT_DLOG_URL,
-    ])
+    scan(OptionalService.Captcha)
+    scan(OptionalService.Sendmail)
+    scan(OptionalService.DistributedTracing)
 
     globalThis.enabledServices = _enabledServices
 }
