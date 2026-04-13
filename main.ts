@@ -24,7 +24,7 @@ import profileRouter from './src/routes/profile.js'
 import verifyRouter from './src/routes/verify.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
-import { calculateEnabledOptionalServices } from './src/utils/optionalServiceUtil.js'
+import { scanEnabledOptionalServices, isServiceEnabled, runIfEnabled } from './src/utils/optionalServiceUtil.js'
 
 // Read .env file
 dotenv.config()
@@ -42,8 +42,8 @@ if (process.env.NT_RATELIMIT_TRUST_PROXY) {
     app.set('trust proxy', process.env.NT_RATELIMIT_TRUST_PROXY.split(',').map(e => e.trim()))
 }
 
-// Store disabled services globally
-globalThis.enabledServices = calculateEnabledOptionalServices()
+// Determine which optional services have been enabled
+scanEnabledOptionalServices()
 
 // Monkey patch send/render to get a good stack trace for ERR_HTTP_HEADERS_SENT errors.
 app.use((request: Request, response: Response, next: NextFunction) => {
@@ -77,9 +77,9 @@ app.use(express.json({
 app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
-if (globalThis.enabledServices.has(OptionalService.Captcha)) {
-    app.use('/captcha', captchaRouter)
-}
+runIfEnabled(OptionalService.Captcha, 
+    () => app.use('/captcha', captchaRouter)
+    , () => logger.debug('Not adding route /captcha since captcha service is disabled by configuration'))
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)
