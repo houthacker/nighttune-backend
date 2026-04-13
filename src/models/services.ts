@@ -8,7 +8,12 @@ export const enum OptionalService {
      /**
       * Service to send job reports by mail.
       */
-     Sendmail = 'mail'
+     Sendmail = 'mail',
+
+     /**
+      * Service to enable distributed tracing.
+      */
+     DistributedTracing = 'dtrace',
 }
 
 /**
