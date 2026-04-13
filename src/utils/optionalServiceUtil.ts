@@ -1,20 +1,33 @@
 import { OptionalService } from '../models/services.js'
 
+function all(vars: any[]): boolean {
+    return !vars.some((v) => v === undefined || String(v).trim().length === 0)
+}
+
 /**
  * Scan the process environment to determine enabled optional services for the current runtime.
  */
 export function scanEnabledOptionalServices(): void {
+    const scannedServices = new Set<OptionalService>()
 
-    // Determine whether the captcha environment variables are missing or empty.
+    // Captcha service scanning
     const captchaEnvVars: any[] = [process.env.NT_CAPTCHA_SITEKEY, process.env.NT_CAPTCHA_SECRET]
-    const captchaEnabled = !captchaEnvVars.some((v) => v === undefined || String(v).trim().length === 0)
-
-    const enabledSerbvices = new Set<OptionalService>()
-    if (captchaEnabled) {
-        enabledSerbvices.add(OptionalService.Captcha)
+    if (all(captchaEnvVars)) {
+        scannedServices.add(OptionalService.Captcha)
     }
 
-    globalThis.enabledServices = enabledSerbvices
+    // Mail service scanning
+    const mailEnvVars: any[] = [
+        process.env.NT_MAIL_APIKEY_PUBLIC, 
+        process.env.NT_MAIL_APIKEY_PRIVATE, 
+        process.env.NT_MAIL_SENDER_ADDRESS,
+        process.env.NT_MAIL_SENDER_NAME,
+    ]
+    if (all(mailEnvVars)) {
+        scannedServices.add(OptionalService.Sendmail)
+    }
+
+    globalThis.enabledServices = scannedServices
 }
 
 /**
