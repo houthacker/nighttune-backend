@@ -17,6 +17,8 @@ import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqu
 import { AccessDeniedError, NightscoutApiVersion, NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
 import { SessionData } from '../models/session.js'
 import { ProfileService } from '../services/profileService.js'
+import { OptionalService } from '../models/services.js'
+import { isServiceEnabled } from '../utils/optionalServiceUtil.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
@@ -28,8 +30,8 @@ const createController = async (session: IronSession<SessionData>): Promise<JobC
     return new JobController(
         new SqliteDao(process.env.NT_DB_PATH!), 
         new NightscoutDao(NightscoutApiFactory.getApi(session.nightscoutApiVersion)),
-        new MailjetDao(), 
-        new ProfileService()
+        new ProfileService(),
+        isServiceEnabled(OptionalService.Sendmail) ? new MailjetDao() : undefined, 
     )
 }
 
@@ -37,7 +39,7 @@ const createController = async (session: IronSession<SessionData>): Promise<JobC
 router.use(cors(corsOptions), async (request: Request, response: Response, next: NextFunction) => {
     const session = await getSession(request, response)
 
-    if (session.captchaTestPassed !== true) {
+    if (isServiceEnabled(OptionalService.Captcha) && session.captchaTestPassed !== true) {
         logger.debug('Client has not (yet) passed captcha test.')
         response.status(403).json({ message: 'Please verify captcha test first.'})
     } else {
@@ -84,7 +86,7 @@ router.get('/id/:id', cors(corsOptions), async (request: Request, response: Resp
     const controller = await createController(session)
 
     try {
-        const result = await controller.result(new URL(session.verifiedNightscoutUrl!), request.params.id)
+        const result = await controller.result(new URL(session.verifiedNightscoutUrl!), request.params.id as string)
         if (result === undefined) {
             response.status(404).json({ message: `No such job '${request.params.id}'`})
         } else {
@@ -111,7 +113,7 @@ router.post('/id/:id/create-ns-profile', cors(corsOptions), async (request: Requ
     } else {
 
         try {
-            await controller.createAndUploadProfile(createProfileRequest.name, request.params.id, new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
+            await controller.createAndUploadProfile(createProfileRequest.name, request.params.id as string, new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
             response.status(200).end()
         } catch (error: any) {
             if (error instanceof UnauthorizedError) {

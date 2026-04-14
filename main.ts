@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 
-// Must be imported first.
+// Do *not* move this import downward.
 import './instrumentation.js'
+
+import { OptionalService } from './src/models/services.js'
+
+// Declare global storage for enabled optional services
+declare global {
+    var enabledServices: Set<OptionalService>
+}
 
 import compression from 'compression'
 import dotenv from 'dotenv'
@@ -17,19 +24,16 @@ import profileRouter from './src/routes/profile.js'
 import verifyRouter from './src/routes/verify.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
+import { runIfEnabled, scanEnabledOptionalServices } from './src/utils/optionalServiceUtil.js'
 
 // Read .env file
 dotenv.config()
 
+// Scan if optional services have been enabled and cache the result.
+scanEnabledOptionalServices()
+
 const app = express()
 const port = process.env.NT_PORT || 3333
-
-const REQUIRED_ENV_VARS = ['NT_CAPTCHA_SITEKEY', 'NT_CAPTCHA_SECRET']
-for (const v of REQUIRED_ENV_VARS) {
-    if (!process.env[v]) {
-        throw new Error(`Missing required env variable ${v}`)
-    }
-}
 
 const limiter = RateLimit({
     windowMs: parseInt(process.env.NT_RATELIMIT_WINDOW_MS!) || 60_000,
@@ -73,11 +77,16 @@ app.use(express.json({
 app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
-app.use('/captcha', captchaRouter)
+runIfEnabled(OptionalService.Captcha, () => app.use('/captcha', captchaRouter))
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)
 app.use('/gdpr', gdprRouter)
+
+// Default response is 404
+app.use((request: Request, response: Response, next: NextFunction) => {
+    response.status(404).send()
+})
 
 app.listen(port, () => {
     logger.info(`listening at port ${port}`)
