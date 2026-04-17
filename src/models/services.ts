@@ -20,7 +20,11 @@ export const enum OptionalService {
  * Required environment variables used to configure the respective services.
  */
 export const ServiceEnvVars = {
-     [OptionalService.Captcha]: [process.env.NT_CAPTCHA_SITEKEY, process.env.NT_CAPTCHA_SECRET],
+     [OptionalService.Captcha]: [
+        process.env.NT_CAPTCHA_SERVER_URL,
+        process.env.NT_CAPTCHA_SITEKEY, 
+        process.env.NT_CAPTCHA_SECRET
+    ],
      [OptionalService.Sendmail]: [
         process.env.NT_MAIL_APIKEY_PUBLIC, 
         process.env.NT_MAIL_APIKEY_PRIVATE, 

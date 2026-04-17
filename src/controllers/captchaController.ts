@@ -9,7 +9,7 @@ export interface CaptchaValidation {
 
 export async function validateCaptcha(token: string, remote_ip: string): Promise<CaptchaValidation> {
     try {
-        const response = await fetch(new URL(`https://captcha.nighttune.app/${encodeURIComponent(process.env.NT_CAPTCHA_SITEKEY!)}/siteverify`), {
+        const response = await fetch(new URL(`${process.env.NT_CAPTCHA_SERVER_URL}/${encodeURIComponent(process.env.NT_CAPTCHA_SITEKEY!)}/siteverify`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
