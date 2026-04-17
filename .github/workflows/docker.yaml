@@ -91,7 +91,7 @@ jobs:
           script: |
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
             echo "*** Pulling latest ${{ github.actor }}/${{ env.IMAGE_NAME }} from ${{ env.REGISTRY }} ***"
-            docker compose -f ${{ secrets.DEPLOY_SSH_DOCKER_COMPOSE_FILE }} pull ${{ env.DOCKER_COMPOSE_SERVICE_NAME }}
+            docker compose -f ${{ secrets.DEPLOY_SSH_DOCKER_COMPOSE_FILE }} pull ${{ vars.DOCKER_COMPOSE_SERVICE_NAME }}
             echo "*** Starting ${{ env.IMAGE_NAME }}:${{ github.ref_name }} ***"
             docker compose -f ${{ secrets.DEPLOY_SSH_DOCKER_COMPOSE_FILE }} up -d
             echo "*** Cleaning up unused images ***"
