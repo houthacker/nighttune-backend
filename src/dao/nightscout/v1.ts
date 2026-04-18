@@ -91,6 +91,27 @@ export class NightscoutApiV1 implements NightscoutApi {
         return tokenized
     }
 
+    private readonly shell
+
+    constructor() {
+        const shell_executable = (): string => {
+            const shell = process.env.SHELL!
+
+            try {
+                const stat = fsSync.statSync(shell)
+                if (stat.isFile()) {
+                    return shell
+                }
+
+                throw new Error(`No such shell ${shell}`)
+            } catch (error: any) {
+                throw new Error(`stat() failed: ${error.message}`)
+            }
+        }
+
+        this.shell = shell_executable()
+    }
+
     /**
      * @inheritdoc
      */
@@ -195,6 +216,7 @@ export class NightscoutApiV1 implements NightscoutApi {
         {
             detached: true,
             env: {...process.env, 'API_SECRET': token},
+            shell: this.shell,
             stdio: ['pipe', 'ignore', 'pipe'],
             timeout: 5 * 60 * 1000
         })

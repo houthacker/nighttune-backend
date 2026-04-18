@@ -60,6 +60,7 @@ export class GenericDatabaseError extends JobError {
     constructor(jobId: JobId, message: string, cause?: any) {
         super(jobId, message, cause)
     }
+
 }
 
 export class JobExecutionError extends JobError {
