@@ -14,6 +14,7 @@ services:
     # Adding this environment might be required for image versions below 3.5.0.
     #environment:
     #  - NT_DB_PATH=<path_within_container>
+    #  - SHELL=/usr/bin/bash
 
     ports:
       # By default, the port is only exposed to localhost.
