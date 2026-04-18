@@ -1,17 +1,16 @@
-FROM node:25-trixie-slim
+FROM node:22-bullseye-slim AS builder
 LABEL org.opencontainers.image.authors="github.com/houthacker"
 
-# Express listens on port 3333
-EXPOSE 3333
+# We want bash
+SHELL [ "/bin/bash", "-c" ]
 
-# We want to use bash instead of sh.
-SHELL [ "/usr/bin/bash", "-c" ]
-
-# Install required packages
-RUN apt-get update && apt-get install -y curl git sudo bash sqlite3 python3 build-essential jq bc && apt-get clean
+# Install packages required for building
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       curl git sudo python3 build-essential ca-certificates jq bc \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch v0.7.1 https://github.com/openaps/oref0.git /autotune/oref0
-RUN curl -fsS https://dotenvx.sh | bash
 
 # Install oref0 binaries
 WORKDIR /autotune/oref0
@@ -23,9 +22,27 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+RUN npm run build
+
+FROM node:22-bullseye-slim AS runtime
+LABEL org.opencontainers.image.authors="github.com/houthacker"
+
+EXPOSE 3333
+SHELL [ "/bin/bash", "-c" ]
+
+# Install packages required for running
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends sqlite3 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /app /app
+COPY --from=builder /autotune/oref0 /autotune/oref0
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Move the .sqliterc file to the home directory
-RUN mv .sqliterc ~/
+RUN mv /app/.sqliterc ~/
 
 # Can be overridden using --build-arg NT_VERSION=..., NT_DB_PATH=..., etc
 # These are required by scripts/build-image.sh
@@ -48,8 +65,5 @@ ENV NT_VERSION=${NT_VERSION}
 
 # The full path to the .env file. 
 ENV DOTENV_CONFIG_PATH=${DOTENV_CONFIG_PATH}
-
-# Build nighttune-backend
-RUN npm run build
 
 ENTRYPOINT [ "/app/scripts/entrypoint.sh" ]
