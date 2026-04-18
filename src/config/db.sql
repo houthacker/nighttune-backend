@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS `jobs` (
     `submit_ts` INTEGER NOT NULL DEFAULT (strftime('%s', 'now', 'utc')),
     `done_ts` INTEGER NULL,
     `ns_url` TEXT NOT NULL,
-    `parameters` TEXT NOT NULL
+    `parameters` TEXT NOT NULL,
+    `backend_version` TEXT NOT NULL DEFAULT 'unknown'
 );
 
 -- INSERT: Allow duplicates per `ns_url` for `state` in ('error', 'success'), deny others.
