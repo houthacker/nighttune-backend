@@ -10,7 +10,7 @@ services:
     environment:
       ADMIN_KEY: <admin key>
       RATELIMIT_IP_HEADER: X-Forwarded-For
-      CORS_ORIGIN: https://nighttune.app
+      CORS_ORIGIN: https://nighttune.local
       ENABLE_ASSETS_SERVER: true
     volumes:
       - type: bind

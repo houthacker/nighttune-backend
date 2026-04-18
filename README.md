@@ -1,27 +1,148 @@
 # nighttune-backend
 
-The API server of nighttune.
+The API server of Nighttune.
 
 ## Table of Contents
 
-1. [Prerequisites](#1-prerequisites)
-    1. [Configure ufw](#configure-ufw)
-    2. [Install nginx](#install-nginx)
-    3. [Install certbot](#install-certbot-and-configure-certifciate)
+1. [Installation methods](#installing)
+    - [Docker](#using-docker)
+    - [Manually](#manually)
 
-### Installing
+## Installing
 
-#### 1. Prerequisites
+The Nighttune API backend can be run/installed manually, and by building and
+running a docker container. The easiest and fastest way to get up and running is by using docker.
 
-Please ensure the following prerequisites have been installed:
+### Using Docker
+
+To run the Nighttune backend in a docker container, you should be comfortable using
+the unix shell and the docker cli.
+
+<details>
+<summary>TLDR&semi;</summary>
+
+```bash
+git clone https://github.com/houthacker/nighttune-backend.git
+
+# Enter the repository root
+cd nighttune-backend
+
+# Either: prepare the required configuration directory structure in a directory of your choosing
+# and build the image using default values.
+./scripts/build-image.sh --prepare ~/nighttune-docker
+
+# Or, just prepare the directory and have the image pulled by docker compose.
+# Ensure that the pull_policy parameter is removed from the compose file in this case.
+./scripts/build-image.sh --prepare-only ~/nighttune-docker
+
+cd ~/nighttune-docker
+
+# Edit compose.yml and .env to your needs
+# ...
+# Run the container
+docker compose up -d
+```
+
+</details>
+
+#### 1. Install Docker
+
+To build the docker container, either [Docker Desktop](https://docs.docker.com/desktop/) or both
+[Docker Engine](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/)
+are required, so make sure you have either option installed first.
+
+##### Note on Windows
+
+Running Nighttune on Windows has not been tested so please report any issues you might encounter.
+Even if you're on Windows, you need access to bash. If you haven't yet, first install a tool
+like [Git for Windows](https://git-scm.com/install/windows) which includes git and bash, or install
+WSL which also includes git and bash, using PowerShell in administrator mode: `wsl --install`.
+
+#### 2. Building and running
+
+Checkout the repository:
+
+```bash
+git clone https://github.com/houthacker/nighttune-backend.git
+
+# Enter the repository root
+cd nighttune-backend
+```
+
+Then build the container, or pull it from the registry.
+
+```bash
+# If you want to, let the build script explain itself:
+./scripts/build-image.sh --help
+
+# Either: prepare the required configuration directory structure in a directory of your choosing
+# and build the image using default values.
+./scripts/build-image.sh --prepare ~/nighttune-docker
+
+# Or, just prepare the directory and pull the image.
+# Ensure that the pull_policy parameter is removed from the compose file in this case.
+./scripts/build-image.sh --prepare-only ~/nighttune-docker
+
+# Change into that directory and edit the configuration files to your needs.
+cd ~/nighttune-docker
+````
+
+#### 3. Run the container
+
+```bash
+# Change to the configuration directory
+cd ~/nighttune-docker
+
+# Run the container
+docker compose up -d
+
+# The container should now be reachable at http://localhost:3333
+```
+
+### Manually
+
+#### Prerequisites
+
+Please ensure the following prerequisites have been installed. For some tools there are well-known alternatives,
+but if you want to use those you're on your own.
 
 | Prerequisite | Notes |
 | :--- | :--- |
-| [Docker Engine](https://docs.docker.com/engine/install/) | |
-| [nvm](https://github.com/nvm-sh/nvm) | Node Version Manager |
-| [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. |
+| [Docker](https://docs.docker.com) | Required only if using the captcha service. |
+| [ufw](https://help.ubuntu.com/community/UFW) | Firewall. Required only if Nighttune will be accessed remotely. |
+| [npm](https://github.com/nvm-sh) | Node Version Manager |
+| [nginx](https://nginx.org) | HTTP web server. Required only if Nighttune will be accessed remotely. |
+| [certbot](https://certbot.eff.org/) | A commandline tool to automate certificate administration. Required only when using nginx. |
 
-### Configure ufw
+<details>
+<summary>Follow these steps if the captcha service is required.</summary>
+
+#### Docker
+
+Follow [step 1](#1-install-docker) to install docker on your machine.
+
+#### Configure Captcha service
+
+The frontend uses Cap for bot protection and the backend handles the verification.
+How to install and configure Cap is described at [Cap](https://capjs.js.org/guide/standalone/).
+
+##### Cap Docker Compose
+
+Copy the template [cap-compose.example.yaml](./examples/cap-compose.example.yaml) to a suitable
+directory in your vm and set the `ADMIN_KEY` environment variable to the admin key of your Cap
+installation. Ensure any directories mentioned in the compose file have been created.
+
+</details>
+
+<details>
+
+#### Configure ufw
+
+<summary>Follow these steps if your Nighttune instance will be accessed remotely.</summary>
+
+**Important**: In your compose file, ensure that the web service only listens on localhost
+(i.e. 127.0.0.1 or ::1), otherwise the web server can still be bypassed because nighttune
+will be listening on all interfaces.
 
 Deny all incoming traffic by default, but leave ssh, http and https open.
 
@@ -43,51 +164,43 @@ $ sudo ufw allow https
 $ sudo ufw default deny incoming
 ```
 
-### Configure Cap
+</details>
 
-The frontend uses Cap for bot protection and the backend handles the verification.
-How to install and configure Cap is described at [Cap](https://capjs.js.org/guide/standalone/).
+#### Checkout the nighttune-backend source code
 
-#### Cap Docker Compose
+```bash
+git clone https://github.com/houthacker/nighttune-backend.git
 
-Copy the template [cap-compose.example.yaml](./examples/cap-compose.example.yaml) to a suitable directory in your vm and set the `ADMIN_KEY` environment
-variable to the admin key of your Cap installation. Ensure any directories mentioned in the compose file have been created.
+# Enter the repository root
+cd nighttune-backend
+```
 
-### Copy .env file
+#### Copy .env file
 
-Copy your (production) .env file to a suitable directory in your vm. See [.env.example](./examples/.env.example) for its format.
+Copy your (production) .env file to a suitable directory in your vm.
+See [.env.example](./examples/.env.example) for its format.
 
 ```bash
 # Copy env file to nightscout
-$ scp .env.production nightscout.app:~
+$ scp .env.production nightscout.local:~
 ```
 
-### Ensure an initialized database exists
+#### Ensure an initialized database exists
 
+<!-- markdownlint-disable -->
 ```bash
-# Create a directory to hold the database
+# Create a directory to hold the database. Make sure it doesn't overlap with the repository directory.
 $ mkdir -p ~/nighttune-backend/data
 
 # Create or migrate the database
-$ docker run --rm --mount type=bind,src=/home/houthacker/nighttune-backend/data,dst=/data ghcr.io/houthacker/nighttune-backend:latest bash -c 'npx initdb /data/nighttune-backend-prod.db'
+$ docker run --rm --mount type=bind,src=/home/user/nighttune-backend/data,dst=/data ghcr.io/houthacker/nighttune-backend:latest bash -c 'npx initdb /data/nighttune-backend-prod.db'
 ```
+<!-- markdownlint-enable -->
 
-### Run the backend Docker container
+<details>
+<summary>Follow these steps if your Nighttune instance will be accessed remotely.</summary>
 
-Copy the template [compose.example.yaml](./examples/compose.example.yaml) to a suitable directory in your vm and run it using `docker compose up -d`. Optionally add a service for the [Nighttune frontend](https://github.com/houthacker/nighttune):
-
-```yaml
-services:
-  nighttune:
-    image: ghcr.io/houthacker/nighttune:latest
-    container_name: nighttune
-    restart: always
-    ports:
-      - "127.0.0.1:3000:3000"
-
-```
-
-### Install nginx
+#### Install nginx
 
 nighttune-backend uses `nginx` as a reverse proxy that also provides the ssl certificates using certbot.
 
@@ -116,7 +229,7 @@ $ sudo systemctl status nginx
             └─23468 "nginx: worker process"
 ```
 
-### Install certbot and configure certifciate
+#### Install certbot and configure certifciate
 
 Answer the questions asked by certbot and have your certificates deployed.
 
@@ -125,12 +238,16 @@ sudo apt install certbot python3-certbot-nginx
 sudo certbot --nginx
 ```
 
-### Add captcha.nighttune.app site config
+<details>
+<summary>Add captcha config if you require the captcha service.</summary>
+
+#### Add captcha site config
 
 ```bash
 server {
 
-  server_name captcha.nighttune.app;
+  # Update to your needs
+  server_name captcha.nighttune.local;
 
   location / {
     proxy_pass http://127.0.0.1:3334;
@@ -152,8 +269,8 @@ server {
   }
 
   listen 443 ssl; # managed by Certbot
-  ssl_certificate /etc/letsencrypt/live/nighttune.app/fullchain.pem; # managed by Certbot
-  ssl_certificate_key /etc/letsencrypt/live/nighttune.app/privkey.pem; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/nighttune.local/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/nighttune.local/privkey.pem; # managed by Certbot
   include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
@@ -161,28 +278,33 @@ server {
 }
 
 server {
-  if ($host = captcha.nighttune.app) {
+  if ($host = captcha.nighttune.local) {
       return 301 https://$host$request_uri;
   } # managed by Certbot
 
 
   listen 80;
 
-  server_name captcha.nighttune.app;
+  # Keep in sync with server_name at the top of this file.
+  server_name captcha.nighttune.local;
   return 404; # managed by Certbot
 }
 
 ```
 
-### Add api.nighttune.app site config
+</details>
 
-Edit the site config to allow reverse proxying to the backend (or docker container). An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
+#### Add backend site config
+
+Edit the site config to allow reverse proxying to the backend (or docker container).
+An example of this is shown below, assuming `$backend_ip` and `$backend_port` have been set correctly.
 Usually, `backend_ip` will be `127.0.0.1` and `backend_port` will be `3333`.
 
 ```bash
 server {
 
-  server_name api.nighttune.app;
+  # Update to your needs
+  server_name api.nighttune.local;
 
   location / {
     proxy_pass http://127.0.0.1:3333;
@@ -201,27 +323,28 @@ server {
   }
 
   listen 443 ssl; # managed by Certbot
-  ssl_certificate /etc/letsencrypt/live/nighttune.app/fullchain.pem; # managed by Certbot
-  ssl_certificate_key /etc/letsencrypt/live/nighttune.app/privkey.pem; # managed by Certbot
+  ssl_certificate /etc/letsencrypt/live/nighttune.local/fullchain.pem; # managed by Certbot
+  ssl_certificate_key /etc/letsencrypt/live/nighttune.local/privkey.pem; # managed by Certbot
   include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
   ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 }
 
 server {
-  if ($host = api.nighttune.app) {
+  if ($host = api.nighttune.local) {
       return 301 https://$host$request_uri;
   } # managed by Certbot
 
 
   listen 80;
 
-  server_name api.nighttune.app;
+  # Keep in sync with the server_name at the top of this file.
+  server_name api.nighttune.local;
   return 404; # managed by Certbot
 }
 
 ```
 
-### Check site-config
+#### Validate site-config
 
 If checking the site configuration is successful, reload nginx.
 
@@ -236,3 +359,4 @@ $ sudo systemctl reload nginx
 ```
 
 Afther this, the backend should be reachable at the location you configured; congrats!
+</details>

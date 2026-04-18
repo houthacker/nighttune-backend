@@ -3,6 +3,12 @@
 .vscode
 
 build/
+node_modules/
+tests/
+*.db
+*.db-*
+
+scripts/build-image.sh
 
 .env
 .env.*

@@ -25,8 +25,8 @@ db_schema.sql   - The path to the sql file containing the database schema.
 
 NOTE
 If the database already exists, re-initializing the database only executes 
-changes that have not yet been applied to the database. It doesn't touch 
-any data.
+changes that have not yet been applied to the database. Any pre-existing 
+data are migrated if necessary.
 EOF
 }
 
@@ -45,6 +45,10 @@ if [ ! -f $(which sqlite3) ]; then
     echo "Could not locate sqlite3, please install it first." >&2
 fi
 
-echo "Creating nighttune database at ${db_file}"
+if [ -f "${db_file}" ]; then
+    echo "Migrating nighttune database at ${db_file}"
+else
+    echo "Creating nighttune database at ${db_file}"
+fi
 sqlite3 ${db_file} < ${schema_file}
 echo "Database initialization successful"
