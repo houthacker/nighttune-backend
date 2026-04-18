@@ -2,12 +2,35 @@ name: nighttune-backend
 
 services:
   nighttune-backend:
-    image: ghcr.io/houthacker/nighttune-backend:main
+    # Pulling from the github image registry is also possible, in which
+    # case the image is ghcr.io/houthacker/nighttune-backend:latest
+    image: nighttune-backend:latest
+
+    # If you built the image yourself, use this policy to prevent
+    # pulling from a remote registry. Otherwise, remove this line.
+    pull_policy: never
     container_name: nighttune-backend
+
+    # Adding this environment might be required for image versions below 3.5.0.
+    #environment:
+    #  - NT_DB_PATH=<path_within_container>
+
     ports:
+      # By default, the port is only exposed to localhost.
+      # This is to prevent a direct connection with the internet when
+      # running on a host that is not behind a router. This is also
+      # practical if you want to run it behind a proxy with e.g. nginx.
+      #
+      # However, if you don't want this, just remove the ip address 
+      # and first colon.
       - "127.0.0.1:3333:3333"
     volumes:
-      - /home/user/nighttune-backend/.env.production:/app/.env
+
+      # Update to reflect the actual host path the .env file resides at.
+      # Must equal the DOTENV_CONFIG_PATH environment variable in your container.
+      - /home/user/nighttune-docker/config/.env:/app/.env
+
+      # Update to reflect the actual source directory to mount to.
       - type: bind
-        source: /home/user/nighttune-backend/data
+        source: /home/user/nighttune-docker/data
         target: /data
