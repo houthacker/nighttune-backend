@@ -211,6 +211,7 @@ sudo apt install nginx -y
 Check if nginx is running. The output should look like the
 following:
 
+<!-- markdownlint-disable -->
 ```bash
 $ sudo systemctl status nginx
 ● nginx.service - A high performance web server and a reverse proxy server
@@ -228,6 +229,7 @@ $ sudo systemctl status nginx
             ├─23467 "nginx: worker process"
             └─23468 "nginx: worker process"
 ```
+<!-- markdownlint-enable -->
 
 #### Install certbot and configure certifciate
 
