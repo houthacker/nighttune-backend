@@ -29,11 +29,11 @@ cd nighttune-backend
 
 # Either: prepare the required configuration directory structure in a directory of your choosing
 # and build the image using default values.
-./scripts/build-image.sh --prepare ~/nighttune-docker
+./scripts/docker-image.sh --prepare ~/nighttune-docker
 
 # Or, just prepare the directory and have the image pulled by docker compose.
 # Ensure that the pull_policy parameter is removed from the compose file in this case.
-./scripts/build-image.sh --prepare-only ~/nighttune-docker
+./scripts/docker-image.sh --prepare-only ~/nighttune-docker
 
 cd ~/nighttune-docker
 
@@ -73,15 +73,15 @@ Then build the container, or pull it from the registry.
 
 ```bash
 # If you want to, let the build script explain itself:
-./scripts/build-image.sh --help
+./scripts/docker-image.sh --help
 
 # Either: prepare the required configuration directory structure in a directory of your choosing
 # and build the image using default values.
-./scripts/build-image.sh --prepare ~/nighttune-docker
+./scripts/docker-image.sh --prepare ~/nighttune-docker
 
 # Or, just prepare the directory and pull the image.
 # Ensure that the pull_policy parameter is removed from the compose file in this case.
-./scripts/build-image.sh --prepare-only ~/nighttune-docker
+./scripts/docker-image.sh --prepare-only ~/nighttune-docker
 
 # Change into that directory and edit the configuration files to your needs.
 cd ~/nighttune-docker
