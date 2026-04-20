@@ -10,10 +10,16 @@
             "name": "nodemon",
             "request": "launch",
             "restart": true,
-            "runtimeExecutable": "concurrently",
+            "runtimeExecutable": "nodemon",
             "args": [
-                "\"npx tsc --watch\"",
-                "\"nodemon --env-file ${workspaceFolder}/.env.development.local ${workspaceFolder}/build/main.js\""
+                "--env-file",
+                "${workspaceFolder}/.env.development.local",
+                "-e",
+                "ts",
+                "--exec",
+                "node",
+                "--import=tsx",
+                "main.ts"
             ],
             "skipFiles": [
                 "<node_internals>/**"

@@ -1,10 +1,16 @@
-import { AccessDeniedError, NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT, NoSuchProfileError, ProfileModificationError, UnauthorizedError } from '../../models/nightscout.js'
-import { NightscoutApiV1 } from './v1.js'
+import { 
+    AccessDeniedError, 
+    NightscoutApi, 
+    NightscoutProfileStore as NightscoutProfileStoreT, 
+    ProfileModificationError, 
+    UnauthorizedError 
+} from '@models/nightscout.js'
+import { NightscoutApiV1 } from '@dao/nightscout/v1.js'
 
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import { type } from 'arktype'
 import { type HeadersInit } from 'node-fetch'
-import logger from '../../logger.js'
+import logger from '@/logger.js'
 
 type ProfileStore = typeof NightscoutProfileStoreT.infer
 type NightscoutAccessToken = string

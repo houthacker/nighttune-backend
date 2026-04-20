@@ -1,6 +1,6 @@
-import { AutotuneConfig, AutotuneErrorType, JobId } from '../models/job.js'
-import { NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT } from '../models/nightscout.js'
-import { AutotuneResult } from '../services/recommendationsParser.js'
+import { AutotuneConfig, AutotuneErrorType, JobId } from '@models/job.js'
+import { NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT } from '@models/nightscout.js'
+import { AutotuneResult } from '@services/recommendationsParser.js'
 
 type NightscoutProfileStore = typeof NightscoutProfileStoreT.infer
 

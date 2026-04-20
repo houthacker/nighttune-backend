@@ -1,5 +1,5 @@
-import { AutotuneResult } from 'src/services/recommendationsParser.js'
-import { FailedJob, JobMeta } from './job.js'
+import { AutotuneResult } from '@services/recommendationsParser.js'
+import { FailedJob, JobMeta } from '@models/job.js'
 
 export class GDPRUserData {
 

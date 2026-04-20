@@ -1,6 +1,6 @@
-import { NightscoutApi, NightscoutApiVersion } from '../../models/nightscout.js'
-import { NightscoutApiV1 } from './v1.js'
-import { NightscoutApiV3 } from './v3.js'
+import { NightscoutApi, NightscoutApiVersion } from '@models/nightscout.js'
+import { NightscoutApiV1 } from '@dao/nightscout/v1.js'
+import { NightscoutApiV3 } from '@dao/nightscout/v3.js'
 
 const INSTANCES: Map<number, NightscoutApi> = new Map()
 

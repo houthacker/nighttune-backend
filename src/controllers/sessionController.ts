@@ -1,9 +1,9 @@
 import { getIronSession } from 'iron-session';
-import { defaultSession } from '../models/session.js';
+import { defaultSession } from '@models/session.js';
 
 import type { IronSession, SessionOptions } from 'iron-session';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { SessionData } from '../models/session.js';
+import type { SessionData } from '@models/session.js';
 
 export const sessionOptions: SessionOptions = {
     password: process.env.NT_IRON_SESSION_SECRET!,

@@ -1,6 +1,6 @@
 import { type } from 'arktype'
-import { AutotuneErrorType, Unit, JobId, AutotuneConfig } from './job.js'
-import { AutotuneResult } from '../services/recommendationsParser.js'
+import { AutotuneErrorType, Unit, JobId, AutotuneConfig } from '@models/job.js'
+import { AutotuneResult } from '@services/recommendationsParser.js'
 
 export enum NightscoutApiVersion {
     /**

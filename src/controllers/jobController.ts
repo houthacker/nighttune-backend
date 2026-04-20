@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises'
 import { v4 as uuidv4 } from 'uuid'
-import { MailDao } from '../dao/mail.js'
-import { NightscoutDao } from '../dao/nightscout.js'
-import { SqliteDao, SqliteError } from '../dao/sqlite.js'
-import logger from '../logger.js'
+import { MailDao } from '@dao/mail.js'
+import { NightscoutDao } from '@dao/nightscout.js'
+import { SqliteDao, SqliteError } from '@dao/sqlite.js'
+import logger from '@/logger.js'
 
 import {
     AutotuneConfig,

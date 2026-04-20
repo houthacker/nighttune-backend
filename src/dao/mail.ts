@@ -4,8 +4,8 @@ import ejs from 'ejs'
 import Mailjet from 'node-mailjet'
 import { fileURLToPath } from 'node:url'
 
-import logger from '../logger.js'
-import { AutotuneResult, roundToNext } from '../services/recommendationsParser.js'
+import logger from '@/logger.js'
+import { AutotuneResult, roundToNext } from '@services/recommendationsParser.js'
 
 export interface MailDao {
     sendReport(recipient: string, report: AutotuneResult): Promise<boolean>;

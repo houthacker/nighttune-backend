@@ -4,10 +4,19 @@ import { strict as assert } from 'node:assert'
 import { tz } from '@date-fns/tz'
 import { type } from 'arktype'
 import { constructNow, fromUnixTime, getUnixTime } from 'date-fns'
-import logger from '../logger.js'
-import { GDPRUserData } from '../models/gdpr.js'
-import { AutotuneErrorType, AutotuneJob, AutotuneJob as AutotuneJobT, FailedJob, JobId, JobMeta, POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '../models/job.js'
-import { AutotuneOptions, AutotuneResult } from '../services/recommendationsParser.js'
+import logger from '@/logger.js'
+import { GDPRUserData } from '@models/gdpr.js'
+import { 
+    AutotuneErrorType, 
+    AutotuneJob, 
+    AutotuneJob as AutotuneJobT, 
+    FailedJob, 
+    JobId, 
+    JobMeta, 
+    POST_PROCESSING_REPLACER, 
+    POST_PROCESSING_REVIVER 
+} from '@models/job.js'
+import { AutotuneResult } from '@services/recommendationsParser.js'
 
 export { SqliteError } from 'better-sqlite3'
 export type JobStatus = 'submitted' | 'processing' | 'error'
@@ -64,7 +73,6 @@ export class SqliteDao {
             this.db.pragma('foreign_keys = ON')
         } else {
             assert(isDatabase(arg), new TypeError('Cannot create SqliteDao: constructor argument must be a path string or an sqlite.Database'))
-            
             arg.pragma('journal_mode = WAL')
             arg.pragma('foreign_keys = ON')
             this.db = arg

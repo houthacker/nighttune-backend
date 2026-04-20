@@ -1,5 +1,5 @@
-import { GDPRUserData } from '../models/gdpr.js'
-import { SqliteDao } from '../dao/sqlite.js'
+import { GDPRUserData } from '@models/gdpr.js'
+import { SqliteDao } from '@dao/sqlite.js'
 
 
 export class GDPRController {

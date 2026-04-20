@@ -3,7 +3,10 @@
 // Do *not* move this import downward.
 import './instrumentation.js'
 
-import { OptionalService } from './src/models/services.js'
+import 'dotenv/config'
+import dotenv from 'dotenv'
+
+import { OptionalService } from '@models/services.js'
 
 // Declare global storage for enabled optional services
 declare global {
@@ -11,20 +14,19 @@ declare global {
 }
 
 import compression from 'compression'
-import dotenv from 'dotenv'
 import express, { NextFunction, Request, Response } from 'express'
 
 import RateLimit from 'express-rate-limit'
 
-import logger from './src/logger.js'
-import captchaRouter from './src/routes/captcha.js'
-import gdprRouter from './src/routes/gdpr.js'
-import jobRouter from './src/routes/job.js'
-import profileRouter from './src/routes/profile.js'
-import verifyRouter from './src/routes/verify.js'
+import logger from '@/logger.js'
+import captchaRouter from '@routes/captcha.js'
+import gdprRouter from '@routes/gdpr.js'
+import jobRouter from '@routes/job.js'
+import profileRouter from '@routes/profile.js'
+import verifyRouter from '@routes/verify.js'
 
-import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from './src/models/job.js'
-import { runIfEnabled, scanEnabledOptionalServices } from './src/utils/optionalServiceUtil.js'
+import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '@models/job.js'
+import { runIfEnabled, scanEnabledOptionalServices } from '@utils/optionalServiceUtil.js'
 
 // Read .env file
 dotenv.config()

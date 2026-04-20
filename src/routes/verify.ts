@@ -2,14 +2,14 @@ import { type } from 'arktype'
 import cors from 'cors'
 import { Router } from 'express'
 
-import { getSession } from '../controllers/sessionController.js'
-import { NightscoutDao } from '../dao/nightscout.js'
-import { NightscoutApiFactory } from '../dao/nightscout/api.js'
-import { VerificationRequest } from '../models/verify.js'
+import { getSession } from '@controllers/sessionController.js'
+import { NightscoutDao } from '@dao/nightscout.js'
+import { NightscoutApiFactory } from '@dao/nightscout/api.js'
+import { VerificationRequest } from '@models/verify.js'
 
 import type { CorsOptions } from 'cors'
 import type { Request, Response } from 'express'
-import { NightscoutApiVersion } from '../models/nightscout.js'
+import { NightscoutApiVersion } from '@models/nightscout.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],

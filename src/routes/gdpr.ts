@@ -5,13 +5,13 @@ import { Router } from 'express'
 import cors from 'cors'
 import compression from 'compression'
 
-import { GDPRController } from '../controllers/gdprController.js'
-import { getSession } from '../controllers/sessionController.js'
-import { SqliteDao } from '../dao/sqlite.js'
-import logger from '../logger.js'
-import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from '../models/verify.js'
-import { OptionalService } from '../models/services.js'
-import { isServiceEnabled } from '../utils/optionalServiceUtil.js'
+import { GDPRController } from '@controllers/gdprController.js'
+import { getSession } from '@controllers/sessionController.js'
+import { SqliteDao } from '@dao/sqlite.js'
+import logger from '@/logger.js'
+import { NIGHTSCOUT_TOKEN_MIN_LENGTH } from '@models/verify.js'
+import { OptionalService } from '@models/services.js'
+import { isServiceEnabled } from '@utils/optionalServiceUtil.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],
