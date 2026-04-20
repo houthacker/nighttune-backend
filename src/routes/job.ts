@@ -6,19 +6,32 @@ import cors from 'cors'
 import { Router } from 'express'
 
 import { IronSession } from 'iron-session'
-import { JobController } from '../controllers/jobController.js'
-import { getSession } from '../controllers/sessionController.js'
-import { MailjetDao } from '../dao/mail.js'
-import { NightscoutDao } from '../dao/nightscout.js'
-import { NightscoutApiFactory } from '../dao/nightscout/api.js'
-import { SqliteDao } from '../dao/sqlite.js'
-import logger from '../logger.js'
-import { AutotuneJob, CreateProfileRequest, GenericDatabaseError, JobAlreadyEnqueuedError, JobExecutionError, NoSuchJobError } from '../models/job.js'
-import { AccessDeniedError, NightscoutApiVersion, NoSuchProfileError, ProfileAlreadyExistsError, UnauthorizedError } from '../models/nightscout.js'
-import { SessionData } from '../models/session.js'
-import { ProfileService } from '../services/profileService.js'
-import { OptionalService } from '../models/services.js'
-import { isServiceEnabled } from '../utils/optionalServiceUtil.js'
+import { JobController } from '@controllers/jobController.js'
+import { getSession } from '@controllers/sessionController.js'
+import { MailjetDao } from '@dao/mail.js'
+import { NightscoutDao } from '@dao/nightscout.js'
+import { NightscoutApiFactory } from '@dao/nightscout/api.js'
+import { SqliteDao } from '@dao/sqlite.js'
+import logger from '@/logger.js'
+import { 
+    AutotuneJob, 
+    CreateProfileRequest, 
+    GenericDatabaseError, 
+    JobAlreadyEnqueuedError, 
+    JobExecutionError, 
+    NoSuchJobError 
+} from '@models/job.js'
+import { 
+    AccessDeniedError, 
+    NightscoutApiVersion, 
+    NoSuchProfileError, 
+    ProfileAlreadyExistsError, 
+    UnauthorizedError 
+} from '@models/nightscout.js'
+import { SessionData } from '@models/session.js'
+import { ProfileService } from '@services/profileService.js'
+import { OptionalService } from '@models/services.js'
+import { isServiceEnabled } from '@utils/optionalServiceUtil.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],

@@ -1,4 +1,4 @@
-import { NightscoutApiVersion } from './nightscout.js'
+import { NightscoutApiVersion } from '@models/nightscout.js'
 
 export interface SessionData {
 

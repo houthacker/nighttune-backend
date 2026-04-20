@@ -1,4 +1,4 @@
-import { OptionalService, unsafeIsEnabled } from '../models/services.js'
+import { OptionalService, unsafeIsEnabled } from '@models/services.js'
 
 /**
  * Scan the process environment to determine enabled optional services for the current runtime.

@@ -1,5 +1,5 @@
 import { type } from 'arktype'
-import { NightscoutApiVersion } from './nightscout.js'
+import { NightscoutApiVersion } from '@models/nightscout.js'
 
 // The minimum length of a Nightscout access token (16 + '-' + abbreviated name.)
 export const NIGHTSCOUT_TOKEN_MIN_LENGTH: number = 18

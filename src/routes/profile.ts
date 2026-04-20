@@ -1,11 +1,11 @@
 import cors from 'cors'
 import { Router } from 'express'
 
-import { getSession } from '../controllers/sessionController.js'
+import { getSession } from '@controllers/sessionController.js'
 
 import type { CorsOptions } from 'cors'
 import type { Request, Response } from 'express'
-import { NightscoutApiFactory } from '../dao/nightscout/api.js'
+import { NightscoutApiFactory } from '@dao/nightscout/api.js'
 
 const corsOptions: CorsOptions = {
     origin: process.env.NT_CORS_ALLOWED_ORIGINS?.split(',') || [],

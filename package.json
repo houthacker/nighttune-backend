@@ -46,6 +46,8 @@
     "@types/node-fetch": "^2.6.13",
     "concurrently": "^9.2.1",
     "copyfiles": "^2.4.1",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
@@ -65,12 +67,12 @@
     "initdb": "scripts/initdb.sh"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias -p tsconfig.json",
     "postinstall": "npm i -g oref0 @dotenvx/dotenvx",
     "postbuild": "npx copyfiles ./src/templates/*.ejs ./build",
     "initdb": "./scripts/initdb.sh",
     "start": "dotenvx run --convention=nextjs -- node build/main.js",
-    "dev": "dotenvx run --convention=nextjs -- concurrently \"npx tsc --watch\" \"nodemon build/main.js\" ",
+    "dev": "dotenvx run --convention=nextjs -- nodemon -e ts --exec node --import=tsx main.ts ",
     "test": "node --import tsx --test tests/**/*test.ts"
   },
   "type": "module",

@@ -8,11 +8,11 @@ import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { AutotuneConfig, AutotuneErrorType, AutotuneJob as AutotuneJobT } from '../../models/job.js'
-import { AutotuneCallback, NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT, UnauthorizedError } from '../../models/nightscout.js'
-import { AutotuneResult, BasalRecommendation, PostProcessType } from '../../services/recommendationsParser.js'
+import { AutotuneConfig, AutotuneErrorType, AutotuneJob as AutotuneJobT } from '@models/job.js'
+import { AutotuneCallback, NightscoutApi, NightscoutProfileStore as NightscoutProfileStoreT } from '@models/nightscout.js'
+import { AutotuneResult, BasalRecommendation, PostProcessType } from '@services/recommendationsParser.js'
 
-import logger from '../../logger.js'
+import logger from '@/logger.js'
 
 type ProfileStore = typeof NightscoutProfileStoreT.infer
 type SmoothingLevel = typeof AutotuneJobT.infer.settings.basal_smoothing

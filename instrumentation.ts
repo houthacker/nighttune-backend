@@ -8,7 +8,7 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { getNodeAutoInstrumentations, getResourceDetectors } from '@opentelemetry/auto-instrumentations-node'
 import { TraceIdRatioBasedSampler } from '@opentelemetry/sdk-trace-node'
 
-import { OptionalService, unsafeIsEnabled } from './src/models/services.js'
+import { OptionalService, unsafeIsEnabled } from '@models/services.js'
 
 let sdk: NodeSDK | undefined = undefined
 

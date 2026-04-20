@@ -1,8 +1,17 @@
 {
     "compilerOptions": {
-        "baseUrl": "./",
         "exactOptionalPropertyTypes": true,
         "outDir": "build",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@controllers/*": ["./src/controllers/*"],
+            "@dao/*": ["./src/dao/*"],
+            "@models/*": ["./src/models/*"],
+            "@routes/*": ["./src/routes/*"],
+            "@services/*": ["./src/services/*"],
+            "@templates/*": ["./src/templates/*"],
+            "@utils/*": ["./src/utils/*"]
+        },
         "sourceMap": true,
         "strict": true,
     },

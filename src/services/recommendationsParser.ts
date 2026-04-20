@@ -3,7 +3,7 @@ import { parse } from 'date-fns'
 import { tz } from '@date-fns/tz'
 
 import type { PathLike } from 'node:fs'
-import { JobId } from '../models/job.js'
+import { JobId } from '@models/job.js'
 
 
 const ISF_LINE_START = 'ISF'

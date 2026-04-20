@@ -1,7 +1,7 @@
 
 import fetch from 'node-fetch'
 
-import logger from '../logger.js'
+import logger from '@/logger.js'
 
 export interface CaptchaValidation {
     success: boolean,
