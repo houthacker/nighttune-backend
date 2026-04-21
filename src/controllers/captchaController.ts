@@ -23,7 +23,7 @@ export async function validateCaptcha(token: string, remote_ip: string): Promise
 
         return await response.json() as CaptchaValidation
     } catch (error) {
-        logger.error(`Captcha validation error:\n${JSON.stringify(error)}`)
+        logger.error('Captcha validation error', error)
         return { success: false } as CaptchaValidation
     }
 }

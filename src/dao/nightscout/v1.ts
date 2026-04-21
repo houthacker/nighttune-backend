@@ -127,7 +127,7 @@ export class NightscoutApiV1 implements NightscoutApi {
 
             logger.warn(`Verification of Nightscout API at '${url.href}' failed: HTTP ${response.status} (${response.statusText}) `)
         } catch (error: any) {
-            logger.error(`Verification of Nightscout API at '${url.href}' failed: \n${JSON.stringify(error)}`)
+            logger.error(`Verification of Nightscout API at '${url.href}' failed`, error)
         }
         
         return false;
@@ -250,7 +250,7 @@ export class NightscoutApiV1 implements NightscoutApi {
                 try {
                     smoothen(config.job.settings.basal_smoothing, recommendations.find_basal())
                 } catch (error: any) {
-                    logger.error(`[job ${config.id}] Smoothing failed:\n${JSON.stringify(error)}`)
+                    logger.error(`[job ${config.id}] Smoothing failed`, error)
                 }
                 
                 await callback(null, recommendations)                

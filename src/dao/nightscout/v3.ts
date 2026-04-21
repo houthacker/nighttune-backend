@@ -109,7 +109,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             logger.warn(`Verification of Nightscout API at '${url.href}' failed: HTTP ${response.status} (${response.statusText}) `)
             return false
         } catch (error: any) {
-            logger.error(`Verification of Nightscout API at '${url.href}' failed: \n${JSON.stringify(error)}`)
+            logger.error(`Verification of Nightscout API at '${url.href}' failed`, error)
         }
 
         return false
@@ -177,7 +177,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             }
 
         } catch (error: any) {
-            logger.error(`Creating profile at ${url.href} failed: ${JSON.stringify(error)}`)
+            logger.error(`Creating profile at ${url.href} failed`, error)
             throw error
         }
     }
