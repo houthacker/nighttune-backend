@@ -65,7 +65,7 @@ router.get('/', compression(), cors(corsOptions), async (request: Request, respo
         const data = controller.retrieveData(new URL(session.verifiedNightscoutUrl!))
         response.status(200).json({ data })
     } catch (error: any) {
-        logger.error(`Error while retrieving GDPR data for url [${session.verifiedNightscoutUrl}]:\n${JSON.stringify(error)}`)
+        logger.error(`Error while retrieving GDPR data for url [${session.verifiedNightscoutUrl}]`, error)
         response.status(500).json({ message: 'Error while retrieving all GDPR data.'})
     }
 })
