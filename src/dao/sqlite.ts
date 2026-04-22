@@ -178,7 +178,7 @@ export class SqliteDao {
     }
 
     /**
-     * Executes the given statement within a transcation. The transaction is rolled back
+     * Executes the given statement within a transaction. The transaction is rolled back
      * if an error occurs and otherwise committed.
      * 
      * @param sql The sql statement to execute.

@@ -231,7 +231,7 @@ $ sudo systemctl status nginx
 ```
 <!-- markdownlint-enable -->
 
-#### Install certbot and configure certifciate
+#### Install certbot and configure certificate
 
 Answer the questions asked by certbot and have your certificates deployed.
 
@@ -360,5 +360,5 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 $ sudo systemctl reload nginx
 ```
 
-Afther this, the backend should be reachable at the location you configured; congrats!
+After this, the backend should be reachable at the location you configured; congrats!
 </details>
