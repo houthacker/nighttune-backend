@@ -36,7 +36,7 @@ OPTIONS
                               Note that the given path must *not* exist, otherwise preparation will not continue.
 
 NOTE
-If the databse doesn't exist, it will be created when the container boots. 
+If the database doesn't exist, it will be created when the container boots. 
 Otherwise, only changes that have not yet been applied to the database are executed. 
 Any pre-existing data are migrated if necessary.
 
@@ -78,9 +78,16 @@ prepare_directories () {
 require_docker_running () {
     docker info &> /dev/null
     if [ "$?" -ne 0 ]; then
-        if [ ! -e '/var/run/docker.sock' ]; then
-            echo >&2 "Docker seems not to be running, please start it first."
-        else 
+        # Check known socket paths, including WSL2 Docker Desktop locations.
+        if [ ! -e '/var/run/docker.sock' ] && \
+           [ ! -e "${HOME}/.docker/desktop/docker.sock" ] && \
+           [ ! -e '/mnt/wsl/docker-desktop/shared-sockets/guest-services/backend.sock' ]; then
+            if grep -qi microsoft /proc/version 2>/dev/null; then
+                echo >&2 "Docker seems not to be running. If you are using Docker Desktop on Windows, ensure WSL integration is enabled for this distro in Docker Desktop settings (Settings > Resources > WSL Integration)."
+            else
+                echo >&2 "Docker seems not to be running, please start it first."
+            fi
+        else
             echo >&2 "Could not successfully retrieve docker status, please ensure it is running without error."
         fi
 

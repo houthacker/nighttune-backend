@@ -12,7 +12,7 @@ const CR_LINE_START = 'Carb Ratio'
 /**
  * Checks whether the given string is numeric.
  * @param str The string to test.
- * @returns `true` if the string is numberic, `false` otherwise.
+ * @returns `true` if the string is numeric, `false` otherwise.
  */
 function is_numeric(str: string): boolean {
     return !isNaN(Number(str));
@@ -211,7 +211,7 @@ export class AutotuneResult {
     }
 
     /**
-     * Finds the Insuline Sensivitiy Factor recommendation.
+     * Finds the Insulin Sensitivity Factor recommendation.
      * @returns The ISF recommendation, or `{}` if no such recommendation exists.
      */
     find_isf(): Recommendation {

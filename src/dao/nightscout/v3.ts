@@ -143,7 +143,7 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             logger.warn(`Failed to fetch user profiles from ${profileStoreUrl.href}: HTTP ${response.status}: ${response.statusText}`)
             return Promise.reject(new Error(`Failed to fetch user profiles: NS instance returned HTTP error status ${response.status}`))
         } catch (error: any) {
-            logger.warn(`Error while fethching user profiles from ${profileStoreUrl.href}:\n${JSON.stringify(error)}`)
+            logger.warn(`Error while fetching user profiles from ${profileStoreUrl.href}:\n${JSON.stringify(error)}`)
             return Promise.reject(new Error('Error while fetching user profiles.'))
         }
     }
