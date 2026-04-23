@@ -37,9 +37,7 @@ export function isServiceEnabled(service: OptionalService): boolean {
 export function runIfEnabled(service: OptionalService, fn: () => void, elseFn: (() => void) | undefined = undefined): void {
     if (isServiceEnabled(service)) {
         fn()
-    } else {
-        if (elseFn !== undefined) {
-            elseFn()
-        }
+    } else if (elseFn !== undefined) {
+        elseFn()
     }
 }
