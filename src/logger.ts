@@ -1,9 +1,9 @@
 import { createLogger, format, transports } from 'winston'
 
-const { colorize, combine, errors, json, timestamp } = format
+const { colorize, combine, errors, timestamp } = format
 
 const logger = createLogger({
-    level: process.env.NT_LOGGER_LOG_LEVEL!,
+    level: process.env.NT_LOGGER_LOG_LEVEL ?? 'info',
     format: combine(
         colorize(),
         timestamp({
@@ -16,7 +16,11 @@ const logger = createLogger({
     ),
     transports: [new transports.Console({
         format: format.printf(info => {
-            let message = `${info.timestamp} [${info.level}]: ${info.message} ${info.stack}`
+            let message = `${info.timestamp} [${info.level}]: ${info.message}`
+
+            if (info.stack) {
+                message += ` ${info.stack}`
+            }
 
             if (info.cause) {
                 const c = info.cause as any
