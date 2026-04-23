@@ -27,9 +27,20 @@ import verifyRouter from '@routes/verify.js'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '@models/job.js'
 import { runIfEnabled, scanEnabledOptionalServices } from '@utils/optionalServiceUtil.js'
+import { exitIfMissing } from '@utils/environment.js'
 
 // Read .env file
 dotenv.config()
+
+// Check for missing, mandatory env vars
+exitIfMissing([
+    'NODE_ENV', 
+    'NT_AUTOTUNE_RECOMMENDATIONS_FILE', 
+    'NT_CORS_ALLOWED_ORIGINS',
+    'NT_DB_PATH', 
+    'NT_IRON_SESSION_COOKIE_DOMAIN',
+    'NT_IRON_SESSION_SECRET',
+])
 
 // Scan if optional services have been enabled and cache the result.
 scanEnabledOptionalServices()

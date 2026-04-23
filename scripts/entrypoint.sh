@@ -12,7 +12,7 @@ check_env () {
     for v in ${MANDATORY_ENV_VARS[@]}; 
     do
         if [ -z "${!v}" ]; then
-            echo "Missing mandatory environment variable '$v'; aborting" >&2
+            echo "Missing mandatory environment variable '$v' in docker container environment; aborting" >&2
             return 1
         fi
     done
@@ -24,4 +24,4 @@ check_env
 source /app/scripts/initdb.sh ${NT_DB_PATH} /app/src/config/db.sql
 
 # Finally, start the app.
-npm start
+exec npm start
