@@ -152,13 +152,36 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
         const profileUrl = new URL('/api/v3/profile', url)
 
         try {
+            const now = Date.now()
+            const normalizedPayload = {
+                ...profile,
+                date: now,
+                app: typeof profile.app === 'string' && profile.app.trim().length > 0
+                    ? profile.app
+                    : 'Nighttune',
+            }
+
+            // API v3 create rejects immutable/server-managed fields in client payload.
+            // Remove them here.
+            const payloadForCreate = {...normalizedPayload} as Record<string, unknown>
+            delete payloadForCreate._id
+            delete payloadForCreate.identifier
+            delete payloadForCreate.utcOffset
+            delete payloadForCreate.srvCreated
+            delete payloadForCreate.srvModified
+            delete payloadForCreate.subject
+            delete payloadForCreate.modifiedBy
+            delete payloadForCreate.isValid
+
+            const payload = payloadForCreate as ProfileStore
+
             const headers = {
                 'Content-Type' : 'application/json',
                 ...await this.requiredHeaders(url, token)
             }
             const response = await fetch(profileUrl, {
                 method: 'POST',
-                body: JSON.stringify(profile),
+                body: JSON.stringify(payload),
                 headers
             })
 
@@ -171,7 +194,8 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
                 case 403: throw new AccessDeniedError(url.href)
                 case 422: throw new ProfileModificationError(url.href)
                 default:
-                    const msg = `Could not add profile to Nightscout site at ${url.href}: HTTP response code was ${response.status}`
+                    const responseText = await response.text()
+                    const msg = `Could not add profile to Nightscout site at ${url.href}: HTTP response code was ${response.status}. Nightscout response: ${responseText}`
                     logger.error(msg)
                     return Promise.reject(new Error(msg))
             }
