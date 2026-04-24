@@ -167,6 +167,8 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             delete payloadForCreate._id
             delete payloadForCreate.identifier
             delete payloadForCreate.utcOffset
+            delete payloadForCreate.eventType
+            delete payloadForCreate.device
             delete payloadForCreate.srvCreated
             delete payloadForCreate.srvModified
             delete payloadForCreate.subject
