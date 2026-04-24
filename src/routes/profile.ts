@@ -29,7 +29,9 @@ router.get('/all', cors(corsOptions), async (request: Request, response: Respons
         
         try {
             const profiles = await nightscout.profileStore(new URL(session.verifiedNightscoutUrl!), session.verifiedNightscoutToken)
-            response.status(200).json(profiles)
+            response
+                .setHeader('Cache-Control', 'no-store')
+                .status(200).json(profiles)
         } catch (error: any) {
             response.status(500).json({ message: error.message})
         }
