@@ -32,8 +32,14 @@ SHELL [ "/bin/bash", "-c" ]
 
 # Install packages required for running
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates sqlite3 jq bc \
+    && apt-get install -y --no-install-recommends curl ca-certificates sqlite3 jq bc locales \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
+
+RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 WORKDIR /app
 COPY --from=builder /app /app
@@ -41,11 +47,9 @@ COPY --from=builder /autotune/oref0 /autotune/oref0
 COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Move the .sqliterc file to the home directory
-RUN mv /app/.sqliterc ~/
-
-# Set the default shell to bash
-RUN chsh -s /bin/bash
+# Move the .sqliterc file to the home directory, and 
+# set the default shell to bash
+RUN mv /app/.sqliterc ~/ && chsh -s /bin/bash
 
 # Can be overridden using --build-arg NT_VERSION=..., NT_DB_PATH=..., etc
 # These are required by scripts/build-image.sh
