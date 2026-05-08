@@ -14,7 +14,7 @@
     "@opentelemetry/sdk-logs": "^0.215.0",
     "@opentelemetry/sdk-node": "^0.215.0",
     "@opentelemetry/sdk-trace-node": "^2.7.0",
-    "@opentelemetry/winston-transport": "^0.25.0",
+    "@opentelemetry/winston-transport": "^0.27.0",
     "@tsconfig/node24": "^24.0.4",
     "arktype": "^2.1.29",
     "better-sqlite3": "^12.9.0",
