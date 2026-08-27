@@ -26,6 +26,19 @@ export class NightscoutDao {
         return await this.api.verify(url, token)
     }
 
+    /**
+     * Validates that the Nightscout instance retains at least `days` days of data.
+     * 
+     * @param url The Nightscout base url.
+     * @param days The amount of days of data required.
+     * @param timezone The IANA time zone to calculate the timestamp for data availability.
+     * @param token The optional access token. Required if the Nightscout instance is locked down.
+     * @returns Whether the Nightscout instance has the required amount of data.
+     */
+    async haveRetainedData(url: URL, days: number, timezone: string, token?: string): Promise<boolean> {
+        return await this.api.haveRetainedData(url, days, timezone, token)
+    }
+
     async profileStore(url: URL, token?: string): Promise<NightscoutProfileStore> {
         return await this.api.profileStore(url, token)
     }

@@ -146,6 +146,17 @@ export interface NightscoutApi {
     verify(url: URL, token?: string): Promise<boolean>
 
     /**
+     * Validates that the Nightscout instance has at least `days` days of data.
+     * 
+     * @param url The Nightscout base url.
+     * @param days The amount of days of data required.
+     * @param timezone The time zone to calculate the timestamp for data availability. Defaults to `"UTC"`.
+     * @param token The optional access token. Required if the Nightscout instance is locked down.
+     * @returns Whether the Nightscout instance has the required amount of data.
+     */
+    haveRetainedData(url: URL, days: number, timezone: string, token?: string): Promise<boolean>
+
+    /**
      * Retrieve the latest Nightscout profile store.
      * 
      * @param url The Nightscout base url.

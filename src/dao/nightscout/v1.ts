@@ -1,6 +1,6 @@
 import { tz } from '@date-fns/tz'
 import { type } from 'arktype'
-import { format, startOfYesterday, subDays } from 'date-fns'
+import { format, startOfYesterday, subDays, startOfToday, getTime } from 'date-fns'
 import { sgg } from 'ml-savitzky-golay-generalized'
 import { spawn } from 'node:child_process'
 import { subtle } from 'node:crypto'
@@ -131,6 +131,33 @@ export class NightscoutApiV1 implements NightscoutApi {
         }
         
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async haveRetainedData(url: URL, days: number, timezone: string, token?: string): Promise<boolean> {
+        const today = startOfToday({ in: tz(timezone) })
+        const earliest = subDays(today, days)
+
+        const tokenizedUrl = await NightscoutApiV1.addToken(new URL('api/v1/entries/sgv', url), token)
+        tokenizedUrl.searchParams.append('date$lt', getTime(earliest).toString())
+        tokenizedUrl.searchParams.append('count', '1')
+
+        try {
+            const response = await fetch(tokenizedUrl)
+
+            if (response.ok) {
+                const body = await response.json()
+                return Array.isArray(body) && body.length != 0
+            }
+
+            logger.warn(`Nightscout instance at ${url.href} does not have ${days} days of data.`)
+        } catch (error: any) {
+            logger.warn(`Error while checking data availability from ${tokenizedUrl.href}:\n${JSON.stringify(error)}`)
+        }
+
+        return false
     }
 
     /**

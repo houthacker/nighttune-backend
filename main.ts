@@ -20,6 +20,7 @@ import RateLimit from 'express-rate-limit'
 
 import logger from '@/logger.js'
 import captchaRouter from '@routes/captcha.js'
+import entriesRouter from '@routes/entries.js'
 import gdprRouter from '@routes/gdpr.js'
 import jobRouter from '@routes/job.js'
 import profileRouter from '@routes/profile.js'
@@ -91,6 +92,7 @@ app.set('json replacer', POST_PROCESSING_REPLACER)
 
 // Routers
 runIfEnabled(OptionalService.Captcha, () => app.use('/captcha', captchaRouter))
+app.use('/entries', entriesRouter)
 app.use('/job', jobRouter)
 app.use('/verify', verifyRouter)
 app.use('/profile', profileRouter)

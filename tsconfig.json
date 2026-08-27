@@ -15,6 +15,6 @@
         "sourceMap": true,
         "strict": true,
     },
-    "extends": "@tsconfig/node24",
+    "extends": "@tsconfig/node24/tsconfig.json",
     "include": ["./src/**/*", "./main.ts"],
 }
