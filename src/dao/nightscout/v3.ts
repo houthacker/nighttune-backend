@@ -9,6 +9,8 @@ import { NightscoutApiV1 } from '@dao/nightscout/v1.js'
 
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 import { type } from 'arktype'
+import { subDays, startOfToday, getTime } from 'date-fns'
+import { tz } from '@date-fns/tz'
 import { type HeadersInit } from 'node-fetch'
 import logger from '@/logger.js'
 
@@ -110,6 +112,37 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             return false
         } catch (error: any) {
             logger.error(`Verification of Nightscout API at '${url.href}' failed`, error)
+        }
+
+        return false
+    }
+
+    /**
+     * @inheritdoc
+     */
+    override async haveRetainedData(url: URL, days: number, timezone: string, token?: string): Promise<boolean> {
+        const today = startOfToday({ in: tz(timezone) })
+        const earliest = subDays(today, days)
+
+        const entriesUrl = new URL('/api/v3/entries', url)
+        entriesUrl.searchParams.append('date$lt', getTime(earliest).toString())
+        entriesUrl.searchParams.append('sort$desc', 'date')
+        entriesUrl.searchParams.append('limit', '1')
+        entriesUrl.searchParams.append('skip', '0')
+        entriesUrl.searchParams.append('fields', '_all')
+        
+        try {
+            const headers = await this.requiredHeaders(url, token)
+            const response = await fetch(entriesUrl, { headers } as RequestInit)
+
+            if (response.ok) {
+                const body = await response.json()
+                return Array.isArray(body) && body.length != 0
+            }
+
+            logger.warn(`Nightscout instance at ${url.href} does not have ${days} days of data.`)
+        } catch (error: any) {
+            logger.warn(`Error while checking data availability from ${entriesUrl.href}:\n${JSON.stringify(error)}`)
         }
 
         return false
