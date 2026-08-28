@@ -61,7 +61,7 @@ const swaggerSpec = swaggerJSDoc({
         openapi: '3.0.0',
         info: {
             title: 'Nighttune API',
-            version: '3.6.1',
+            version: '3.7.0',
         },
     },
     apis: ['./src/routes/*.ts']
