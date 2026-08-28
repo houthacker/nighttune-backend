@@ -31,7 +31,7 @@ if (unsafeIsEnabled(OptionalService.DistributedTracing)) {
         resourceDetectors: getResourceDetectors(),
         sampler: new TraceIdRatioBasedSampler(1.0),
         traceExporter,
-        logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
+        logRecordProcessors: [new BatchLogRecordProcessor({ exporter: logExporter})],
         instrumentations: [getNodeAutoInstrumentations({
             '@opentelemetry/instrumentation-net': { enabled: false }
         }), new WinstonInstrumentation({})]
