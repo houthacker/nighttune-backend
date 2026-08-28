@@ -140,7 +140,7 @@ export class NightscoutApiV1 implements NightscoutApi {
         const today = startOfToday({ in: tz(timezone) })
         const earliest = subDays(today, days)
 
-        const tokenizedUrl = await NightscoutApiV1.addToken(new URL('api/v1/entries/sgv', url), token)
+        const tokenizedUrl = await NightscoutApiV1.addToken(new URL('api/v1/entries/sgv.json', url), token)
         tokenizedUrl.searchParams.append('date$lt', getTime(earliest).toString())
         tokenizedUrl.searchParams.append('count', '1')
 
@@ -148,7 +148,7 @@ export class NightscoutApiV1 implements NightscoutApi {
             const response = await fetch(tokenizedUrl)
 
             if (response.ok) {
-                const body = await response.json()
+                const body = await response.json() as any
                 return Array.isArray(body) && body.length != 0
             }
 

@@ -21,7 +21,41 @@ const router = Router()
 router.options('/', cors(corsOptions))
 router.options('/have-retained-data', cors(corsOptions))
 
-// POST validate available days of data in NS instance.
+/**
+ * @openapi
+ * /entries/have-retained-data:
+ *  post:
+ *      summary: Check if the related Nightscout instance retains the requested days of data.
+ *      tags:
+ *          - entries
+ *      requestBody:
+ *          required:
+ *              - days
+ *              - timezone
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          days:
+ *                              type: integer
+ *                              minimum: 1
+ *                              maximum: 30
+ *                              example: 7
+ *                          timezone:
+ *                              type: string
+ *                              example: Europe/Amsterdam
+ *      responses:
+ *          '200': 
+ *              description: Success
+ *          '400': 
+ *              description: Invalid request
+ *          '404': 
+ *              description: The Nightscout instance does not retain the requested days of data.
+ *          '407': 
+ *              description: Nightscout instance not verified.
+ *      
+ */
 router.post('/have-retained-data', cors(corsOptions), async (request: Request, response: Response) => {
     const session = await getSession(request, response)
 
@@ -45,7 +79,7 @@ router.post('/have-retained-data', cors(corsOptions), async (request: Request, r
             session.verifiedNightscoutToken
         )
 
-        response.status(haveRetainedData ? 200 : 404)
+        response.status(haveRetainedData ? 200 : 404).end()
     }
 
 })

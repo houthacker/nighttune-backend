@@ -21,7 +21,41 @@ const router = Router()
 // CORS preflight
 router.options('/', cors(corsOptions))
 
-// POST verification request
+/**
+ * @openapi
+ * /verify:
+ *  post:
+ *      summary: Verify the Nightscout instance and store credentials in encrypted cookie
+ *      tags:
+ *          - auth
+ *      requestBody:
+ *          required:
+ *              - nightscout_url
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          nightscout_url: 
+ *                              type: string
+ *                              format: uri
+ *                              example: https://my.nightscout.site
+ *                          nightscout_access_token:
+ *                              type: string
+ *                              minLength: 1
+ *                          nightscout_api_version:
+ *                              type: integer
+ *                              enum: [1, 3]
+ *                              default: 1
+ *      responses:
+ *          '200': 
+ *              description: Success
+ *          '400': 
+ *              description: Invalid request
+ *          '407': 
+ *              description: Nightscout instance not verified.
+ *      
+ */
 router.post('/', cors(corsOptions), async (request: Request, response: Response) => {
     const verification = VerificationRequest(request.body)
     if (verification instanceof type.errors) {

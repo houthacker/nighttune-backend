@@ -25,6 +25,8 @@ import gdprRouter from '@routes/gdpr.js'
 import jobRouter from '@routes/job.js'
 import profileRouter from '@routes/profile.js'
 import verifyRouter from '@routes/verify.js'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 
 import { POST_PROCESSING_REPLACER, POST_PROCESSING_REVIVER } from '@models/job.js'
 import { runIfEnabled, scanEnabledOptionalServices } from '@utils/optionalServiceUtil.js'
@@ -53,6 +55,18 @@ const limiter = RateLimit({
     windowMs: parseInt(process.env.NT_RATELIMIT_WINDOW_MS!) || 60_000,
     max: parseInt(process.env.NT_RATELIMIT_MAX!) || 30
 })
+
+const swaggerSpec = swaggerJSDoc({
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Nighttune API',
+            version: '3.6.1',
+        },
+    },
+    apis: ['./src/routes/*.ts']
+})
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 // Configure express
 if (process.env.NT_RATELIMIT_TRUST_PROXY) {
