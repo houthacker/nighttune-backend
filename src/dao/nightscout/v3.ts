@@ -136,8 +136,8 @@ export class NightscoutApiV3 extends NightscoutApiV1 implements NightscoutApi {
             const response = await fetch(entriesUrl, { headers } as RequestInit)
 
             if (response.ok) {
-                const body = await response.json()
-                return Array.isArray(body) && body.length != 0
+                const body = await response.json() as any
+                return Array.isArray(body.result) && body.result.length != 0
             }
 
             logger.warn(`Nightscout instance at ${url.href} does not have ${days} days of data.`)
